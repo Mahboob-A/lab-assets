@@ -390,6 +390,9 @@ Before we start writing code, let us look at the high-level architecture of the 
 
 ## Step-by-Step Implementation
 
+> **Caution — Learning Guidance**:
+> Do not look at the solutions first. For each component, make an honest attempt to implement the `# TODO:` challenges on your own before seeking the solution. Struggling with the logic, indexing mechanics, and pointer algorithms is where true engineering intuition develops. Complete, verified solutions for every algorithm and step are fully provided immediately after each challenge block if you get stuck or want to verify your approach.
+
 ### Step 1: Workspace & Project Setup
 
 In your terminal, navigate to your workspace and create the project directory:
@@ -401,18 +404,9 @@ touch corpus.py analyzer.py index.py ranker.py main.py
 ls -la
 ```
 
-[[Terminal Snapshot 1: Workspace setup and project tree]]
-
-```text
-total 0
-drwxr-xr-x  7 user  staff  224 Oct 22 12:20 .
-drwxr-xr-x  3 user  staff   96 Oct 22 12:20 ..
--rw-r--r--  1 user  staff    0 Oct 22 12:20 analyzer.py
--rw-r--r--  1 user  staff    0 Oct 22 12:20 corpus.py
--rw-r--r--  1 user  staff    0 Oct 22 12:20 index.py
--rw-r--r--  1 user  staff    0 Oct 22 12:20 main.py
--rw-r--r--  1 user  staff    0 Oct 22 12:20 ranker.py
-```
+<p align="center">
+  <img src="images/terminal-snapshot-01.png" alt="End-to-End System Architecture" width="100%">
+</p>
 
 ---
 
@@ -605,12 +599,10 @@ if __name__ == "__main__":
 python3 analyzer.py
 ```
 
-[[Terminal Snapshot 2: TextAnalyzer tokenization output]]
+<p align="center">
+  <img src="images/terminal-snapshot-02.png" alt="End-to-End System Architecture" width="100%">
+</p>
 
-```text
-Sample Input:    'Redis is an in-memory, key-value distributed cache!'
-Analyzed Tokens: ['redis', 'in-memory', 'key-value', 'distributed', 'cache']
-```
 
 Notice that uppercase `Redis` became `redis`, stop words `is` and `an` were eliminated, and technical hyphenated words `in-memory` and `key-value` were preserved!
 
@@ -729,14 +721,10 @@ if __name__ == "__main__":
 python3 index.py
 ```
 
-[[Terminal Snapshot 3: InvertedIndex dictionary and postings inspect]]
+<p align="center">
+  <img src="images/terminal-snapshot-03.png" alt="End-to-End System Architecture" width="100%">
+</p>
 
-```text
-Total documents: 3
-Average document length: 3.00
-Postings for 'cache': [(1, 1), (3, 1)]
-Postings for 'distributed': [(1, 1), (3, 1)]
-```
 
 Notice how `self.dictionary['cache']` maps directly to `[(1, 1), (3, 1)]`. In one lookup, we know Doc 1 and Doc 3 mention `"cache"`!
 
@@ -1248,84 +1236,16 @@ if __name__ == "__main__":
 python3 main.py
 ```
 
-[[Terminal Snapshot 6: Master script execution, query log, and JSON export]]
+<p align="center">
+  <img src="images/terminal-snapshot-4-1.png" alt="End-to-End System Architecture" width="100%">
+</p>
+<p align="center">
+  <img src="images/terminal-snapshot-4-2.png" alt="End-to-End System Architecture" width="100%">
+</p>
+<p align="center">
+  <img src="images/terminal-snapshot-4-3.png" alt="End-to-End System Architecture" width="100%">
+</p>
 
-```text
-======================================================================
-STEP 1: Indexing Document Collection
-======================================================================
-  [Indexed] Doc 01: 'Distributed In-Memory Caching with Redis' (27 tokens)
-  [Indexed] Doc 02: 'Raft Consensus and Leader Election' (25 tokens)
-  [Indexed] Doc 03: 'Database Sharding and Horizontal Partitioning' (21 tokens)
-  [Indexed] Doc 04: 'Kafka Event Streaming and Partition Rebalancing' (22 tokens)
-  [Indexed] Doc 05: 'Consistent Hashing and Virtual Nodes' (26 tokens)
-  [Indexed] Doc 06: 'Distributed Transactions with Two-Phase Commit' (23 tokens)
-  [Indexed] Doc 07: 'Application Load Balancing with Nginx' (25 tokens)
-  [Indexed] Doc 08: 'Data Replication Strategies: Sync vs Async' (24 tokens)
-  [Indexed] Doc 09: 'Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)' (93 tokens)
-----------------------------------------------------------------------
-Corpus Statistics:
-  • Total Documents:     9
-  • Vocabulary Size:      225 unique terms
-  • Average Doc Length:   31.78 tokens
-======================================================================
-
-======================================================================
-STEP 2: The Ranking Demonstration (TF-IDF vs. Okapi BM25)
-Query: 'distributed cache'
-======================================================================
-
---- Mode A: Classic TF-IDF Scoring ---
-Rank | Doc ID | Score   | Title
------+--------+---------+----------------------------------------------
-  1  | Doc 09 | 10.3379 | Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)
-  2  | Doc 01 |  4.3451 | Distributed In-Memory Caching with Redis
-
---- Mode B: Okapi BM25 Scoring (k1=1.2, b=0.75) ---
-Rank | Doc ID | Score   | Title
------+--------+---------+----------------------------------------------
-  1  | Doc 01 |  2.5630 | Distributed In-Memory Caching with Redis
-  2  | Doc 09 |  2.4564 | Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)
-
---- Term-by-Term Score Explanation (Elasticsearch _explain style) ---
-
-Doc 1 (length=27, len_ratio=0.85):
-  • term 'distributed': tf=2, idf=0.5978, tf_norm=1.4357 -> BM25 contribution=0.8583
-  • term 'cache': tf=3, idf=1.0498, tf_norm=1.6237 -> BM25 contribution=1.7046
-  => Total BM25: 2.563 | Total TF-IDF: 4.3451
-
-Doc 9 (length=93, len_ratio=2.93):
-  • term 'distributed': tf=5, idf=0.5978, tf_norm=1.3865 -> BM25 contribution=0.8289
-  • term 'cache': tf=7, idf=1.0498, tf_norm=1.5502 -> BM25 contribution=1.6275
-  => Total BM25: 2.4564 | Total TF-IDF: 10.3379
-======================================================================
-
-======================================================================
-STEP 3: Running 5 Benchmark Queries
-======================================================================
-
-Query 1: 'distributed cache replication'
-  Rank 1: Doc 01 [BM25: 4.0401] - Distributed In-Memory Caching with Redis
-
-Query 2: 'raft consensus leader election'
-  Rank 1: Doc 02 [BM25: 9.0104] - Raft Consensus and Leader Election
-
-Query 3: 'database sharding partition key'
-  Rank 1: Doc 03 [BM25: 7.5292] - Database Sharding and Horizontal Partitioning
-
-Query 4: 'kafka event streaming partition'
-  Rank 1: Doc 04 [BM25: 8.0968] - Kafka Event Streaming and Partition Rebalancing
-
-Query 5: 'consistent hashing virtual nodes'
-  Rank 1: Doc 05 [BM25: 7.2829] - Consistent Hashing and Virtual Nodes
-
-[Saved] Query log exported to: query_log.txt
-[Saved] Relevance judgments exported to: relevance_judgments.json
-
-======================================================================
-ALL STEPS COMPLETED SUCCESSFULLY!
-======================================================================
-```
 
 ---
 
@@ -1407,7 +1327,7 @@ In **Lab 2**, we will solve this exact latency challenge. We will step away from
 
 ---
 
-## Summary & Deliverables Checklist
+## Conclusion
 
 ### What You Built
 * [x] **`corpus.py`**: A 9-document seed collection covering distributed systems concepts.
