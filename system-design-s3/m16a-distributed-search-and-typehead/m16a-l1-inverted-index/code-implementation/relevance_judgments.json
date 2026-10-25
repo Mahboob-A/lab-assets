@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "module": "M16a",
+    "lab": "M16a-L1",
+    "purpose": "Ground truth relevance judgments for search evaluation and Elasticsearch comparison in M16a-L3",
+    "scale": {
+      "0": "Irrelevant - Document does not address the query information need.",
+      "1": "Partially Relevant - Document touches on the topic or related concepts.",
+      "2": "Highly Relevant - Document directly answers or centers on the query topic."
+    }
+  },
+  "queries": [
+    {
+      "query_id": "Q1",
+      "query": "distributed cache replication",
+      "expected_top_docs": [
+        1,
+        8,
+        9
+      ],
+      "judgments": [
+        {
+          "doc_id": 1,
+          "grade": 2,
+          "notes": "Highly relevant: Directly covers Redis as a distributed cache with master-slave replication."
+        },
+        {
+          "doc_id": 8,
+          "grade": 1,
+          "notes": "Partially relevant: Explains synchronous vs asynchronous replication, but not caching."
+        },
+        {
+          "doc_id": 9,
+          "grade": 1,
+          "notes": "Partially relevant: Mentions distributed cache repeatedly, but rambling/noisy."
+        }
+      ]
+    },
+    {
+      "query_id": "Q2",
+      "query": "raft consensus leader election",
+      "expected_top_docs": [
+        2
+      ],
+      "judgments": [
+        {
+          "doc_id": 2,
+          "grade": 2,
+          "notes": "Highly relevant: Specifically explains Raft consensus states and leader election timers."
+        },
+        {
+          "doc_id": 6,
+          "grade": 1,
+          "notes": "Partially relevant: Covers distributed transactions, but not Raft consensus."
+        }
+      ]
+    },
+    {
+      "query_id": "Q3",
+      "query": "database sharding partition key",
+      "expected_top_docs": [
+        3
+      ],
+      "judgments": [
+        {
+          "doc_id": 3,
+          "grade": 2,
+          "notes": "Highly relevant: Core focus on horizontal sharding, partition keys, and avoiding hotspots."
+        },
+        {
+          "doc_id": 5,
+          "grade": 1,
+          "notes": "Partially relevant: Discusses consistent hashing key mapping, but for cache nodes."
+        }
+      ]
+    },
+    {
+      "query_id": "Q4",
+      "query": "kafka event streaming partition",
+      "expected_top_docs": [
+        4
+      ],
+      "judgments": [
+        {
+          "doc_id": 4,
+          "grade": 2,
+          "notes": "Highly relevant: Directly covers Apache Kafka event streaming and partitioned logs."
+        },
+        {
+          "doc_id": 3,
+          "grade": 1,
+          "notes": "Partially relevant: Mentions partitioning, but in relational databases."
+        }
+      ]
+    },
+    {
+      "query_id": "Q5",
+      "query": "consistent hashing virtual nodes",
+      "expected_top_docs": [
+        5
+      ],
+      "judgments": [
+        {
+          "doc_id": 5,
+          "grade": 2,
+          "notes": "Highly relevant: Dedicated document explaining consistent hashing and virtual node distribution."
+        },
+        {
+          "doc_id": 1,
+          "grade": 1,
+          "notes": "Partially relevant: Covers caching, but not consistent hashing ring geometry."
+        }
+      ]
+    }
+  ]
+}
