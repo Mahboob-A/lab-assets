@@ -1237,13 +1237,13 @@ python3 main.py
 ```
 
 <p align="center">
-  <img src="images/terminal-snapshot-4-1.png" alt="End-to-End System Architecture" width="100%">
+  <img src="images/terminal-snapshot-04-1.png" alt="End-to-End System Architecture" width="100%">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-4-2.png" alt="End-to-End System Architecture" width="100%">
+  <img src="images/terminal-snapshot-04-2.png" alt="End-to-End System Architecture" width="100%">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-4-3.png" alt="End-to-End System Architecture" width="100%">
+  <img src="images/terminal-snapshot-04-3.png" alt="End-to-End System Architecture" width="100%">
 </p>
 
 
