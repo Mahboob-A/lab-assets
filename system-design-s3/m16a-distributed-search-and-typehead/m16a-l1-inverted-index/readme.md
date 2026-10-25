@@ -49,8 +49,9 @@ Because of this ambiguity, search cannot be treated as a simple true/false Boole
 2. **The Relevance Problem (Ranking)**:
    Once we have retrieved the 500 documents that contain the query words, which document should be at Rank 1, Rank 2, and Rank 3? This is a quality and relevance problem. We solve it using statistical scoring functions like **TF-IDF** and **Okapi BM25**.
 
+
 <p align="center">
-  <img src="images/diagram-1-two-stage-retrieval.svg" alt="Information Retrieval: The Two-Stage Funnel" width="100%">
+      <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-1-two-stage-retrieval.svg" alt="Information Retrieval: The Two-Stage Funnel" width="100%">
 </p>
 
 ---
@@ -170,7 +171,7 @@ The following table summarizes the structural trade-offs between Forward and Inv
 An inverted index is not just a single giant list. Under the hood, it is constructed from two cooperating data structures: the **Lexicon** and the **Posting Lists**.
 
 <p align="center">
-  <img src="images/diagram-2-inverted-index-memory.svg" alt="Inverted Index Architecture: Lexicon vs. Posting Lists" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-2-inverted-index-memory.svg" alt="Inverted Index Architecture: Lexicon vs. Posting Lists" width="100%">
 </p>
 
 #### 1. The Lexicon (Dictionary / Vocabulary)
@@ -211,7 +212,7 @@ To a naive string comparator, these three words are completely different because
 To make text searchable, raw strings must pass through a multi-stage **Text Analysis Pipeline** before being indexed or queried.
 
 <p align="center">
-  <img src="images/diagram-3-text-analysis-pipeline.svg" alt="Text Analysis and Normalization Pipeline" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-3-text-analysis-pipeline.svg" alt="Text Analysis and Normalization Pipeline" width="100%">
 </p>
 
 #### The Four Core Stages of Text Analysis
@@ -266,7 +267,7 @@ If our posting lists were unsorted, we would have to take each document in List 
 Because our posting lists are strictly sorted by `doc_id`, we can place a pointer at the start of both lists and advance them together in a single pass, exactly like the merge step in MergeSort:
 
 <p align="center">
-  <img src="images/diagram-4-two-pointer-intersection.svg" alt="Two-Pointer Boolean AND Intersection Sequence Trace" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-4-two-pointer-intersection.svg" alt="Two-Pointer Boolean AND Intersection Sequence Trace" width="100%">
 </p>
 
 1. **Compare** the doc IDs at Pointer A and Pointer B:
@@ -334,7 +335,7 @@ To eliminate both flaws, modern search engines (including Apache Lucene, Elastic
 Okapi BM25 introduces two tunable mathematical controls that fix the weaknesses of TF-IDF:
 
 <p align="center">
-  <img src="images/diagram-5-bm25-saturation-curve.svg" alt="Term Frequency Relevance Curve: Classic TF-IDF vs Okapi BM25" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-5-bm25-saturation-curve.svg" alt="Term Frequency Relevance Curve: Classic TF-IDF vs Okapi BM25" width="100%">
 </p>
 
 ##### 1. Term Saturation (Controlled by parameter `k1`, typically 1.2)
@@ -377,7 +378,7 @@ Length_Penalty = 1 - b + b * (|D| / avgdl)
 Before we start writing code, let us look at the high-level architecture of the search engine you are about to construct:
 
 <p align="center">
-  <img src="images/diagram-6-system-architecture.svg" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/diagram-6-system-architecture.svg" alt="End-to-End System Architecture" width="100%">
 </p>
 
 * **`corpus.py`**: Contains our seed collection of 9 realistic distributed systems engineering documents.
@@ -405,7 +406,7 @@ ls -la
 ```
 
 <p align="center">
-  <img src="images/terminal-snapshot-01.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-01.png" alt="Terminal Project Setup" width="100%">
 </p>
 
 ---
@@ -600,7 +601,7 @@ python3 analyzer.py
 ```
 
 <p align="center">
-  <img src="images/terminal-snapshot-02.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-02.png" alt="Terminal Analayzer" width="100%">
 </p>
 
 
@@ -722,7 +723,7 @@ python3 index.py
 ```
 
 <p align="center">
-  <img src="images/terminal-snapshot-03.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-03.png" alt="Terminal IndexPY Output" width="100%">
 </p>
 
 
@@ -1237,13 +1238,13 @@ python3 main.py
 ```
 
 <p align="center">
-  <img src="images/terminal-snapshot-04-1.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-04-1.png" alt="Termianl Main Program Run" width="100%">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-04-2.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-04-2.png" alt="Termianl Main Program Run" width="100%">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-04-3.png" alt="End-to-End System Architecture" width="100%">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/terminal-snapshot-04-3.png" alt="Termianl Main Program Run" width="100%">
 </p>
 
 
