@@ -1,7 +1,7 @@
 # Building an Inverted Index with Ranking from Scratch
 
 <p align="center">
-    <img src="images/overview-architecture.svg" alt="Search Engine Architecture Overview" width="100%">
+    <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l1-inverted-index/images/overview-architecture.svg" alt="Search Engine Architecture Overview" width="100%">
 </p>
 
 ## Introduction: The Magic Behind the Search Box
