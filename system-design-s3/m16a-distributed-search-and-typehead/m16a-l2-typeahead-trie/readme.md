@@ -155,6 +155,9 @@ In this lab, we adopt the industry-standard **hybrid production model**:
 
 ## Stage 3: Hands-On Walkthrough: Part A (Baseline Trie Service)
 
+> **Caution — Learning Guidance**:
+> Do not look at the solutions first. For each component, make an honest attempt to implement the `# TODO:` challenges on your own before seeking the solution. Struggling with the tree traversal logic, bottom-up recursion, candidate merging, and heap extraction mechanics is where true engineering intuition develops. Complete, verified solutions for every algorithm and step are fully provided immediately after each challenge block if you get stuck or want to verify your approach.
+
 Now that you understand the cognitive and architectural constraints, you will build the system step by step.
 
 ### Milestone 1: Environment Setup & Redis Integration
