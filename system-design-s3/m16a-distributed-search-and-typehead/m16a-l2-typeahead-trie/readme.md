@@ -218,7 +218,7 @@ python3 test_redis.py
 
 Compare your output against the following verified execution checkpoint:
 
-<!-- Terminal Snapshot 1: Redis Connectivity & Operations Verification -->
+[[Terminal Snapshot 1: Redis Connectivity & Operations Verification]]
 ```text
 ====================================================================
 Testing Redis Integration against: 127.0.0.1:6379
@@ -359,12 +359,36 @@ Populating `node.top_k` efficiently requires a **post-order depth-first traversa
 
 > **Warning — Subtle Production Bug**: Consider the query `"car"` with frequency 5000, and `"card"` with frequency 4000. At node `'r'`, the query `"car"` terminates (`node.is_end = True`). Its child node `'d'` terminates `"card"`. If your merge logic only aggregates suggestions from child nodes, `"car"` will be completely omitted from its own prefix node cache! You must always include `node.word` if `node.is_end` is True.
 
-Inspect the implementation of **TODO 1** in `typeahead_lab/trie_service.py`:
+#### The Challenge: Implementing Post-Order Top-K Caching
+
+Before reviewing the solution, attempt to implement this logic inside `trie_service.py`.
+
+```python
+def build_top_k(self, k: int = 5) -> None:
+    # -----------------------------------------------------------------
+    # TODO 1: Implement Post-Order Bottom-Up Top-K Caching:
+    # 1. Define an inner recursive function:
+    #    def _post_order_dfs(node: TrieNode) -> List[Tuple[str, int]]:
+    # 2. Recurse into all children first:
+    #    for child in node.children.values(): child_top_k = _post_order_dfs(child)
+    # 3. Merge candidates from children into a local dictionary (candidates: Dict[str, int]).
+    # 4. Critical Edge Case: If a valid word terminates at this node (node.is_end and node.word):
+    #    ensure candidates[node.word] = max(node.frequency, candidates.get(node.word, 0))
+    # 5. Sort candidates descending by frequency (-item[1], item[0]).
+    # 6. Slice to size k and assign directly to node.top_k.
+    # 7. Start the recursion by invoking _post_order_dfs(self.root).
+    # -----------------------------------------------------------------
+    pass
+```
+
+#### The Solution Walkthrough
+
+Here is the completed, verified implementation for `build_top_k()`:
 
 ```python
 def build_top_k(self, k: int = 5) -> None:
     """
-    TODO 1: Implement Post-Order Bottom-Up Top-K Caching.
+    Post-Order Bottom-Up Top-K Caching.
     
     Recursively traverses to leaf nodes first, then merges candidate queries
     from all children plus the current node's own query (if is_end is True).
@@ -403,12 +427,32 @@ def build_top_k(self, k: int = 5) -> None:
 
 ### Milestone 5: Implementing `O(L)` Prefix Search
 
-With `node.top_k` precomputed, runtime suggestion retrieval requires only walking down the characters of the prefix. Inspect **TODO 2** in `typeahead_lab/trie_service.py`:
+With `node.top_k` precomputed, runtime suggestion retrieval requires only walking down the characters of the prefix. #### The Challenge: Implementing O(L) Prefix Search
+
+Attempt to implement `suggest()` inside `trie_service.py`:
+
+```python
+def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]:
+    # -----------------------------------------------------------------
+    # TODO 2: Implement Prefix Search with Node-Cached Top-K:
+    # 1. Determine target_k (use k if provided, else self.k).
+    # 2. Start traversal from self.root and normalize prefix to lowercase.
+    # 3. For each character in normalized prefix:
+    #    - If char is not in current.children, return [] (no matching suggestions).
+    #    - Move current to current.children[char].
+    # 4. Return the precomputed top-K list sliced to target_k: current.top_k[:target_k].
+    # -----------------------------------------------------------------
+    pass
+```
+
+#### The Solution Walkthrough
+
+Here is the completed, verified implementation for `suggest()`:
 
 ```python
 def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]:
     """
-    TODO 2: Implement Prefix Search with Node-Cached Top-K.
+    Prefix Search with Node-Cached Top-K.
     
     Navigates down the Trie along the prefix characters in O(L) time.
     Once at the prefix node, returns the precomputed top-K list immediately.
@@ -450,7 +494,7 @@ python3 main.py
 
 Compare your console output against the verified snapshots below:
 
-<!-- Terminal Snapshot 2: Trie Service Construction & Suggestion Parity -->
+[[Terminal Snapshot 2: Trie Service Construction & Suggestion Parity]]
 ```text
 ============================================================================
   TYPEAHEAD & AUTOCOMPLETE LAB: TRIE vs HASH+HEAP PARITY VERIFICATION
@@ -478,7 +522,7 @@ Prefix: 'py' -> Status: MATCH [PASS]
 ----------------------------------------------------------------------------
 ```
 
-<!-- Terminal Snapshot 3: Single-Query Micro-Benchmark Latency -->
+[[Terminal Snapshot 3: Single-Query Micro-Benchmark Latency]]
 ```text
 ============================================================================
   SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')
@@ -545,12 +589,35 @@ Algorithmic complexity:
 * **Time Complexity**: `O(1)` hash map lookup + `O(B log K)` heap extraction. Because `K` is small (`K = 5`), `log2(5) ~= 2.3` operations per candidate.
 * **Space Complexity**: `O(K)` auxiliary space during query processing.
 
-Inspect the implementation of **TODO 3** in `typeahead_lab/hash_heap_service.py`:
+#### The Challenge: Implementing Bounded Min-Heap Extraction
+
+Attempt to implement `suggest()` inside `hash_heap_service.py`:
+
+```python
+def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]:
+    # -----------------------------------------------------------------
+    # TODO 3: Implement Bounded Min-Heap Top-K Extraction:
+    # 1. Determine target_k (use k if provided, else self.k).
+    # 2. Normalize prefix to lowercase and lookup in self.prefix_index:
+    #    candidates = self.prefix_index.get(normalized)
+    #    If candidates is None or empty, return [].
+    # 3. Maintain a bounded Min-Heap (min_heap: List[Tuple[int, str]]):
+    #    For each query, freq in candidates:
+    #      - If len(min_heap) < target_k: heapq.heappush(min_heap, (freq, query))
+    #      - Else if freq > min_heap[0][0]: heapq.heappushpop(min_heap, (freq, query))
+    # 4. Extract elements, reverse, and sort descending by frequency (-item[1], item[0]).
+    # -----------------------------------------------------------------
+    pass
+```
+
+#### The Solution Walkthrough
+
+Here is the completed, verified implementation for `suggest()`:
 
 ```python
 def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]:
     """
-    TODO 3: Implement Bounded Min-Heap Top-K Extraction.
+    Bounded Min-Heap Top-K Extraction.
     
     Performs an O(1) hash table lookup to retrieve the candidate bucket, then maintains
     a bounded Min-Heap of size K to extract the top-K highest-frequency candidates in O(B log K).
@@ -591,7 +658,7 @@ def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]
     return results
 ```
 
-<!-- Terminal Snapshot 4: Hash+Heap Service Verification & Parity -->
+[[Terminal Snapshot 4: Hash+Heap Service Verification & Parity]]
 ```text
 [+] Built Hash+Heap Service in 0.20ms
     - Unique Prefixes: 119 | Estimated RAM: 180.84 KB
@@ -612,7 +679,7 @@ python3 benchmark.py
 
 Compare your console output against the verified benchmark snapshot:
 
-<!-- Terminal Snapshot 5: 10,000 QPS Load Test & Memory Shootout Benchmark -->
+[[Terminal Snapshot 5: 10,000 QPS Load Test & Memory Shootout Benchmark]]
 ```text
 ==============================================================================
   TYPEAHEAD & AUTOCOMPLETE LOAD TEST & MEMORY BENCHMARK (10,000 QUERIES)
@@ -692,7 +759,7 @@ print("Second call:", r2.json())
 
 Compare your console output against the verified HTTP checkpoint:
 
-<!-- Terminal Snapshot 6: FastAPI HTTP Microservice Verification & L1 Cache Hit -->
+[[Terminal Snapshot 6: FastAPI HTTP Microservice Verification & L1 Cache Hit]]
 ```text
 [PASS] GET / -> {'status': 'healthy', 'service': 'Typeahead & Autocomplete Service', 'redis_mode': 'live_redis'}
 [PASS] GET /suggest (trie) -> {'prefix': 'sys', 'engine': 'trie', 'source': 'memory_trie', 'count': 3, 'suggestions': [{'query': 'system design interview', 'frequency': 9850}, {'query': 'system design rate limiter', 'frequency': 8420}, {'query': 'system design caching', 'frequency': 7650}]}
