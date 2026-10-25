@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="100%" height="100%">
+  <defs>
+    <!-- Arrowhead Markers -->
+    <marker id="arrow-blue-right" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-blue-left" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <style>
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
+        to { stroke-dashoffset: 0; }
+      }
+      .flow-blue {
+        stroke: #2563EB;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1000" height="520" fill="#F8FAFC" rx="14"/>
+  <rect x="1" y="1" width="998" height="518" fill="none" stroke="#E2E8F0" stroke-width="2" rx="14"/>
+
+  <!-- Diagram Header -->
+  <text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Two-Pointer Posting List Intersection (Sequence Trace)</text>
+  <text x="500" y="48" text-anchor="middle" font-size="11" font-weight="500" fill="#64748B">Linear Merge Walk O(L_A + L_B) Chronological Step-by-Step Execution</text>
+
+  <!-- ========================================== -->
+  <!-- LIFELINES (Dashed Vertical Guides)        -->
+  <!-- ========================================== -->
+  <line x1="170" y1="120" x2="170" y2="465" stroke="#93C5FD" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <line x1="500" y1="120" x2="500" y2="465" stroke="#93C5FD" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <line x1="830" y1="120" x2="830" y2="465" stroke="#86EFAC" stroke-width="1.8" stroke-dasharray="4 4"/>
+
+  <!-- ========================================== -->
+  <!-- PARTICIPANT HEADERS                        -->
+  <!-- ========================================== -->
+  <!-- Participant A -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="65" width="240" height="54" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="170" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#1E40AF">List A: 'distributed'</text>
+    <rect x="85" y="94" width="170" height="18" fill="#DBEAFE" rx="4"/>
+    <text x="170" y="107" text-anchor="middle" font-size="9.5" font-family="monospace" font-weight="700" fill="#1D4ED8">[Doc 1, Doc 3, Doc 7]</text>
+  </g>
+
+  <!-- Participant B -->
+  <g filter="url(#shadow)">
+    <rect x="380" y="65" width="240" height="54" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="500" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#1E40AF">List B: 'consensus'</text>
+    <rect x="415" y="94" width="170" height="18" fill="#DBEAFE" rx="4"/>
+    <text x="500" y="107" text-anchor="middle" font-size="9.5" font-family="monospace" font-weight="700" fill="#1D4ED8">[Doc 2, Doc 3, Doc 8]</text>
+  </g>
+
+  <!-- Participant Out -->
+  <g filter="url(#shadow)">
+    <rect x="720" y="65" width="220" height="54" fill="#ECFDF5" stroke="#059669" stroke-width="1.8" rx="8"/>
+    <text x="830" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">Matching Results</text>
+    <rect x="745" y="94" width="170" height="18" fill="#DCFCE7" rx="4"/>
+    <text x="830" y="107" text-anchor="middle" font-size="9.5" font-weight="700" fill="#047857">Intersection Output</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- SEQUENCE STEPS                             -->
+  <!-- ========================================== -->
+
+  <!-- STEP 1 -->
+  <!-- Note 1 -->
+  <rect x="190" y="138" width="290" height="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" rx="5"/>
+  <text x="335" y="154" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Compare A[0]=1 with B[0]=2</text>
+  <!-- Message 1: A -> B -->
+  <path d="M 170 182 L 495 182" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue-right)"/>
+  <path d="M 170 182 L 490 182" class="base-line flow-blue"/>
+  <circle cx="195" cy="173" r="9" fill="#2563EB"/>
+  <text x="195" y="176" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="335" y="176" text-anchor="middle" font-size="10" font-weight="700" fill="#2563EB">1 &lt; 2 ──▶ Advance Pointer A</text>
+
+  <!-- STEP 2 -->
+  <!-- Note 2 -->
+  <rect x="190" y="212" width="290" height="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" rx="5"/>
+  <text x="335" y="228" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Compare A[1]=3 with B[0]=2</text>
+  <!-- Message 2: B -> A -->
+  <path d="M 500 256 L 175 256" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue-left)"/>
+  <path d="M 500 256 L 180 256" class="base-line flow-blue"/>
+  <circle cx="475" cy="247" r="9" fill="#2563EB"/>
+  <text x="475" y="250" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="335" y="250" text-anchor="middle" font-size="10" font-weight="700" fill="#2563EB">2 &lt; 3 ──▶ Advance Pointer B</text>
+
+  <!-- STEP 3 (MATCH!) -->
+  <!-- Note 3 -->
+  <rect x="190" y="286" width="290" height="24" fill="#ECFDF5" stroke="#86EFAC" stroke-width="1.2" rx="5"/>
+  <text x="335" y="302" text-anchor="middle" font-size="9.5" font-weight="700" fill="#065F46">Compare A[1]=3 with B[1]=3 ──▶ EQUAL!</text>
+  <!-- Message 3: A -> Out -->
+  <path d="M 170 330 L 825 330" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 170 330 L 820 330" class="base-line flow-green"/>
+  <circle cx="195" cy="321" r="9" fill="#059669"/>
+  <text x="195" y="324" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">3</text>
+  <rect x="360" y="316" width="280" height="20" fill="#DCFCE7" stroke="#86EFAC" rx="4"/>
+  <text x="500" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#065F46">3 == 3 ──▶ MATCH! Add Doc 3 to Results</text>
+
+  <!-- STEP 4 -->
+  <!-- Note 4 -->
+  <rect x="190" y="360" width="290" height="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" rx="5"/>
+  <text x="335" y="376" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Advance both pointers ──▶ Compare A[2]=7 with B[2]=8</text>
+  <!-- Message 4: A -> B -->
+  <path d="M 170 404 L 495 404" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue-right)"/>
+  <path d="M 170 404 L 490 404" class="base-line flow-blue"/>
+  <circle cx="195" cy="395" r="9" fill="#2563EB"/>
+  <text x="195" y="398" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">4</text>
+  <text x="335" y="398" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2563EB">7 &lt; 8 ──▶ Advance Pointer A (List A ends ──▶ HALT)</text>
+
+  <!-- Final Candidates Card over Lifeline Out -->
+  <g filter="url(#shadow)">
+    <rect x="740" y="390" width="180" height="52" fill="#ECFDF5" stroke="#059669" stroke-width="1.8" rx="8"/>
+    <text x="830" y="412" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065F46">Final Candidates: [Doc 3]</text>
+    <rect x="760" y="420" width="140" height="16" fill="#DCFCE7" rx="3"/>
+    <text x="830" y="432" text-anchor="middle" font-size="8" font-weight="700" fill="#047857">Sub-2ms boolean match</text>
+  </g>
+
+  <!-- Bottom Complexity Bar -->
+  <rect x="30" y="475" width="940" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" rx="6"/>
+  <text x="500" y="493" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Linear Single-Pass Complexity: Exactly O(L_A + L_B) comparisons. Stops as soon as either list is exhausted.</text>
+</svg>

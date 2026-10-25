@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 640" width="100%" height="100%">
+  <defs>
+    <!-- Arrowhead Markers -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <style>
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
+        to { stroke-dashoffset: 0; }
+      }
+      .flow-blue {
+        stroke: #2563EB;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="860" height="640" fill="#F8FAFC" rx="14"/>
+  <rect x="1" y="1" width="858" height="638" fill="none" stroke="#E2E8F0" stroke-width="2" rx="14"/>
+
+  <!-- Diagram Header -->
+  <text x="430" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#0F172A" letter-spacing="-0.3">End-to-End System Architecture</text>
+
+  <!-- ========================================== -->
+  <!-- ROW 1: INPUTS (Corpus & Query)             -->
+  <!-- ========================================== -->
+
+  <!-- Node 1: Corpus -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="55" width="250" height="52" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.6" rx="8"/>
+    <text x="205" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="#1E293B">corpus.py</text>
+    <text x="205" y="94" text-anchor="middle" font-size="9.5" fill="#64748B">(9 Distributed Systems Docs)</text>
+  </g>
+
+  <!-- Node 2: Query -->
+  <g filter="url(#shadow)">
+    <rect x="530" y="55" width="250" height="52" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.6" rx="8"/>
+    <text x="655" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="#1E293B">User Query</text>
+    <text x="655" y="94" text-anchor="middle" font-size="10" font-family="monospace" font-weight="700" fill="#2563EB">'distributed cache'</text>
+  </g>
+
+  <!-- Arrow: Corpus -> Analyzer -->
+  <path d="M 205 107 L 360 148" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 205 107 L 355 148" class="base-line flow-blue"/>
+
+  <!-- Arrow: Query -> Analyzer -->
+  <path d="M 655 107 L 500 148" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 655 107 L 505 148" class="base-line flow-blue"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 2: TEXT ANALYZER                       -->
+  <!-- ========================================== -->
+
+  <!-- Node 3: Analyzer -->
+  <g filter="url(#shadow)">
+    <rect x="305" y="145" width="250" height="52" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="430" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#1E40AF">analyzer.py</text>
+    <text x="430" y="184" text-anchor="middle" font-size="9.5" font-weight="600" fill="#2563EB">(TextAnalyzer)</text>
+  </g>
+
+  <!-- Arrow: Analyzer -> Index -->
+  <path d="M 370 197 L 245 235" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 370 197 L 250 235" class="base-line flow-blue"/>
+
+  <!-- Arrow: Analyzer -> Ranker -->
+  <path d="M 490 197 L 615 235" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 490 197 L 610 235" class="base-line flow-blue"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 3: INDEX & RANKER                      -->
+  <!-- ========================================== -->
+
+  <!-- Node 4: Index -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="235" width="240" height="52" fill="#F0FDF4" stroke="#059669" stroke-width="1.8" rx="8"/>
+    <text x="230" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#14532D">index.py</text>
+    <text x="230" y="274" text-anchor="middle" font-size="9.5" font-weight="600" fill="#166534">(InvertedIndex)</text>
+  </g>
+
+  <!-- Arrow: Index -> Ranker -->
+  <path d="M 350 261 L 505 261" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 350 261 L 500 261" class="base-line flow-green"/>
+
+  <!-- Node 5: Ranker -->
+  <g filter="url(#shadow)">
+    <rect x="510" y="235" width="240" height="52" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="630" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#1E40AF">ranker.py</text>
+    <text x="630" y="274" text-anchor="middle" font-size="9.5" font-weight="600" fill="#2563EB">(SearchRanker)</text>
+  </g>
+
+  <!-- Arrow: Ranker -> CandidateMatch -->
+  <path d="M 630 287 L 630 318" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 630 287 L 630 315" class="base-line flow-blue"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 4: CANDIDATE MATCH                     -->
+  <!-- ========================================== -->
+
+  <!-- Node 6: CandidateMatch -->
+  <g filter="url(#shadow)">
+    <rect x="480" y="320" width="300" height="48" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="630" y="349" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1E40AF">Two-Pointer Boolean AND Match</text>
+  </g>
+
+  <!-- Arrow: CandidateMatch -> BM25Scorer -->
+  <path d="M 630 368 L 630 398" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 630 368 L 630 395" class="base-line flow-blue"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 5: BM25 SCORER                         -->
+  <!-- ========================================== -->
+
+  <!-- Node 7: BM25Scorer -->
+  <g filter="url(#shadow)">
+    <rect x="480" y="400" width="300" height="48" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="8"/>
+    <text x="630" y="429" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1E40AF">Okapi BM25 Scoring Engine</text>
+  </g>
+
+  <!-- Arrow: BM25Scorer -> Main -->
+  <path d="M 630 448 L 630 478" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 630 448 L 630 475" class="base-line flow-blue"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 6: MAIN ENTRYPOINT                     -->
+  <!-- ========================================== -->
+
+  <!-- Node 8: Main -->
+  <g filter="url(#shadow)">
+    <rect x="480" y="480" width="300" height="48" fill="#F8FAFC" stroke="#1E293B" stroke-width="1.8" rx="8"/>
+    <text x="630" y="509" text-anchor="middle" font-size="12" font-weight="700" fill="#1E293B">main.py Entrypoint</text>
+  </g>
+
+  <!-- Arrow: Main -> QueryLog -->
+  <path d="M 570 528 L 475 558" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 570 528 L 480 558" class="base-line flow-green"/>
+
+  <!-- Arrow: Main -> Judgments -->
+  <path d="M 690 528 L 710 558" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 690 528 L 705 558" class="base-line flow-green"/>
+
+  <!-- ========================================== -->
+  <!-- ROW 7: EXPORTED ARTIFACTS                  -->
+  <!-- ========================================== -->
+
+  <!-- Node 9: QueryLog -->
+  <g filter="url(#shadow)">
+    <rect x="350" y="560" width="220" height="52" fill="#ECFDF5" stroke="#059669" stroke-width="1.6" rx="8"/>
+    <text x="460" y="582" text-anchor="middle" font-size="11.5" font-weight="700" fill="#065F46">query_log.txt</text>
+    <text x="460" y="599" text-anchor="middle" font-size="9" fill="#047857">(Benchmark Logs)</text>
+  </g>
+
+  <!-- Node 10: Judgments -->
+  <g filter="url(#shadow)">
+    <rect x="590" y="560" width="240" height="52" fill="#ECFDF5" stroke="#059669" stroke-width="1.6" rx="8"/>
+    <text x="710" y="582" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">relevance_judgments.json</text>
+    <text x="710" y="599" text-anchor="middle" font-size="9" fill="#047857">(Ground Truth for Lab 3)</text>
+  </g>
+</svg>

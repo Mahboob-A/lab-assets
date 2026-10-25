@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 340" width="100%" height="100%">
+  <defs>
+    <!-- Arrowhead Markers -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <style>
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
+        to { stroke-dashoffset: 0; }
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1000" height="340" fill="#F8FAFC" rx="14"/>
+  <rect x="1" y="1" width="998" height="338" fill="none" stroke="#E2E8F0" stroke-width="2" rx="14"/>
+
+  <!-- Diagram Header -->
+  <text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Inverted Index Architecture: Lexicon vs. Posting Lists</text>
+  <text x="500" y="48" text-anchor="middle" font-size="11" font-weight="500" fill="#64748B">Decoupling In-Memory Term Lookups O(1) from Contiguous Posting Scans</text>
+
+  <!-- Left Container: Lexicon (RAM) -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="65" width="350" height="215" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.8" rx="10"/>
+    <rect x="40" y="65" width="350" height="34" fill="#DBEAFE" rx="10"/>
+    <path d="M 40 89 H 390 V 99 H 40 Z" fill="#DBEAFE"/>
+    <text x="55" y="88" font-size="12.5" font-weight="700" fill="#1E40AF">Dictionary / Lexicon (RAM)</text>
+    <rect x="270" y="72" width="105" height="20" fill="#2563EB" rx="4"/>
+    <text x="322" y="86" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">O(1) Hash Map</text>
+
+    <!-- Term Row 1: consensus -->
+    <rect x="55" y="106" width="320" height="32" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1" rx="6"/>
+    <text x="68" y="127" font-size="11" font-family="monospace" font-weight="700" fill="#1E3A8A">"consensus"</text>
+    <rect x="220" y="112" width="60" height="20" fill="#EFF6FF" stroke="#93C5FD" rx="4"/>
+    <text x="250" y="126" text-anchor="middle" font-size="9" font-weight="700" fill="#2563EB">DF: 2</text>
+    <text x="315" y="126" font-size="9.5" font-weight="700" fill="#059669">ptr ──▶</text>
+
+    <!-- Term Row 2: distributed -->
+    <rect x="55" y="146" width="320" height="32" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1" rx="6"/>
+    <text x="68" y="167" font-size="11" font-family="monospace" font-weight="700" fill="#1E3A8A">"distributed"</text>
+    <rect x="220" y="152" width="60" height="20" fill="#EFF6FF" stroke="#93C5FD" rx="4"/>
+    <text x="250" y="166" text-anchor="middle" font-size="9" font-weight="700" fill="#2563EB">DF: 3</text>
+    <text x="315" y="166" font-size="9.5" font-weight="700" fill="#059669">ptr ──▶</text>
+
+    <!-- Term Row 3: sharding -->
+    <rect x="55" y="186" width="320" height="32" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1" rx="6"/>
+    <text x="68" y="207" font-size="11" font-family="monospace" font-weight="700" fill="#1E3A8A">"sharding"</text>
+    <rect x="220" y="192" width="60" height="20" fill="#EFF6FF" stroke="#93C5FD" rx="4"/>
+    <text x="250" y="206" text-anchor="middle" font-size="9" font-weight="700" fill="#2563EB">DF: 1</text>
+    <text x="315" y="206" font-size="9.5" font-weight="700" fill="#059669">ptr ──▶</text>
+
+    <!-- RAM Pill -->
+    <rect x="55" y="235" width="320" height="24" fill="#DBEAFE" rx="5"/>
+    <text x="215" y="251" text-anchor="middle" font-size="9.5" font-weight="600" fill="#1E40AF">RAM Footprint: Compact Vocabulary (&lt; 100MB)</text>
+  </g>
+
+  <!-- Flowing Pointers from Lexicon to Postings -->
+  <!-- Pointer 1 -->
+  <path d="M 390 122 L 480 122" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 390 122 L 475 122" class="base-line flow-green"/>
+
+  <!-- Pointer 2 -->
+  <path d="M 390 162 L 480 162" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 390 162 L 475 162" class="base-line flow-green"/>
+
+  <!-- Pointer 3 -->
+  <path d="M 390 202 L 480 202" class="base-line" stroke="#86EFAC" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 390 202 L 475 202" class="base-line flow-green"/>
+
+  <!-- Right Container: Posting Lists (Memory / Disk) -->
+  <g filter="url(#shadow)">
+    <rect x="490" y="65" width="470" height="215" fill="#F0FDF4" stroke="#059669" stroke-width="1.8" rx="10"/>
+    <rect x="490" y="65" width="470" height="34" fill="#DCFCE7" rx="10"/>
+    <path d="M 490 89 H 960 V 99 H 490 Z" fill="#DCFCE7"/>
+    <text x="505" y="88" font-size="12.5" font-weight="700" fill="#14532D">Posting Lists (Memory / Disk)</text>
+    <rect x="830" y="72" width="115" height="20" fill="#059669" rx="4"/>
+    <text x="887" y="86" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Sorted by DocID</text>
+
+    <!-- Chain 1: consensus -->
+    <g>
+      <rect x="505" y="107" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="562" y="126" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 2 (tf=2)</text>
+
+      <path d="M 620 122 L 650 122" class="base-line" stroke="#86EFAC" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <rect x="655" y="107" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="712" y="126" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 5 (tf=1)</text>
+    </g>
+
+    <!-- Chain 2: distributed -->
+    <g>
+      <rect x="505" y="147" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="562" y="166" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 1 (tf=2)</text>
+
+      <path d="M 620 162 L 650 162" class="base-line" stroke="#86EFAC" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <rect x="655" y="147" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="712" y="166" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 3 (tf=1)</text>
+
+      <path d="M 770 162 L 800 162" class="base-line" stroke="#86EFAC" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <rect x="805" y="147" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="862" y="166" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 9 (tf=5)</text>
+    </g>
+
+    <!-- Chain 3: sharding -->
+    <g>
+      <rect x="505" y="187" width="115" height="30" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1" rx="5"/>
+      <text x="562" y="206" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">Doc 4 (tf=2)</text>
+    </g>
+
+    <!-- Storage Pill -->
+    <rect x="505" y="235" width="440" height="24" fill="#DCFCE7" rx="5"/>
+    <text x="725" y="251" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532D">Delta-Gap Compressed: Efficient Sequential Paging from Disk</text>
+  </g>
+
+  <!-- Bottom Principle Bar -->
+  <rect x="40" y="295" width="920" height="26" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" rx="6"/>
+  <text x="500" y="312" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Memory Hierarchy: The Lexicon lives in RAM for microsecond term lookups; Postings are laid out contiguously for fast sequential scans.</text>
+</svg>
