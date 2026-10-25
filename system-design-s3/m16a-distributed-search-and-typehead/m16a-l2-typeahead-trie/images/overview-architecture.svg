@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; }
+      .card-header-blue { fill: #EFF6FF; stroke: #3B82F6; stroke-width: 1.5; }
+      .card-header-green { fill: #ECFDF5; stroke: #10B981; stroke-width: 1.5; }
+      .card-header-purple { fill: #FAF5FF; stroke: #A855F7; stroke-width: 1.5; }
+      .card-header-slate { fill: #F1F5F9; stroke: #64748B; stroke-width: 1.5; }
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 700; font-size: 18px; fill: #0F172A; }
+      .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #334155; }
+      .bold-text { font-weight: 600; fill: #1E293B; }
+      .badge-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 600; }
+      .flow-line { stroke: #2563EB; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .flow-line-green { stroke: #059669; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .solid-line { stroke: #94A3B8; stroke-width: 1.5; fill: none; }
+      @keyframes flow { to { stroke-dashoffset: -20; } }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" class="bg"/>
+
+  <!-- Main Canvas Card -->
+  <rect x="20" y="20" width="960" height="580" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" rx="12"/>
+
+  <!-- Title Banner -->
+  <text x="500" y="55" text-anchor="middle" class="title-text" font-size="20">M16a-L2: Typeahead &amp; Autocomplete End-to-End System Architecture</text>
+  <text x="500" y="76" text-anchor="middle" class="subtitle-text">Hybrid Architecture: High-Throughput In-Memory Engines + Distributed L1 Cache &amp; Counters</text>
+
+  <!-- Step 1: Client Layer -->
+  <g transform="translate(60, 110)">
+    <rect width="200" height="100" class="card" stroke="#3B82F6"/>
+    <path d="M 0 8 Q 0 0 8 0 L 192 0 Q 200 0 200 8 L 200 28 L 0 28 Z" class="card-header-blue"/>
+    <text x="100" y="19" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">CLIENT APPLICATION</text>
+    <text x="15" y="48" class="body-text">Browser / Mobile Input</text>
+    <text x="15" y="66" class="subtitle-text">Keystroke rhythm: ~160ms</text>
+    <text x="15" y="84" class="badge-text" fill="#2563EB">q='sys' (Debounced 50ms)</text>
+  </g>
+
+  <!-- Step 2: API Gateway Layer -->
+  <g transform="translate(360, 110)">
+    <rect width="260" height="100" class="card" stroke="#3B82F6"/>
+    <path d="M 0 8 Q 0 0 8 0 L 252 0 Q 260 0 260 8 L 260 28 L 0 28 Z" class="card-header-blue"/>
+    <text x="130" y="19" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">FASTAPI GATEWAY (api.py)</text>
+    <text x="15" y="48" class="body-text">GET /suggest?q=sys&amp;engine=hash</text>
+    <text x="15" y="66" class="subtitle-text">Latency SLA: p99 &lt; 50ms</text>
+    <text x="15" y="84" class="badge-text" fill="#2563EB">Compute Budget: &lt;= 3.0ms</text>
+  </g>
+
+  <!-- Connect Client -> API -->
+  <path d="M 260 160 L 350 160" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- Tier 1: Redis Distributed Cache & Counters -->
+  <g transform="translate(720, 110)">
+    <rect width="220" height="150" class="card" stroke="#10B981"/>
+    <path d="M 0 8 Q 0 0 8 0 L 212 0 Q 220 0 220 8 L 220 28 L 0 28 Z" class="card-header-green"/>
+    <text x="110" y="19" text-anchor="middle" class="bold-text" fill="#065F46" font-size="12">TIER 1: REDIS CACHE &amp; ZSET</text>
+    <text x="15" y="48" class="bold-text" font-size="12">Hot Prefix Cache</text>
+    <text x="15" y="65" class="badge-text" fill="#059669">GET prefix_cache:sys (TTL 5m)</text>
+    <text x="15" y="88" class="bold-text" font-size="12">Query Frequency Counter</text>
+    <text x="15" y="105" class="badge-text" fill="#059669">ZINCRBY query_freq 1 "query"</text>
+    <text x="15" y="130" class="subtitle-text">Absorbs 80% repeat keystrokes</text>
+  </g>
+
+  <!-- Connect API <-> Redis -->
+  <path d="M 620 140 L 710 140" class="flow-line-green" marker-end="url(#arrow-green)"/>
+  <text x="665" y="132" text-anchor="middle" class="badge-text" fill="#059669">1. Cache Check</text>
+
+  <path d="M 710 170 L 620 170" class="solid-line"/>
+  <text x="665" y="185" text-anchor="middle" class="badge-text" fill="#64748B">Hit (&lt; 0.01ms)</text>
+
+  <!-- Tier 2: In-Memory Search Engines Container -->
+  <rect x="60" y="270" width="600" height="200" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4,4" rx="8"/>
+  <text x="75" y="292" class="bold-text" fill="#475569" font-size="13">TIER 2: IN-MEMORY SEARCH ENGINES (Local Process Memory)</text>
+
+  <!-- Engine 1: Baseline Trie -->
+  <g transform="translate(80, 310)">
+    <rect width="260" height="140" class="card" stroke="#64748B"/>
+    <path d="M 0 8 Q 0 0 8 0 L 252 0 Q 260 0 260 8 L 260 26 L 0 26 Z" class="card-header-slate"/>
+    <text x="130" y="18" text-anchor="middle" class="bold-text" fill="#334155" font-size="11">PART A: BASELINE TRIE SERVICE</text>
+    <text x="12" y="44" class="body-text">• Data Structure: Prefix Tree (__slots__)</text>
+    <text x="12" y="62" class="body-text">• Lookup Complexity: O(L) Character Path</text>
+    <text x="12" y="80" class="body-text">• Caching: Post-Order Bottom-Up Top-K</text>
+    <text x="12" y="98" class="badge-text" fill="#DC2626">• Peak RAM (10k items): ~58.2 MB</text>
+    <text x="12" y="116" class="badge-text" fill="#2563EB">• p99 Latency: 0.0007 ms | 2.8M QPS</text>
+  </g>
+
+  <!-- Engine 2: Hash+Heap -->
+  <g transform="translate(370, 310)">
+    <rect width="270" height="140" class="card" stroke="#2563EB"/>
+    <path d="M 0 8 Q 0 0 8 0 L 262 0 Q 270 0 270 8 L 270 26 L 0 26 Z" class="card-header-blue"/>
+    <text x="135" y="18" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="11">PART B: OPTIMIZED HASH+HEAP</text>
+    <text x="12" y="44" class="body-text">• Data Structure: Flat Prefix Dict (L &lt;= 6)</text>
+    <text x="12" y="62" class="body-text">• Extraction: Bounded Min-Heap (K=5)</text>
+    <text x="12" y="80" class="body-text">• Complexity: O(1) Hash + O(B log K) Heap</text>
+    <text x="12" y="98" class="badge-text" fill="#059669">• Peak RAM: 4.52 MB (92.2% RAM Savings!)</text>
+    <text x="12" y="116" class="badge-text" fill="#2563EB">• p99 Latency: 0.053 ms | 65,000 QPS</text>
+  </g>
+
+  <!-- Connect Gateway -> Tier 2 Engines -->
+  <path d="M 450 210 L 450 240 L 210 240 L 210 300" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 450 210 L 450 300" class="flow-line" marker-end="url(#arrow)"/>
+  <text x="320" y="235" text-anchor="middle" class="badge-text" fill="#2563EB">2. Query Engine on Cache Miss</text>
+
+  <!-- Tier 3: Benchmark & Evaluation Suite -->
+  <g transform="translate(60, 490)">
+    <rect width="880" height="85" class="card" stroke="#A855F7"/>
+    <path d="M 0 8 Q 0 0 8 0 L 872 0 Q 880 0 880 8 L 880 26 L 0 26 Z" class="card-header-purple"/>
+    <text x="440" y="18" text-anchor="middle" class="bold-text" fill="#6B21A8" font-size="12">TIER 3: VERIFICATION &amp; LOAD TESTING BENCHMARK (benchmark.py)</text>
+    <text x="20" y="48" class="body-text">• 10,000 Concurrent Queries Simulated Workload | Zipfian Power-Law Distribution</text>
+    <text x="20" y="66" class="body-text">• Performance Verification: SLA Target (p99 &lt; 50ms at 10,000 QPS) Verified Against Both Engines</text>
+    <text x="560" y="48" class="badge-text" fill="#059669">[SLA PASSED] p99 Latency: &lt; 0.06 ms</text>
+    <text x="560" y="66" class="badge-text" fill="#059669">[SLA PASSED] Throughput: &gt; 65,000 QPS</text>
+  </g>
+
+  <!-- Connect Tier 2 -> Benchmark -->
+  <path d="M 490 450 L 490 480" class="solid-line"/>
+</svg>

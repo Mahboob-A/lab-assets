@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; }
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 700; font-size: 18px; fill: #0F172A; }
+      .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #334155; }
+      .bold-text { font-weight: 600; fill: #1E293B; }
+      .mono-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+      .flow-line { stroke: #2563EB; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .danger-line { stroke: #DC2626; stroke-width: 2; stroke-dasharray: 4,4; fill: none; }
+      @keyframes flow { to { stroke-dashoffset: -20; } }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="500" class="bg"/>
+  <rect x="20" y="20" width="920" height="460" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" rx="12"/>
+
+  <!-- Title -->
+  <text x="480" y="55" text-anchor="middle" class="title-text">The 50ms Keystroke Latency Budget &amp; Human Typing Rhythm</text>
+  <text x="480" y="78" text-anchor="middle" class="subtitle-text">Average typing speed: 60-80 WPM = One keystroke every 160ms. Suggestions must render within 50ms.</text>
+
+  <!-- Human Typing Rhythm Bar -->
+  <g transform="translate(60, 110)">
+    <rect width="840" height="40" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" rx="6"/>
+    <rect width="420" height="40" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.5" rx="6"/>
+    <text x="210" y="25" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">Target SLA Window: Round-Trip &lt;= 50 ms</text>
+    <text x="630" y="25" text-anchor="middle" class="body-text" fill="#475569" font-size="12">Next Keystroke Arrives at ~160 ms (Safe Idle Buffer)</text>
+    <line x1="420" y1="0" x2="420" y2="40" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="4,2"/>
+  </g>
+
+  <!-- Breakdown Cards -->
+  <!-- 1. Network Ingress -->
+  <g transform="translate(60, 180)">
+    <rect width="130" height="110" class="card" stroke="#3B82F6"/>
+    <text x="65" y="28" text-anchor="middle" class="bold-text" font-size="12">1. Ingress RTT</text>
+    <text x="65" y="55" text-anchor="middle" class="title-text" fill="#2563EB" font-size="18">15 ms</text>
+    <text x="65" y="80" text-anchor="middle" class="body-text">Client to Gateway</text>
+    <text x="65" y="96" text-anchor="middle" class="mono-text" fill="#64748B">Mobile 4G/5G</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 190 235 L 210 235" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- 2. Gateway / SSL -->
+  <g transform="translate(220, 180)">
+    <rect width="120" height="110" class="card" stroke="#64748B"/>
+    <text x="60" y="28" text-anchor="middle" class="bold-text" font-size="12">2. Gateway</text>
+    <text x="60" y="55" text-anchor="middle" class="title-text" fill="#475569" font-size="18">2 ms</text>
+    <text x="60" y="80" text-anchor="middle" class="body-text">TLS Termination</text>
+    <text x="60" y="96" text-anchor="middle" class="mono-text" fill="#64748B">Auth &amp; Routing</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 340 235 L 360 235" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- 3. Autocomplete Compute (Highlighted Green) -->
+  <g transform="translate(370, 170)">
+    <rect width="180" height="130" fill="#ECFDF5" stroke="#10B981" stroke-width="2" rx="8"/>
+    <text x="90" y="28" text-anchor="middle" class="bold-text" fill="#065F46" font-size="13">3. COMPUTE BUDGET</text>
+    <text x="90" y="60" text-anchor="middle" class="title-text" fill="#059669" font-size="22">&lt;= 3.0 ms</text>
+    <text x="90" y="86" text-anchor="middle" class="bold-text" fill="#047857" font-size="11">Trie: 0.0007 ms</text>
+    <text x="90" y="104" text-anchor="middle" class="bold-text" fill="#047857" font-size="11">Hash+Heap: 0.053 ms</text>
+    <text x="90" y="120" text-anchor="middle" class="mono-text" fill="#065F46">In-Memory Engine</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 550 235 L 570 235" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- 4. JSON Serialization -->
+  <g transform="translate(580, 180)">
+    <rect width="110" height="110" class="card" stroke="#64748B"/>
+    <text x="55" y="28" text-anchor="middle" class="bold-text" font-size="12">4. Serialize</text>
+    <text x="55" y="55" text-anchor="middle" class="title-text" fill="#475569" font-size="18">1 ms</text>
+    <text x="55" y="80" text-anchor="middle" class="body-text">JSON Encoding</text>
+    <text x="55" y="96" text-anchor="middle" class="mono-text" fill="#64748B">Payload ~500B</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 690 235 L 710 235" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- 5. Network Egress -->
+  <g transform="translate(720, 180)">
+    <rect width="100" height="110" class="card" stroke="#3B82F6"/>
+    <text x="50" y="28" text-anchor="middle" class="bold-text" font-size="12">5. Egress</text>
+    <text x="50" y="55" text-anchor="middle" class="title-text" fill="#2563EB" font-size="18">15 ms</text>
+    <text x="50" y="80" text-anchor="middle" class="body-text">Return to Client</text>
+    <text x="50" y="96" text-anchor="middle" class="mono-text" fill="#64748B">Network Packet</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 820 235 L 835 235" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- 6. Client DOM Render -->
+  <g transform="translate(845, 180)">
+    <rect width="75" height="110" class="card" stroke="#3B82F6"/>
+    <text x="37" y="28" text-anchor="middle" class="bold-text" font-size="11">6. Render</text>
+    <text x="37" y="55" text-anchor="middle" class="title-text" fill="#2563EB" font-size="16">4 ms</text>
+    <text x="37" y="80" text-anchor="middle" class="body-text" font-size="10">DOM Paint</text>
+    <text x="37" y="96" text-anchor="middle" class="mono-text" fill="#64748B" font-size="9">UI Dropdown</text>
+  </g>
+
+  <!-- Cumulative Calculation Box -->
+  <g transform="translate(60, 325)">
+    <rect width="840" height="120" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5" rx="8"/>
+    <text x="25" y="32" class="bold-text" fill="#1E40AF" font-size="14">Cumulative Latency Calculation:</text>
+    <text x="25" y="60" class="mono-text" font-size="13" fill="#1E3A8A">Total Latency = 15ms (Ingress) + 2ms (Gateway) + 0.05ms (Compute) + 1ms (JSON) + 15ms (Egress) + 4ms (DOM) = ~37.05 ms</text>
+    <text x="25" y="88" class="bold-text" fill="#059669" font-size="13">[STATUS: PASSED] Comfortably within the 50 ms p99 threshold (Provides ~13ms jitter buffer).</text>
+    <text x="25" y="108" class="body-text" fill="#DC2626" font-size="12">Critical Rule: If backend compute takes 10ms+, tail latency jitter causes visual flicker and stale suggestions.</text>
+  </g>
+</svg>

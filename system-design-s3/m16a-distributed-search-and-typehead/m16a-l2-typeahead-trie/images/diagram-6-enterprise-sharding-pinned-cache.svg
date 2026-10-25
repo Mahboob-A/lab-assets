@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; }
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 700; font-size: 18px; fill: #0F172A; }
+      .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #334155; }
+      .bold-text { font-weight: 600; fill: #1E293B; }
+      .mono-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+      .flow-line { stroke: #2563EB; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .flow-line-green { stroke: #059669; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .solid-line { stroke: #94A3B8; stroke-width: 1.5; fill: none; }
+      @keyframes flow { to { stroke-dashoffset: -20; } }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="520" class="bg"/>
+  <rect x="20" y="20" width="920" height="480" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" rx="12"/>
+
+  <!-- Title Banner -->
+  <text x="480" y="55" text-anchor="middle" class="title-text">Enterprise Scale: Consistent Hash Sharding &amp; Pinned Caches</text>
+  <text x="480" y="78" text-anchor="middle" class="subtitle-text">Scaling to 100M+ queries and 500,000 QPS across distributed prefix shards.</text>
+
+  <!-- Top Ingress Bar -->
+  <g transform="translate(60, 105)">
+    <!-- Client -->
+    <g transform="translate(0, 0)">
+      <rect width="180" height="70" class="card" stroke="#3B82F6"/>
+      <text x="90" y="26" text-anchor="middle" class="bold-text" font-size="12">Global Users</text>
+      <text x="90" y="46" text-anchor="middle" class="body-text">q='docker', 'python'</text>
+      <text x="90" y="60" text-anchor="middle" class="mono-text" fill="#2563EB">500,000 Global QPS</text>
+    </g>
+
+    <!-- Arrow -->
+    <path d="M 180 35 L 230 35" class="flow-line" marker-end="url(#arrow)"/>
+
+    <!-- Anycast DNS / CDN -->
+    <g transform="translate(240, 0)">
+      <rect width="200" height="70" class="card" stroke="#64748B"/>
+      <text x="100" y="26" text-anchor="middle" class="bold-text" font-size="12">Anycast DNS / Edge CDN</text>
+      <text x="100" y="46" text-anchor="middle" class="body-text">Nearest Datacenter (US/EU/AP)</text>
+      <text x="100" y="60" text-anchor="middle" class="mono-text" fill="#64748B">Network Ingress &lt;= 15ms</text>
+    </g>
+
+    <!-- Arrow -->
+    <path d="M 440 35 L 490 35" class="flow-line" marker-end="url(#arrow)"/>
+
+    <!-- Gateway Router -->
+    <g transform="translate(500, 0)">
+      <rect width="340" height="70" class="card" stroke="#2563EB" stroke-width="2"/>
+      <text x="170" y="24" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">Consistent Hash Shard Router</text>
+      <text x="170" y="44" text-anchor="middle" class="mono-text" fill="#2563EB">shard_id = hash(prefix[:2]) % NumShards</text>
+      <text x="170" y="60" text-anchor="middle" class="subtitle-text">Deterministic Prefix Routing (Zero Cross-Shard Merging)</text>
+    </g>
+  </g>
+
+  <!-- Middle Routing Connectors -->
+  <path d="M 580 175 L 580 215 L 180 215 L 180 240" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 670 175 L 670 240" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 760 175 L 760 215 L 780 215 L 780 240" class="flow-line" marker-end="url(#arrow)"/>
+
+  <!-- Shard 1 -->
+  <g transform="translate(60, 245)">
+    <rect width="260" height="230" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" rx="8"/>
+    <rect width="260" height="30" fill="#EFF6FF" stroke="#3B82F6" rx="6"/>
+    <text x="130" y="20" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">SHARD A: PREFIXES [a - g]</text>
+
+    <!-- Pinned Cache Box -->
+    <g transform="translate(15, 42)">
+      <rect width="230" height="75" fill="#ECFDF5" stroke="#10B981" rx="6"/>
+      <text x="115" y="20" text-anchor="middle" class="bold-text" fill="#065F46" font-size="11">Pinned L1 In-Memory Cache</text>
+      <text x="12" y="38" class="mono-text" fill="#047857">• "am", "ap", "do", "go", "fl"</text>
+      <text x="12" y="54" class="mono-text" fill="#047857">• Top 1,000 Prefixes Pinned</text>
+      <text x="12" y="68" class="badge-text" fill="#059669">Hit Rate: 91.4% (Latency: 0.005ms)</text>
+    </g>
+
+    <!-- In-Memory Engine Box -->
+    <g transform="translate(15, 128)">
+      <rect width="230" height="85" class="card" stroke="#64748B"/>
+      <text x="115" y="22" text-anchor="middle" class="bold-text" font-size="11">In-Memory Engine Replica</text>
+      <text x="12" y="42" class="body-text">• Vocabulary: 35M Queries</text>
+      <text x="12" y="60" class="body-text">• RAM: 18 GB with RCU swap</text>
+      <text x="12" y="78" class="mono-text" fill="#2563EB">3x Replicated for Read HA</text>
+    </g>
+  </g>
+
+  <!-- Shard 2 -->
+  <g transform="translate(350, 245)">
+    <rect width="260" height="230" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" rx="8"/>
+    <rect width="260" height="30" fill="#EFF6FF" stroke="#3B82F6" rx="6"/>
+    <text x="130" y="20" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">SHARD B: PREFIXES [h - p]</text>
+
+    <!-- Pinned Cache Box -->
+    <g transform="translate(15, 42)">
+      <rect width="230" height="75" fill="#ECFDF5" stroke="#10B981" rx="6"/>
+      <text x="115" y="20" text-anchor="middle" class="bold-text" fill="#065F46" font-size="11">Pinned L1 In-Memory Cache</text>
+      <text x="12" y="38" class="mono-text" fill="#047857">• "ja", "ka", "ku", "li", "py"</text>
+      <text x="12" y="54" class="mono-text" fill="#047857">• Top 1,000 Prefixes Pinned</text>
+      <text x="12" y="68" class="badge-text" fill="#059669">Hit Rate: 92.1% (Latency: 0.005ms)</text>
+    </g>
+
+    <!-- In-Memory Engine Box -->
+    <g transform="translate(15, 128)">
+      <rect width="230" height="85" class="card" stroke="#64748B"/>
+      <text x="115" y="22" text-anchor="middle" class="bold-text" font-size="11">In-Memory Engine Replica</text>
+      <text x="12" y="42" class="body-text">• Vocabulary: 32M Queries</text>
+      <text x="12" y="60" class="body-text">• RAM: 16 GB with RCU swap</text>
+      <text x="12" y="78" class="mono-text" fill="#2563EB">3x Replicated for Read HA</text>
+    </g>
+  </g>
+
+  <!-- Shard 3 -->
+  <g transform="translate(640, 245)">
+    <rect width="260" height="230" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" rx="8"/>
+    <rect width="260" height="30" fill="#EFF6FF" stroke="#3B82F6" rx="6"/>
+    <text x="130" y="20" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="12">SHARD C: PREFIXES [q - z]</text>
+
+    <!-- Pinned Cache Box -->
+    <g transform="translate(15, 42)">
+      <rect width="230" height="75" fill="#ECFDF5" stroke="#10B981" rx="6"/>
+      <text x="115" y="20" text-anchor="middle" class="bold-text" fill="#065F46" font-size="11">Pinned L1 In-Memory Cache</text>
+      <text x="12" y="38" class="mono-text" fill="#047857">• "re", "sq", "sy", "te", "ub"</text>
+      <text x="12" y="54" class="mono-text" fill="#047857">• Top 1,000 Prefixes Pinned</text>
+      <text x="12" y="68" class="badge-text" fill="#059669">Hit Rate: 90.8% (Latency: 0.005ms)</text>
+    </g>
+
+    <!-- In-Memory Engine Box -->
+    <g transform="translate(15, 128)">
+      <rect width="230" height="85" class="card" stroke="#64748B"/>
+      <text x="115" y="22" text-anchor="middle" class="bold-text" font-size="11">In-Memory Engine Replica</text>
+      <text x="12" y="42" class="body-text">• Vocabulary: 33M Queries</text>
+      <text x="12" y="60" class="body-text">• RAM: 17 GB with RCU swap</text>
+      <text x="12" y="78" class="mono-text" fill="#2563EB">3x Replicated for Read HA</text>
+    </g>
+  </g>
+</svg>

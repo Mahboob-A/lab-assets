@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; }
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 700; font-size: 18px; fill: #0F172A; }
+      .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #334155; }
+      .bold-text { font-weight: 600; fill: #1E293B; }
+      .mono-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+      .flow-line-blue { stroke: #2563EB; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .flow-line-red { stroke: #DC2626; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .flow-line-green { stroke: #059669; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .solid-line { stroke: #94A3B8; stroke-width: 1.5; fill: none; }
+      @keyframes flow { to { stroke-dashoffset: -20; } }
+    </style>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="540" class="bg"/>
+  <rect x="20" y="20" width="920" height="500" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" rx="12"/>
+
+  <!-- Title -->
+  <text x="480" y="55" text-anchor="middle" class="title-text">The Inversion Principle: Traditional Search vs. Autocomplete</text>
+  <text x="480" y="78" text-anchor="middle" class="subtitle-text">Standard search calculates relevance at query time. Autocomplete inverts this by precomputing rankings at write time.</text>
+
+  <!-- Left Column: Traditional Search -->
+  <g transform="translate(50, 105)">
+    <rect width="400" height="385" fill="#FEF2F2" stroke="#F87171" stroke-width="1.5" rx="10"/>
+    <rect width="400" height="40" fill="#FEE2E2" stroke="#F87171" stroke-width="1.5" rx="10"/>
+    <text x="200" y="26" text-anchor="middle" class="bold-text" fill="#991B1B" font-size="14">TRADITIONAL SEARCH (Inverted Index)</text>
+
+    <!-- Subtitle -->
+    <text x="200" y="62" text-anchor="middle" class="mono-text" fill="#DC2626">Heavy Work Done at Read Time</text>
+
+    <!-- Step 1 -->
+    <g transform="translate(30, 80)">
+      <rect width="340" height="45" class="card" stroke="#FCA5A5"/>
+      <text x="15" y="27" class="bold-text" font-size="12">1. Query Ingress:</text>
+      <text x="130" y="27" class="mono-text" fill="#991B1B">Full user query submitted ("python")</text>
+    </g>
+
+    <!-- Step 2 -->
+    <g transform="translate(30, 140)">
+      <rect width="340" height="45" class="card" stroke="#FCA5A5"/>
+      <text x="15" y="27" class="bold-text" font-size="12">2. Term Lookup:</text>
+      <text x="130" y="27" class="mono-text" fill="#991B1B">Scan vocabulary dictionary</text>
+    </g>
+
+    <!-- Step 3 -->
+    <g transform="translate(30, 200)">
+      <rect width="340" height="45" class="card" stroke="#FCA5A5"/>
+      <text x="15" y="27" class="bold-text" font-size="12">3. Merge Postings:</text>
+      <text x="130" y="27" class="mono-text" fill="#991B1B">Boolean intersection of doc IDs</text>
+    </g>
+
+    <!-- Step 4 -->
+    <g transform="translate(30, 260)">
+      <rect width="340" height="45" class="card" stroke="#FCA5A5"/>
+      <text x="15" y="27" class="bold-text" font-size="12">4. Score Candidates:</text>
+      <text x="145" y="27" class="mono-text" fill="#DC2626">Dynamic BM25 / TF-IDF ranking</text>
+    </g>
+
+    <!-- Summary Box -->
+    <g transform="translate(30, 320)">
+      <rect width="340" height="48" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5" rx="6"/>
+      <text x="170" y="22" text-anchor="middle" class="bold-text" fill="#991B1B" font-size="12">Read Latency: 20 ms to 50 ms</text>
+      <text x="170" y="38" text-anchor="middle" class="mono-text" fill="#DC2626">High CPU load per query (Cannot sustain 10k QPS)</text>
+    </g>
+
+    <!-- Connecting Arrows -->
+    <path d="M 200 125 L 200 140" class="flow-line-red" marker-end="url(#arrow-red)"/>
+    <path d="M 200 185 L 200 200" class="flow-line-red" marker-end="url(#arrow-red)"/>
+    <path d="M 200 245 L 200 260" class="flow-line-red" marker-end="url(#arrow-red)"/>
+  </g>
+
+  <!-- Right Column: Autocomplete -->
+  <g transform="translate(510, 105)">
+    <rect width="400" height="385" fill="#ECFDF5" stroke="#34D399" stroke-width="1.5" rx="10"/>
+    <rect width="400" height="40" fill="#D1FAE5" stroke="#34D399" stroke-width="1.5" rx="10"/>
+    <text x="200" y="26" text-anchor="middle" class="bold-text" fill="#065F46" font-size="14">AUTOCOMPLETE (Trie &amp; Hash+Heap)</text>
+
+    <!-- Subtitle -->
+    <text x="200" y="62" text-anchor="middle" class="mono-text" fill="#059669">Heavy Work Precomputed at Build Time</text>
+
+    <!-- Step 1 -->
+    <g transform="translate(30, 80)">
+      <rect width="340" height="45" class="card" stroke="#A7F3D0"/>
+      <text x="15" y="20" class="bold-text" font-size="11">Build-Time Inversion:</text>
+      <text x="15" y="36" class="mono-text" fill="#065F46">Trie post-order merge / Hash prefix slice</text>
+    </g>
+
+    <!-- Step 2 -->
+    <g transform="translate(30, 140)">
+      <rect width="340" height="45" class="card" stroke="#A7F3D0"/>
+      <text x="15" y="27" class="bold-text" font-size="12">1. Keystroke Ingress:</text>
+      <text x="145" y="27" class="mono-text" fill="#065F46">Partial prefix arrives ("py")</text>
+    </g>
+
+    <!-- Step 3 -->
+    <g transform="translate(30, 200)">
+      <rect width="340" height="45" class="card" stroke="#A7F3D0"/>
+      <text x="15" y="27" class="bold-text" font-size="12">2. Exact Prefix Match:</text>
+      <text x="145" y="27" class="mono-text" fill="#065F46">O(L) Trie walk or O(1) Hash get</text>
+    </g>
+
+    <!-- Step 4 -->
+    <g transform="translate(30, 260)">
+      <rect width="340" height="45" class="card" stroke="#A7F3D0"/>
+      <text x="15" y="27" class="bold-text" font-size="12">3. Direct Cache Read:</text>
+      <text x="145" y="27" class="mono-text" fill="#059669">Return node.top_k or Bounded Heap</text>
+    </g>
+
+    <!-- Summary Box -->
+    <g transform="translate(30, 320)">
+      <rect width="340" height="48" fill="#D1FAE5" stroke="#059669" stroke-width="1.5" rx="6"/>
+      <text x="170" y="22" text-anchor="middle" class="bold-text" fill="#065F46" font-size="12">Read Latency: 0.0007 ms to 0.053 ms</text>
+      <text x="170" y="38" text-anchor="middle" class="mono-text" fill="#047857">Near-Zero Read CPU (Sustains 65k to 2.8M QPS!)</text>
+    </g>
+
+    <!-- Connecting Arrows -->
+    <path d="M 200 125 L 200 140" class="flow-line-green" marker-end="url(#arrow-green)"/>
+    <path d="M 200 185 L 200 200" class="flow-line-green" marker-end="url(#arrow-green)"/>
+    <path d="M 200 245 L 200 260" class="flow-line-green" marker-end="url(#arrow-green)"/>
+  </g>
+</svg>
