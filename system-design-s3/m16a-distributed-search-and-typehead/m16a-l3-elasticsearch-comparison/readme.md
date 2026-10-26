@@ -1343,7 +1343,14 @@ python3 evaluator.py
 
 ### Milestone 6: Conducting the Empirical Benchmark Comparison (`benchmark.py`)
 
-Create `benchmark.py`. This master runner executes the 6 queries across all 4 configurations, measures microsecond execution latencies via `time.perf_counter()`, computes IR metrics, prints side-by-side diagnostic cards, executes Lucene's `_explain` API, and exports structured JSON and text logs:
+Now that both search engines and the Cranfield evaluation engine are implemented, we bring them together in a comprehensive benchmark suite: `benchmark.py`.
+
+This master benchmarking harness executes the 6 curated queries across all four engine configurations (Custom Inverted Index, Elasticsearch Standard, Elasticsearch English, and Elasticsearch Exact), measures microsecond execution latencies using `time.perf_counter()`, evaluates quantitative IR metrics via `evaluator.py`, prints qualitative diagnostic cards, executes Lucene's `_explain` scoring breakdown, and persists results to structured JSON and text files.
+
+Click to unfold the complete code block below, then create and save `benchmark.py` in your lab workspace:
+
+<details>
+<summary>Click to view complete benchmark.py code</summary>
 
 ```python
 """
@@ -1744,6 +1751,7 @@ if __name__ == "__main__":
     else:
         run_shootout()
 ```
+</details>
 
 ---
 
@@ -1985,21 +1993,26 @@ Both engines implement the Okapi BM25 ranking function, yet our custom Python im
 
 ---
 
-## Stage 8: Conclusion & Next Steps
+## Stage 9: Conclusion
 
----
+### Codebase File Inventory
 
-### Summary of Core Engineering Insights
+| File | Primary Class / Entrypoint | Key Responsibility |
+| :--- | :--- | :--- |
+| `docker-compose.yml` | Container Service | Single-node Elasticsearch 8.11.0 cluster definition (`localhost:9200`) with disabled security for local benchmarking. |
+| `test_es.py` | Health Verification Script | 4-step HTTP connectivity and health check verifying cluster readiness. |
+| `es_client.py` | `ElasticsearchBenchmarkClient` | Multi-field mappings (`standard`, `english`, `exact`), bulk indexing, and Lucene search/explain execution. |
+| `homemade_adapter.py` | `HomemadeSearchEngine` | Adapter unifying the first-principles Inverted Index, TextAnalyzer, and SearchRanker into a standardized benchmark interface. |
+| `generate_judgments.py` | Ground-Truth Generator | Standalone script annotating binary relevance for the 6 benchmark queries based on Cranfield evaluation principles. |
+| `evaluator.py` | `SearchEvaluator` | Information retrieval evaluation engine calculating Precision@k, Recall@k, Reciprocal Rank, Average Precision, MAP, and MRR. |
+| `benchmark.py` | Master Benchmark Suite | Dual-engine comparison harness measuring microsecond latencies, evaluating IR metrics, and executing BM25 scoring explain deep dives. |
 
-In this empirical study, you validated the fundamental engineering laws of search systems:
-1. **Linguistic Normalization Dominates Precision & Recall**: The custom Python index failed completely on conversational queries and plurals (achieving MAP = 0.4167) due to strict Boolean AND matching and lack of stemming. Elasticsearch's English Analyzer achieved **MAP = 0.8472 and 100% Precision@1**.
-2. **Domain-Specific Tokenizers Protect High-Value Compounds**: Generic Unicode tokenizers split hyphens, diluting precision on technical phrases like `in-memory key-value`. Custom pattern tokenizers preserve exact domain semantics.
-3. **Execution Latency Reflects System Boundaries**: In-memory Python indexes execute in **0.02ms** directly in CPU cache; industrial distributed engines execute in **3ms** while providing multi-sharding, durability, and resilience.
+### System Design Competencies Mastered
 
----
-
-### What's Next in the Search Engine Track?
-
-In **Module 16b**, we transition from full-text keyword retrieval to interactive query guidance:
-* **M16b-L1: Typeahead Autocomplete with Trie Data Structures**: Implementing prefix trees, ternary search trees (TST), and Top-K priority queues for sub-millisecond query suggestions.
-* **M16b-L2: Distributed Typeahead at Scale**: Scaling autocomplete to millions of concurrent users using Redis ZSETs, prefix partition sharding, and client-side debounced caching.
+* [x] **The In-Memory Scalability Wall**: Understanding why single-threaded in-memory Python dictionaries fail in production due to interpreter heap GC pressure, lack of durability, and inability to scale horizontally.
+* [x] **Lucene Segment Architecture**: Understanding immutable on-disk segment storage, FST term dictionaries (`.tim`), SIMD PFOR-DELTA posting lists (`.doc`), and columnar Doc Values (`.dvd`) memory-mapped via the OS page cache (`mmap`).
+* [x] **Near-Real-Time (NRT) Ingestion & Durability**: Distinguishing between 1-second NRT `refresh` (making data searchable in OS page cache) vs. periodic `flush` with `fsync` (persisting segments to physical disk and truncating the Translog WAL).
+* [x] **Multi-Field Linguistic Strategy**: Overcoming morphological blindness by indexing text simultaneously across standard Unicode tokenizers, language-specific Porter stemmers (`content.english`), and exact hyphen regex tokenizers (`content.exact`).
+* [x] **Candidate Retrieval Dynamics (Conjunctive Cliff vs. Disjunctive WAND)**: Analyzing why strict Boolean AND fails on multi-term and conversational queries, and how Lucene's Disjunctive OR with Block-Max WAND dynamic score pruning delivers 100% Precision@1 without evaluating millions of non-competitive candidates.
+* [x] **The Distributed Network & Abstraction Tax**: Explaining the latency paradox—why an in-memory Python index executes in 0.05ms in CPU cache while Elasticsearch takes 6–8ms over HTTP/Netty to provide clustering, replication, and durability.
+* [x] **Empirical Information Retrieval Evaluation (Cranfield Paradigm)**: Mathematically computing and interpreting standard IR metrics (Precision@k, Recall@k, Reciprocal Rank, Average Precision, MAP, and MRR) to objectively benchmark search engine quality against ground-truth judgments.
