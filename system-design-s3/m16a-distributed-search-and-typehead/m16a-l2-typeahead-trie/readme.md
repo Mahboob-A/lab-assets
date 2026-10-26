@@ -519,9 +519,84 @@ Notice the algorithmic complexity:
 
 ---
 
-### Milestone 6: Verifying Trie Parity & Micro-Benchmark Latency
+### Milestone 6: Verifying Trie Service & Micro-Benchmark Latency
 
-Execute `main.py` to build the Trie, verify suggestion accuracy against standard prefixes, and measure lookup latency:
+Before moving on to the optimized Hash+Heap architecture in Part B, let us verify our baseline Prefix Trie implementation. We want to confirm that:
+1. The bottom-up post-order construction correctly populates `node.top_k` at every prefix node.
+2. The `O(L)` lookup cleanly retrieves ranked suggestions.
+3. Lookups execute in microseconds, well within our 3ms compute budget.
+
+#### Step 1: Populate the Baseline Trie Verification Script (`main.py`)
+
+Open `typeahead_lab/main.py` and populate it with the baseline Trie verification script:
+
+```python
+"""
+Baseline Trie Verification Script.
+
+Loads seed query dataset, builds the Prefix Trie service,
+validates suggestion accuracy across standard test prefixes,
+and measures single-query lookup latency.
+"""
+
+import time
+from dataset import QueryDataset
+from trie_service import TrieTypeaheadService
+
+
+def run_trie_verification():
+    print("=" * 76)
+    print("  TYPEAHEAD LAB: BASELINE TRIE VERIFICATION")
+    print("=" * 76)
+
+    # 1. Load Dataset
+    dataset = QueryDataset()
+    queries = dataset.queries
+    print(f"[*] Loaded curated dataset: {len(queries)} technical search queries")
+
+    # 2. Build Trie Engine
+    t0 = time.perf_counter()
+    trie = TrieTypeaheadService(k=5)
+    trie.build_from_dataset(queries, k=5)
+    trie_build_ms = (time.perf_counter() - t0) * 1000
+    trie_nodes, trie_bytes = trie.count_nodes_and_memory()
+    print(f"[+] Built Trie Service in {trie_build_ms:.2f}ms")
+    print(f"    - Total Nodes: {trie_nodes:,} | Estimated RAM: {trie_bytes / 1024:.2f} KB")
+
+    # 3. Suggestion Verification Across Standard Prefixes
+    test_prefixes = ["sys", "py", "rea", "do", "red", "sql"]
+    print("\n" + "=" * 76)
+    print("  TRIE SUGGESTION ACCURACY CHECK (Top-5 Suggestions)")
+    print("=" * 76)
+
+    for prefix in test_prefixes:
+        results = trie.suggest(prefix, k=5)
+        print(f"\nPrefix: '{prefix}' -> Retrieved {len(results)} suggestions:")
+        for query, freq in results[:3]:
+            print(f"  - '{query}' (frequency: {freq})")
+
+    # 4. Single-Query Latency Micro-Benchmark
+    print("\n" + "=" * 76)
+    print("  SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')")
+    print("=" * 76)
+
+    iterations = 1000
+    t0 = time.perf_counter()
+    for _ in range(iterations):
+        _ = trie.suggest("sys", k=5)
+    trie_single_us = ((time.perf_counter() - t0) / iterations) * 1_000_000
+
+    print(f"  Trie O(L) Lookup Latency      : {trie_single_us:.3f} microseconds ({trie_single_us / 1000:.5f} ms)")
+    print("=" * 76)
+
+
+if __name__ == "__main__":
+    run_trie_verification()
+```
+
+#### Step 2: Executing Trie Verification
+
+Execute `main.py` in your terminal:
 
 ```bash
 python3 main.py
@@ -529,32 +604,33 @@ python3 main.py
 
 Compare your console output against the verified snapshots below:
 
-[[Terminal Snapshot 2: Trie Service Construction & Suggestion Parity]]
+[[Terminal Snapshot 2: Trie Service Construction & Verification]]
 ```text
 ============================================================================
-  TYPEAHEAD & AUTOCOMPLETE LAB: TRIE vs HASH+HEAP PARITY VERIFICATION
+  TYPEAHEAD LAB: BASELINE TRIE VERIFICATION
 ============================================================================
 [*] Loaded curated dataset: 165 technical search queries
 [+] Built Trie Service in 2.65ms
     - Total Nodes: 2,956 | Estimated RAM: 1052.86 KB
-[+] Built Hash+Heap Service in 0.20ms
-    - Unique Prefixes: 119 | Estimated RAM: 180.84 KB
 
 ============================================================================
-  SUGGESTION PARITY CHECK (Top-5 Suggestions for Test Prefixes)
+  TRIE SUGGESTION ACCURACY CHECK (Top-5 Suggestions)
 ============================================================================
 
-Prefix: 'sys' -> Status: MATCH [PASS]
-  Trie Results      : [('system design interview', 9850), ('system design rate limiter', 8420), ('system design caching', 7650)]
-  Hash+Heap Results : [('system design interview', 9850), ('system design rate limiter', 8420), ('system design caching', 7650)]
+Prefix: 'sys' -> Retrieved 5 suggestions:
+  - 'system design interview' (frequency: 9850)
+  - 'system design rate limiter' (frequency: 8420)
+  - 'system design caching' (frequency: 7650)
 
-Prefix: 'py' -> Status: MATCH [PASS]
-  Trie Results      : [('python tutorial', 9650), ('python list comprehension', 8720), ('python dictionary methods', 7890)]
-  Hash+Heap Results : [('python tutorial', 9650), ('python list comprehension', 8720), ('python dictionary methods', 7890)]
+Prefix: 'py' -> Retrieved 5 suggestions:
+  - 'python tutorial' (frequency: 9650)
+  - 'python list comprehension' (frequency: 8720)
+  - 'python dictionary methods' (frequency: 7890)
 
-----------------------------------------------------------------------------
-[SUCCESS] All test prefixes yielded 100% identical top-K ranked suggestions!
-----------------------------------------------------------------------------
+Prefix: 'rea' -> Retrieved 5 suggestions:
+  - 'react hooks guide' (frequency: 9210)
+  - 'react useeffect dependency array' (frequency: 8340)
+  - 'react usestate functional update' (frequency: 7720)
 ```
 
 [[Terminal Snapshot 3: Single-Query Micro-Benchmark Latency]]
@@ -563,7 +639,6 @@ Prefix: 'py' -> Status: MATCH [PASS]
   SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')
 ============================================================================
   Trie O(L) Lookup Latency      : 0.264 microseconds (0.00026 ms)
-  Hash+Heap Lookup Latency      : 2.049 microseconds (0.00205 ms)
 ============================================================================
 ```
 
@@ -695,7 +770,105 @@ def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]
 
 #### Step 4: Verifying Suggestion Parity Between Engines
 
-To verify that your Hash+Heap implementation correctly builds the flat prefix index, extracts top-K suggestions using bounded min-heaps, and produces exact suggestion parity with the baseline Trie service, execute `main.py` in your terminal:
+Now that both the baseline Trie service and the optimized Hash+Heap service are fully implemented, update `typeahead_lab/main.py` with the complete cross-engine verification suite. This expanded version runs both engines side by side, inspects their memory footprints, asserts 100% suggestion parity across standard test prefixes, and compares micro-benchmark lookup latencies:
+
+```python
+"""
+Main Verification Script for Typeahead and Autocomplete Services.
+
+Loads seed query dataset, populates both the Prefix Trie and the Optimized Hash+Heap
+services, validates suggestion parity across standard test prefixes, and compares
+memory footprints and query latencies.
+"""
+
+import time
+from dataset import QueryDataset
+from trie_service import TrieTypeaheadService
+from hash_heap_service import HashHeapTypeaheadService
+
+
+def run_verification():
+    print("=" * 76)
+    print("  TYPEAHEAD & AUTOCOMPLETE LAB: TRIE vs HASH+HEAP PARITY VERIFICATION")
+    print("=" * 76)
+
+    # 1. Load Dataset
+    dataset = QueryDataset()
+    queries = dataset.queries
+    print(f"[*] Loaded curated dataset: {len(queries)} technical search queries")
+
+    # 2. Build Trie Engine
+    t0 = time.perf_counter()
+    trie = TrieTypeaheadService(k=5)
+    trie.build_from_dataset(queries, k=5)
+    trie_build_ms = (time.perf_counter() - t0) * 1000
+    trie_nodes, trie_bytes = trie.count_nodes_and_memory()
+    print(f"[+] Built Trie Service in {trie_build_ms:.2f}ms")
+    print(f"    - Total Nodes: {trie_nodes:,} | Estimated RAM: {trie_bytes / 1024:.2f} KB")
+
+    # 3. Build Hash+Heap Engine
+    t0 = time.perf_counter()
+    hash_heap = HashHeapTypeaheadService(max_prefix_len=6, k=5)
+    hash_heap.build(queries, max_prefix_len=6)
+    hash_build_ms = (time.perf_counter() - t0) * 1000
+    hash_bytes = hash_heap.memory_footprint_bytes()
+    print(f"[+] Built Hash+Heap Service in {hash_build_ms:.2f}ms")
+    print(f"    - Unique Prefixes: {len(hash_heap.prefix_index):,} | Estimated RAM: {hash_bytes / 1024:.2f} KB")
+
+    # 4. Parity Testing Across Standard Prefixes
+    test_prefixes = ["sys", "py", "rea", "do", "red", "sql"]
+    print("\n" + "=" * 76)
+    print("  SUGGESTION PARITY CHECK (Top-5 Suggestions for Test Prefixes)")
+    print("=" * 76)
+
+    all_match = True
+    for prefix in test_prefixes:
+        trie_results = trie.suggest(prefix, k=5)
+        hash_results = hash_heap.suggest(prefix, k=5)
+
+        # Check if query names and ranks match
+        trie_names = [q for q, _ in trie_results]
+        hash_names = [q for q, _ in hash_results]
+        match = trie_names == hash_names
+        status = "MATCH [PASS]" if match else "MISMATCH [FAIL]"
+        if not match:
+            all_match = False
+
+        print(f"\nPrefix: '{prefix}' -> Status: {status}")
+        print(f"  Trie Results      : {trie_results[:3]}")
+        print(f"  Hash+Heap Results : {hash_results[:3]}")
+
+    assert all_match, "Parity check failed between Trie and Hash+Heap services"
+    print("\n" + "-" * 76)
+    print("[SUCCESS] All test prefixes yielded 100% identical top-K ranked suggestions!")
+    print("-" * 76)
+
+    # 5. Single-Query Latency Micro-Benchmark
+    print("\n" + "=" * 76)
+    print("  SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')")
+    print("=" * 76)
+
+    iterations = 1000
+    t0 = time.perf_counter()
+    for _ in range(iterations):
+        _ = trie.suggest("sys", k=5)
+    trie_single_us = ((time.perf_counter() - t0) / iterations) * 1_000_000
+
+    t0 = time.perf_counter()
+    for _ in range(iterations):
+        _ = hash_heap.suggest("sys", k=5)
+    hash_single_us = ((time.perf_counter() - t0) / iterations) * 1_000_000
+
+    print(f"  Trie O(L) Lookup Latency      : {trie_single_us:.3f} microseconds ({trie_single_us / 1000:.5f} ms)")
+    print(f"  Hash+Heap Lookup Latency      : {hash_single_us:.3f} microseconds ({hash_single_us / 1000:.5f} ms)")
+    print("=" * 76)
+
+
+if __name__ == "__main__":
+    run_verification()
+```
+
+To execute this cross-engine parity suite, run `main.py` in your terminal:
 
 ```bash
 python3 main.py
