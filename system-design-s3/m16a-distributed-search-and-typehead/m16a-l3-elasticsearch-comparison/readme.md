@@ -1,7 +1,7 @@
 # From First Principles to Production: Inverted Index vs. Elasticsearch
 
 <p align="center">
-  <img src="images/overview-architecture.svg" alt="Dual-Engine Search Architecture Overview" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/overview-architecture.svg" alt="Dual-Engine Search Architecture Overview" width="100%" />
 </p>
 
 ---
@@ -91,7 +91,7 @@ Elasticsearch does not store data in a single monolithic table. Instead, every s
 Inside every single Lucene segment, data is physically partitioned into three distinct, specialized storage engines, each optimized for a specific query access pattern:
 
 <p align="center">
-  <img src="images/diagram-1-lucene-segment-storage-internals.svg" alt="Lucene Segment Storage Internals" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-1-lucene-segment-storage-internals.svg" alt="Lucene Segment Storage Internals" width="100%" />
 </p>
 
 #### 1. The Inverted Index (`.tim` and `.doc`)
@@ -121,7 +121,7 @@ Raw Text Stream ──▶ [Character Filters] ──▶ [Tokenizer] ──▶ [T
 ```
 
 <p align="center">
-  <img src="images/diagram-3-text-analysis-pipeline-contrast.svg" alt="Text Analysis Pipeline Contrast" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-3-text-analysis-pipeline-contrast.svg" alt="Text Analysis Pipeline Contrast" width="100%" />
 </p>
 
 #### The Journey of a Character Stream
@@ -165,7 +165,7 @@ Under this architecture, `content` indexes the text using standard Unicode word 
 Once queries are tokenized, how does the engine find and score matching documents?
 
 <p align="center">
-  <img src="images/diagram-4-candidate-retrieval-and-scoring-funnel.svg" alt="Candidate Retrieval and Scoring Funnel" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-4-candidate-retrieval-and-scoring-funnel.svg" alt="Candidate Retrieval and Scoring Funnel" width="100%" />
 </p>
 
 #### Conjunctive Retrieval (Strict Boolean AND)
@@ -216,7 +216,7 @@ However, the storage mechanics diverge significantly:
 A fundamental law of storage systems engineering states that **disk fsync operations are far too slow for real-time document indexing**. Calling a synchronous `fsync` on every incoming document caps ingestion throughput at a few hundred writes per second due to storage controller and flash write overhead. Yet, keeping newly indexed documents exclusively in volatile application RAM creates an unacceptable risk: an unexpected power outage or kernel panic would permanently destroy uncommitted data.
 
 <p align="center">
-  <img src="images/diagram-2-nrt-segment-lifecycle-and-merges.svg" alt="Near-Real-Time Segment Lifecycle and Merges" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-2-nrt-segment-lifecycle-and-merges.svg" alt="Near-Real-Time Segment Lifecycle and Merges" width="100%" />
 </p>
 
 Elasticsearch and Lucene resolve this classic tension through an elegant two-track architecture that decouples search visibility from physical disk persistence.
@@ -280,7 +280,7 @@ ls -la corpus.py analyzer.py index.py ranker.py
 ```
 
 <p align="center">
-  <img src="images/ts-01-project-setup.png" alt="Project-Setup" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-01-project-setup.png" alt="Project-Setup" width="100%" />
 </p>
 
 
@@ -327,7 +327,7 @@ docker compose up -d
 ```
 
 <p align="center">
-  <img src="images/ts-02-docker-compose-container.png" alt="Docker-Compose-Container" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-02-docker-compose-container.png" alt="Docker-Compose-Container" width="100%" />
 </p>
 
 ---
@@ -390,7 +390,7 @@ python3 test_es.py
 ```
 
 <p align="center">
-  <img src="images/ts-04-test_es_py.png" alt="Test-ES" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-04-test_es_py.png" alt="Test-ES" width="100%" />
 </p>
 
 ---
@@ -723,7 +723,7 @@ python3 es_client.py
 ```
 
 <p align="center">
-  <img src="images/ts-05-es_client_py.png" alt="Test-ES-Client" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-05-es_client_py.png" alt="Test-ES-Client" width="100%" />
 </p>
 
 Notice what happened in the sanity test output:
@@ -893,7 +893,7 @@ python3 homemade_adapter.py
 ```
 
 <p align="center">
-  <img src="images/ts-06-homemade_adapter_py.png" alt="Test-Homemade-Adapter" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-06-homemade_adapter_py.png" alt="Test-Homemade-Adapter" width="100%" />
 </p>
 
 ---
@@ -1016,7 +1016,7 @@ python3 generate_judgments.py
 Expected output:
 
 <p align="center">
-  <img src="images/ts-07-generate_judgements_py.png" alt="Generate-Judgements" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-07-generate_judgements_py.png" alt="Generate-Judgements" width="100%" />
 </p>
 
 ---
@@ -1024,7 +1024,7 @@ Expected output:
 ### Milestone 5: Building the IR Evaluation Engine (`evaluator.py`)
 
 <p align="center">
-  <img src="images/diagram-6-ir-evaluation-metrics-pipeline.svg" alt="Information Retrieval Evaluation Metrics Pipeline" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-6-ir-evaluation-metrics-pipeline.svg" alt="Information Retrieval Evaluation Metrics Pipeline" width="100%" />
 </p>
 
 In standard machine learning classification, engineers evaluate models using overall accuracy (correct predictions divided by total predictions). However, in full-text search systems, evaluating quality requires an entirely different mathematical approach known as **Information Retrieval (IR) Evaluation**.
@@ -1336,7 +1336,7 @@ python3 evaluator.py
 ```
 
 <p align="center">
-  <img src="images/ts-08-evaluator_py.png" alt="Evaluator-Py" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-08-evaluator_py.png" alt="Evaluator-Py" width="100%" />
 </p>
 
 ---
@@ -1768,13 +1768,13 @@ python3 benchmark.py
 ```
 
 <p align="center">
-  <img src="images/ts-benchmark-01.png" alt="Benchmark-01" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-benchmark-01.png" alt="Benchmark-01" width="100%" />
 </p>
 <p align="center">
-  <img src="images/ts-benchmark-02.png" alt="Benchmark-02" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-benchmark-02.png" alt="Benchmark-02" width="100%" />
 </p>
 <p align="center">
-  <img src="images/ts-benchmark-03.png" alt="Benchmark-03" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-benchmark-03.png" alt="Benchmark-03" width="100%" />
 </p>
 
 *(Note: Exact values for query latencies reflect real-world execution on the Poridhi Cloud VM. In-memory Python RAM execution averages 0.05ms, while containerized Elasticsearch REST operations average between 6.62ms and 8.12ms due to network I/O, JSON serialization, and Lucene segment reader coordination. The 100% Precision@1 ranking dominance of Elasticsearch's English Analyzer remains decisive across all runs)*.
@@ -1784,7 +1784,7 @@ python3 benchmark.py
 ### Step 5.2: The 3 vs 3 Decision Matrix & Root Causes
 
 <p align="center">
-  <img src="images/diagram-5-qualitative-3vs3-shootout-matrix.svg" alt="The 3 vs 3 Shootout Qualitative Decision Matrix" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/diagram-5-qualitative-3vs3-shootout-matrix.svg" alt="The 3 vs 3 Shootout Qualitative Decision Matrix" width="100%" />
 </p>
 
 ---
@@ -1888,7 +1888,7 @@ You can run and inspect this scoring comparison in three ways:
    ```
 
 <p align="center">
-  <img src="images/ts-benchmark-explain.png" alt="Benchmark-Explain" width="100%" />
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l3-elasticsearch-comparison/images/ts-benchmark-explain.png" alt="Benchmark-Explain" width="100%" />
 </p>
 
 #### Why Do the Total Scores Differ? (11.4203 vs 9.1549)
