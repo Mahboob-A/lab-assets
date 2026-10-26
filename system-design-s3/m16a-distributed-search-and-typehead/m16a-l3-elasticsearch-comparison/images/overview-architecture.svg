@@ -1,236 +1,154 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 580" width="100%" height="100%">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 640" width="100%" height="100%">
   <defs>
-    <!-- Arrowhead Markers -->
-    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
-    </marker>
-    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
-    </marker>
-
-    <!-- Drop Shadow Filter -->
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
-    </filter>
-
     <style>
-      @keyframes flow {
-        from { stroke-dashoffset: 24; }
-        to { stroke-dashoffset: 0; }
-      }
-      .flow-blue {
-        stroke: #2563EB;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 6;
-        animation: flow 1s linear infinite;
-      }
-      .flow-green {
-        stroke: #059669;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 6;
-        animation: flow 1s linear infinite;
-      }
-      .base-line {
-        fill: none;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      text {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      }
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; }
+      .card-header-blue { fill: #EFF6FF; stroke: #3B82F6; stroke-width: 1.5; }
+      .card-header-green { fill: #ECFDF5; stroke: #10B981; stroke-width: 1.5; }
+      .card-header-slate { fill: #F1F5F9; stroke: #64748B; stroke-width: 1.5; }
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 700; font-size: 19px; fill: #0F172A; }
+      .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #475569; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #334155; }
+      .bold-text { font-weight: 600; fill: #1E293B; }
+      .mono-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+      .badge-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 600; }
+      .flow-line { stroke: #2563EB; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .flow-line-green { stroke: #059669; stroke-width: 2; stroke-dasharray: 6,4; fill: none; animation: flow 1.5s linear infinite; }
+      .solid-line { stroke: #94A3B8; stroke-width: 1.5; fill: none; }
+      @keyframes flow { to { stroke-dashoffset: -20; } }
     </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
   </defs>
 
-  <!-- Canvas Background -->
-  <rect width="1520" height="580" fill="#F8FAFC" rx="16"/>
-  <rect x="1" y="1" width="1518" height="578" fill="none" stroke="#E2E8F0" stroke-width="2" rx="16"/>
+  <!-- Background -->
+  <rect width="1020" height="640" class="bg"/>
 
-  <!-- Diagram Title Header -->
-  <text x="760" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Dual-Engine Search Architecture: Inverted Index vs. Elasticsearch</text>
-  <text x="760" y="58" text-anchor="middle" font-size="12" font-weight="500" fill="#64748B">Empirical Benchmarking Across Text Analysis, Candidate Retrieval, and BM25 Relevance Ranking</text>
+  <!-- Main Canvas Card Frame -->
+  <rect x="20" y="20" width="980" height="600" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" rx="12"/>
+
+  <!-- Title Banner -->
+  <text x="510" y="52" text-anchor="middle" class="title-text">Dual-Engine Search Architecture: Inverted Index vs. Elasticsearch</text>
+  <text x="510" y="73" text-anchor="middle" class="subtitle-text">End-to-End System Pipeline: Corpus Ingestion, Dual Candidate Engines &amp; Cranfield IR Evaluation</text>
 
   <!-- ============================================================== -->
-  <!-- 1. LEFT SECTION: INPUT SEED CORPUS & BENCHMARK QUERIES         -->
+  <!-- TIER 1: INGRESS HARNESS & WORKLOAD DISPATCHER                  -->
   <!-- ============================================================== -->
-  <rect x="35" y="85" width="270" height="465" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4" rx="12"/>
-  <rect x="50" y="75" width="160" height="22" fill="#2563EB" rx="6"/>
-  <text x="130" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">INPUT WORKLOAD</text>
 
-  <!-- Box 1A: Seed Corpus (corpus.py) -->
-  <g filter="url(#shadow)">
-    <rect x="50" y="115" width="240" height="195" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5" rx="10"/>
-    <rect x="50" y="115" width="240" height="34" fill="#F1F5F9" rx="10"/>
-    <path d="M 50 139 H 290 V 149 H 50 Z" fill="#F1F5F9"/>
-    <text x="65" y="137" font-size="13" font-weight="700" fill="#1E293B">Seed Corpus</text>
-    <rect x="210" y="122" width="70" height="18" fill="#E2E8F0" rx="4"/>
-    <text x="245" y="135" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">corpus.py</text>
-
-    <text x="65" y="167" font-size="11" font-weight="600" fill="#334155">9 Distributed Docs:</text>
-    <text x="65" y="185" font-size="10" fill="#64748B">• Doc 1: Redis In-Memory Caching</text>
-    <text x="65" y="201" font-size="10" fill="#64748B">• Doc 2: Raft Consensus Algorithm</text>
-    <text x="65" y="217" font-size="10" fill="#64748B">• Doc 3: Database Sharding</text>
-    <text x="65" y="233" font-size="10" fill="#64748B">• Doc 8: Consistent Hashing Ring</text>
-    <rect x="65" y="250" width="210" height="42" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1" rx="6"/>
-    <text x="75" y="267" font-size="9.5" font-weight="700" fill="#2563EB">Raw Unstructured Text Strings</text>
-    <text x="75" y="282" font-size="8.5" fill="#64748B">Identical text fed to both engines</text>
+  <!-- Card 1A: Seed Corpus -->
+  <g transform="translate(50, 95)">
+    <rect width="280" height="92" class="card" stroke="#3B82F6"/>
+    <path d="M 0 8 Q 0 0 8 0 L 272 0 Q 280 0 280 8 L 280 26 L 0 26 Z" class="card-header-blue"/>
+    <text x="140" y="18" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="11">1A. SEED CORPUS (corpus.py)</text>
+    <text x="14" y="44" class="body-text">9 Distributed Systems Documents</text>
+    <text x="14" y="62" class="subtitle-text">Redis, Raft, Sharding, Consistent Hashing</text>
+    <text x="14" y="80" class="badge-text" fill="#2563EB">Identical raw text fed to both engines</text>
   </g>
 
-  <!-- Box 1B: Benchmark Workload (6 Curated Queries) -->
-  <g filter="url(#shadow)">
-    <rect x="50" y="335" width="240" height="195" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5" rx="10"/>
-    <rect x="50" y="335" width="240" height="34" fill="#F1F5F9" rx="10"/>
-    <path d="M 50 359 H 290 V 369 H 50 Z" fill="#F1F5F9"/>
-    <text x="65" y="357" font-size="13" font-weight="700" fill="#1E293B">Benchmark Suite</text>
-    <rect x="215" y="342" width="65" height="18" fill="#E2E8F0" rx="4"/>
-    <text x="247" y="355" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">6 Queries</text>
-
-    <text x="65" y="387" font-size="11" font-weight="600" fill="#1E40AF">Category A (ES Test Cases):</text>
-    <text x="65" y="405" font-size="10" fill="#64748B">• A1: "replicating cache nodes"</text>
-    <text x="65" y="421" font-size="10" fill="#64748B">• A2: "redis cache clustering and sharding"</text>
-    <text x="65" y="437" font-size="10" fill="#64748B">• A3: "how to achieve consensus..."</text>
-
-    <text x="65" y="460" font-size="11" font-weight="600" fill="#047857">Category B (Custom Test Cases):</text>
-    <text x="65" y="478" font-size="10" fill="#64748B">• B1: "in-memory key-value"</text>
-    <text x="65" y="494" font-size="10" fill="#64748B">• B2: "scatter-gather"</text>
-    <text x="65" y="510" font-size="10" fill="#64748B">• B3: "raft consensus leader election"</text>
+  <!-- Card 1B: Benchmark Harness -->
+  <g transform="translate(370, 95)">
+    <rect width="280" height="92" class="card" stroke="#2563EB"/>
+    <path d="M 0 8 Q 0 0 8 0 L 272 0 Q 280 0 280 8 L 280 26 L 0 26 Z" class="card-header-blue"/>
+    <text x="140" y="18" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="11">1B. BENCHMARK HARNESS (benchmark.py)</text>
+    <text x="14" y="44" class="body-text">6 Curated Verification Queries</text>
+    <text x="14" y="62" class="subtitle-text">Queries A1-A3: Morphological, Disjunctive, Stopwords</text>
+    <text x="14" y="80" class="badge-text" fill="#2563EB">Queries B1-B3: Hyphens, Small IDF, RAM Latency</text>
   </g>
 
+  <!-- Card 1C: Ground Truth Annotations -->
+  <g transform="translate(690, 95)">
+    <rect width="280" height="92" class="card" stroke="#10B981"/>
+    <path d="M 0 8 Q 0 0 8 0 L 272 0 Q 280 0 280 8 L 280 26 L 0 26 Z" class="card-header-green"/>
+    <text x="140" y="18" text-anchor="middle" class="bold-text" fill="#065F46" font-size="11">1C. CRANFIELD GROUND TRUTH</text>
+    <text x="14" y="44" class="body-text">relevance_judgments.json</text>
+    <text x="14" y="62" class="subtitle-text">Human-annotated binary relevance (DocIDs)</text>
+    <text x="14" y="80" class="badge-text" fill="#059669">Strict ground truth for P@k, R@k, MAP</text>
+  </g>
+
+  <!-- Connectors: Tier 1 -> Tier 2 -->
+  <path d="M 190 187 L 190 220" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 510 187 L 270 215 L 270 240" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 510 187 L 750 215 L 750 240" class="flow-line-green" marker-end="url(#arrow-green)"/>
+
   <!-- ============================================================== -->
-  <!-- 2. CENTER SECTION: DUAL-ENGINE PARALLEL ARCHITECTURE           -->
+  <!-- TIER 2: DUAL-ENGINE PARALLEL PROCESSING CORE                   -->
   <!-- ============================================================== -->
+  <rect x="50" y="215" width="920" height="260" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4,4" rx="10"/>
+  <text x="65" y="236" class="bold-text" fill="#475569" font-size="12">TIER 2: DUAL-ENGINE PARALLEL PROCESSING CORE (Identical Seed Corpus &amp; Query Workload)</text>
 
   <!-- Engine A: First Principles Prototype -->
-  <g filter="url(#shadow)">
-    <rect x="345" y="95" width="670" height="215" fill="#FFFFFF" stroke="#059669" stroke-width="1.8" rx="10"/>
-    <rect x="345" y="95" width="670" height="34" fill="#D1FAE5" rx="10"/>
-    <path d="M 345 119 H 1015 V 129 H 345 Z" fill="#D1FAE5"/>
-    <text x="360" y="117" font-size="13" font-weight="700" fill="#065F46">Engine A: First Principles Prototype (Pure Python In-Memory)</text>
-    <rect x="915" y="102" width="90" height="20" fill="#059669" rx="4"/>
-    <text x="960" y="116" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">RAM: ~0.05ms</text>
+  <g transform="translate(70, 250)">
+    <rect width="420" height="210" class="card" stroke="#3B82F6"/>
+    <path d="M 0 8 Q 0 0 8 0 L 412 0 Q 420 0 420 8 L 420 26 L 0 26 Z" class="card-header-blue"/>
+    <text x="210" y="18" text-anchor="middle" class="bold-text" fill="#1E40AF" font-size="11">ENGINE A: FIRST PRINCIPLES PYTHON INDEX (homemade_adapter.py)</text>
 
-    <!-- Sub-card A1: Text Analyzer -->
-    <rect x="360" y="140" width="295" height="155" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" rx="8"/>
-    <text x="375" y="160" font-size="11" font-weight="700" fill="#1E293B">TextAnalyzer (Regex Tokenizer)</text>
-    <text x="375" y="180" font-size="10" fill="#64748B">• Pattern: \b[a-zA-Z0-9_-]+\b</text>
-    <text x="375" y="196" font-size="10" fill="#64748B">• Case Folding: Lowercase transform</text>
-    <text x="375" y="212" font-size="10" fill="#64748B">• Stopwords: Filters ubiquitous words</text>
-    <rect x="375" y="228" width="265" height="52" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
-    <text x="385" y="246" font-size="9.5" font-weight="700" fill="#065F46">Hyphen-Preserving Semantics</text>
-    <text x="385" y="261" font-size="8.5" fill="#64748B">Preserves "in-memory" as single token.</text>
-    <text x="385" y="273" font-size="8.5" fill="#DC2626">Lacks stemming ("replicating" != "replication")</text>
+    <text x="15" y="46" class="body-text">• Text Analysis: Regex Tokenizer (\b[a-zA-Z0-9_-]+\b) + Case Folding</text>
+    <text x="15" y="66" class="body-text">• Storage: In-Memory Inverted Dictionary (dict[str, list[int]])</text>
+    <text x="15" y="86" class="body-text">• Candidate Retrieval: Two-Pointer Boolean AND Intersection</text>
+    <text x="15" y="106" class="body-text">• Relevance Ranking: Exact 64-bit Float IEEE 754 BM25 Scoring</text>
+    <text x="15" y="126" class="body-text">• Architecture: Single-threaded in-process RAM traversal (CPU cache)</text>
 
-    <!-- Sub-card A2: Inverted Index & Ranker -->
-    <rect x="675" y="140" width="325" height="155" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" rx="8"/>
-    <text x="690" y="160" font-size="11" font-weight="700" fill="#1E293B">InvertedIndex &amp; SearchRanker</text>
-    <text x="690" y="180" font-size="10" fill="#64748B">• Storage: Python dict[str, list[tuple]]</text>
-    <text x="690" y="196" font-size="10" fill="#64748B">• Candidate Retrieval: 2-Pointer Boolean AND</text>
-    <text x="690" y="212" font-size="10" fill="#64748B">• Scoring: Exact 64-bit float IEEE 754 BM25</text>
-    <rect x="690" y="228" width="295" height="52" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
-    <text x="700" y="246" font-size="9.5" font-weight="700" fill="#065F46">Zero IPC / Zero Overhead Execution</text>
-    <text x="700" y="261" font-size="8.5" fill="#64748B">Ultra-low latency directly in CPU L1/L2 cache.</text>
-    <text x="700" y="273" font-size="8.5" fill="#DC2626">Conjunctive Cliff: 0 hits if 1 term missing.</text>
+    <!-- Metrics Callout Box -->
+    <g transform="translate(15, 142)">
+      <rect width="390" height="54" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.2" rx="6"/>
+      <text x="12" y="22" class="badge-text" fill="#1E40AF">Mean Latency: 0.05 ms (130x Faster Execution in RAM)</text>
+      <text x="12" y="42" class="badge-text" fill="#DC2626">Limitation: Conjunctive Cliff (0 hits if single term missing)</text>
+    </g>
   </g>
 
   <!-- Engine B: Production Elasticsearch -->
-  <g filter="url(#shadow)">
-    <rect x="345" y="335" width="670" height="215" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.8" rx="10"/>
-    <rect x="345" y="335" width="670" height="34" fill="#DBEAFE" rx="10"/>
-    <path d="M 345 359 H 1015 V 369 H 345 Z" fill="#DBEAFE"/>
-    <text x="360" y="357" font-size="13" font-weight="700" fill="#1E40AF">Engine B: Production Engine (Elasticsearch in Docker Container)</text>
-    <rect x="915" y="342" width="90" height="20" fill="#2563EB" rx="4"/>
-    <text x="960" y="356" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">REST: ~6.62ms</text>
+  <g transform="translate(530, 250)">
+    <rect width="420" height="210" class="card" stroke="#10B981"/>
+    <path d="M 0 8 Q 0 0 8 0 L 412 0 Q 420 0 420 8 L 420 26 L 0 26 Z" class="card-header-green"/>
+    <text x="210" y="18" text-anchor="middle" class="bold-text" fill="#065F46" font-size="11">ENGINE B: DOCKER ELASTICSEARCH NODE (es_client.py)</text>
 
-    <!-- Sub-card B1: Multi-Field Analysis -->
-    <rect x="360" y="380" width="295" height="155" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" rx="8"/>
-    <text x="375" y="400" font-size="11" font-weight="700" fill="#1E293B">Multi-Field Linguistic Mapping</text>
-    <text x="375" y="420" font-size="10" fill="#64748B">• content: Standard Unicode boundaries</text>
-    <text x="375" y="436" font-size="10" fill="#64748B">• content.english: Porter stemmer + stopwords</text>
-    <text x="375" y="452" font-size="10" fill="#64748B">• content.exact: Hyphen pattern tokenizer</text>
-    <rect x="375" y="468" width="265" height="52" fill="#EFF6FF" stroke="#BFDBFE" rx="6"/>
-    <text x="385" y="486" font-size="9.5" font-weight="700" fill="#1D4ED8">Linguistic Resilience (100% P@1)</text>
-    <text x="385" y="501" font-size="8.5" fill="#64748B">Porter stems "replicating" ──▶ "replic"</text>
-    <text x="385" y="513" font-size="8.5" fill="#059669">Successfully matches corpus "replication"!</text>
+    <text x="15" y="46" class="body-text">• Multi-Field Mappings: standard, english (Porter Stemmer), exact</text>
+    <text x="15" y="66" class="body-text">• Storage: Immutable Lucene Segments (.tim, .doc, .dvd) + Translog WAL</text>
+    <text x="15" y="86" class="body-text">• Candidate Retrieval: Disjunctive OR with Block-Max WAND Top-K</text>
+    <text x="15" y="106" class="body-text">• Relevance Ranking: Lucene BM25 with 1-byte lossy norm table</text>
+    <text x="15" y="126" class="body-text">• Architecture: Containerized REST daemon, Page Cache mmap, Netty</text>
 
-    <!-- Sub-card B2: Lucene Segments & WAND -->
-    <rect x="675" y="380" width="325" height="155" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" rx="8"/>
-    <text x="690" y="400" font-size="11" font-weight="700" fill="#1E293B">Lucene Segments &amp; Candidate Funnel</text>
-    <text x="690" y="420" font-size="10" fill="#64748B">• Storage: Immutable on-disk segment blocks</text>
-    <text x="690" y="436" font-size="10" fill="#64748B">• Retrieval: Disjunctive OR with WAND top-K</text>
-    <text x="690" y="452" font-size="10" fill="#64748B">• Scoring: BM25 with 1-byte lossy norm table</text>
-    <rect x="690" y="468" width="295" height="52" fill="#EFF6FF" stroke="#BFDBFE" rx="6"/>
-    <text x="700" y="486" font-size="9.5" font-weight="700" fill="#1D4ED8">Disjunctive Matching + Durability</text>
-    <text x="700" y="501" font-size="8.5" fill="#64748B">Surfaces documents even with partial matches.</text>
-    <text x="700" y="513" font-size="8.5" fill="#64748B">Pays ~6ms network, JSON &amp; coordination tax.</text>
+    <!-- Metrics Callout Box -->
+    <g transform="translate(15, 142)">
+      <rect width="390" height="54" fill="#ECFDF5" stroke="#10B981" stroke-width="1.2" rx="6"/>
+      <text x="12" y="22" class="badge-text" fill="#065F46">Mean Latency: 6.62 ms (Network I/O, JSON &amp; Abstraction Tax)</text>
+      <text x="12" y="42" class="badge-text" fill="#059669">Advantage: 100% Precision@1, Morphological Stemming &amp; Durability</text>
+    </g>
   </g>
 
-  <!-- Connectors: Input -> Engines -->
-  <path d="M 290 200 L 345 200" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
-  <path d="M 290 200 L 340 200" class="base-line flow-green"/>
-
-  <path d="M 290 435 L 345 435" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
-  <path d="M 290 435 L 340 435" class="base-line flow-blue"/>
+  <!-- Connectors: Tier 2 -> Tier 3 -->
+  <path d="M 280 460 L 280 495" class="flow-line" marker-end="url(#arrow)"/>
+  <path d="M 740 460 L 740 495" class="flow-line-green" marker-end="url(#arrow-green)"/>
 
   <!-- ============================================================== -->
-  <!-- 3. RIGHT SECTION: MASTER BENCHMARK & EVALUATION ENGINE         -->
+  <!-- TIER 3: CRANFIELD IR EVALUATION ENGINE & VERDICT               -->
   <!-- ============================================================== -->
-  <rect x="1055" y="85" width="430" height="465" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4" rx="12"/>
-  <rect x="1070" y="75" width="210" height="22" fill="#0F172A" rx="6"/>
-  <text x="1175" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">EVALUATION &amp; VERDICT</text>
+  <g transform="translate(50, 495)">
+    <rect width="920" height="105" class="card" stroke="#64748B"/>
+    <path d="M 0 8 Q 0 0 8 0 L 912 0 Q 920 0 920 8 L 920 26 L 0 26 Z" class="card-header-slate"/>
+    <text x="460" y="18" text-anchor="middle" class="bold-text" fill="#334155" font-size="11">TIER 3: CRANFIELD EVALUATION ENGINE &amp; EMPIRICAL VERDICT (evaluator.py)</text>
 
-  <!-- Box 3A: Ground-Truth Judgments -->
-  <g filter="url(#shadow)">
-    <rect x="1070" y="115" width="400" height="110" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5" rx="10"/>
-    <rect x="1070" y="115" width="400" height="30" fill="#F1F5F9" rx="10"/>
-    <path d="M 1070 135 H 1470 V 145 H 1070 Z" fill="#F1F5F9"/>
-    <text x="1085" y="135" font-size="12" font-weight="700" fill="#1E293B">Ground-Truth Relevance Judgments</text>
-    <rect x="1350" y="121" width="110" height="18" fill="#E2E8F0" rx="4"/>
-    <text x="1405" y="134" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569">Cranfield Paradigm</text>
+    <!-- Evaluation Engine Details -->
+    <g transform="translate(15, 36)">
+      <text x="0" y="14" class="bold-text" font-size="11" fill="#1E293B">Mathematical Information Retrieval Metrics Pipeline:</text>
+      <text x="0" y="32" class="body-text">• Precision@k (P@1, P@3): Result viewport purity</text>
+      <text x="0" y="48" class="body-text">• Recall@k (R@3): Global corpus coverage</text>
+      <text x="280" y="32" class="body-text">• Reciprocal Rank (RR): First relevant hit position</text>
+      <text x="280" y="48" class="body-text">• Average Precision (AP): Area under PR curve</text>
+    </g>
 
-    <text x="1085" y="162" font-size="10" fill="#64748B">• Seed annotations: relevance_judgments.json</text>
-    <text x="1085" y="178" font-size="10" fill="#64748B">• Maps 6 queries to binary relevant DocIDs in corpus</text>
-    <text x="1085" y="194" font-size="10" fill="#64748B">• Enables objective, mathematical ranking scoring</text>
+    <!-- Empirical Verdict Badges -->
+    <g transform="translate(560, 36)">
+      <rect width="345" height="26" fill="#ECFDF5" stroke="#10B981" rx="4"/>
+      <text x="10" y="17" class="badge-text" fill="#065F46">ES English: MAP = 0.8472 | P@1 = 1.0000 (Dominates)</text>
+
+      <rect y="32" width="345" height="26" fill="#EFF6FF" stroke="#3B82F6" rx="4"/>
+      <text x="10" y="49" class="badge-text" fill="#1E40AF">Homemade: Latency = 0.05 ms (130x Faster in RAM)</text>
+    </g>
   </g>
-
-  <!-- Box 3B: Evaluation Engine (evaluator.py) -->
-  <g filter="url(#shadow)">
-    <rect x="1070" y="240" width="400" height="145" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5" rx="10"/>
-    <rect x="1070" y="240" width="400" height="32" fill="#DBEAFE" rx="10"/>
-    <path d="M 1070 262 H 1470 V 272 H 1070 Z" fill="#DBEAFE"/>
-    <text x="1085" y="261" font-size="12" font-weight="700" fill="#1E40AF">IR Evaluation Engine (evaluator.py)</text>
-    <rect x="1375" y="247" width="85" height="18" fill="#2563EB" rx="4"/>
-    <text x="1417" y="260" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">IR Metrics</text>
-
-    <text x="1085" y="289" font-size="10" font-weight="600" fill="#1E3A8A">• Precision@k (P@1, P@3): Result viewport purity</text>
-    <text x="1085" y="306" font-size="10" font-weight="600" fill="#1E3A8A">• Recall@k (R@3): Global corpus coverage</text>
-    <text x="1085" y="323" font-size="10" font-weight="600" fill="#1E3A8A">• Reciprocal Rank (RR): Position of first relevant hit</text>
-    <text x="1085" y="340" font-size="10" font-weight="600" fill="#1E3A8A">• Average Precision (AP): Area under PR curve</text>
-    <text x="1085" y="357" font-size="10" font-weight="700" fill="#047857">• Macro Averages: MAP &amp; MRR across full suite</text>
-  </g>
-
-  <!-- Box 3C: Benchmark Verdict -->
-  <g filter="url(#shadow)">
-    <rect x="1070" y="400" width="400" height="130" fill="#ECFDF5" stroke="#059669" stroke-width="1.8" rx="10"/>
-    <rect x="1070" y="400" width="400" height="30" fill="#D1FAE5" rx="10"/>
-    <path d="M 1070 420 H 1470 V 430 H 1070 Z" fill="#D1FAE5"/>
-    <text x="1085" y="420" font-size="12" font-weight="700" fill="#065F46">Empirical Verdict &amp; Scorecard</text>
-    <rect x="1360" y="406" width="100" height="18" fill="#059669" rx="4"/>
-    <text x="1410" y="419" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Verified Report</text>
-
-    <text x="1085" y="447" font-size="10" font-weight="700" fill="#1E293B">Elasticsearch (English): MAP = 0.8472 | P@1 = 1.0000</text>
-    <text x="1085" y="463" font-size="9" fill="#047857">✔ Dominates natural language &amp; multi-term disjunction</text>
-
-    <text x="1085" y="485" font-size="10" font-weight="700" fill="#1E293B">Homemade Python Index: Latency = 0.05 ms</text>
-    <text x="1085" y="501" font-size="9" fill="#047857">✔ 130x faster CPU execution &amp; exact hyphen precision</text>
-  </g>
-
-  <!-- Connectors: Engines -> Evaluation -->
-  <path d="M 1015 200 L 1070 280" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
-  <path d="M 1015 200 L 1065 280" class="base-line flow-green"/>
-
-  <path d="M 1015 440 L 1070 330" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
-  <path d="M 1015 440 L 1065 330" class="base-line flow-blue"/>
-
-  <!-- Connector: Evaluator -> Verdict -->
-  <path d="M 1270 385 L 1270 400" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
-  <path d="M 1270 385 L 1270 395" class="base-line flow-green"/>
 </svg>
