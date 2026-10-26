@@ -226,9 +226,6 @@ typeahead_lab/
 └── api.py                 # FastAPI microservice for HTTP verification (provided in Milestone 10)
 ```
 
-> [!NOTE]
-> Visit the [GitHub Repository](https://github.com/poridhi-labs/m16a-l2-typeahead-trie) and copy the complete contents of `dataset.py`, `redis_client.py`, and `test_redis.py` into your newly created files before continuing.
-
 #### Step 2: Provisioning Redis in Poridhi Cloud Lab
 
 In this lab, Redis serves as our high-speed cache and atomic query frequency store. To provision and configure your database:
@@ -1238,7 +1235,7 @@ Exposes RESTful endpoints for prefix suggestions with L1 Redis caching,
 query submission frequency increments, and engine metrics.
 """
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from dataset import QueryDataset
@@ -1280,13 +1277,18 @@ def health_check() -> Dict[str, str]:
 @app.get("/suggest")
 def get_suggestions(
     q: str = Query(..., min_length=1, description="The typed search prefix"),
-    engine: str = Query("hash", pattern=r"^(trie|hash)\Z", description="Engine selection: 'trie' or 'hash'"),
+    engine: Literal["trie", "hash"] = Query("hash", description="Engine selection: 'trie' or 'hash'"),
     k: int = Query(5, ge=1, le=10, description="Number of suggestions to return"),
 ) -> Dict[str, Any]:
     prefix = q.strip().lower()
 
     # 1. Check L1 Redis hot-prefix cache
-    cached = redis_client.get_cached_prefix_results(prefix)
+    cached = None
+    try:
+        cached = redis_client.get_cached_prefix_results(prefix)
+    except Exception:
+        cached = None
+
     if cached is not None:
         return {
             "prefix": prefix,
@@ -1304,7 +1306,10 @@ def get_suggestions(
 
     # 3. Asynchronously populate L1 cache with 5-minute TTL
     if results:
-        redis_client.cache_prefix_results(prefix, results, ttl_seconds=300)
+        try:
+            redis_client.cache_prefix_results(prefix, results, ttl_seconds=300)
+        except Exception:
+            pass
 
     return {
         "prefix": prefix,
@@ -1318,9 +1323,13 @@ def get_suggestions(
 @app.post("/search")
 def record_search(submission: SearchSubmission) -> Dict[str, Any]:
     """Records a completed user search query, incrementing its Redis frequency counter."""
-    new_score = redis_client.record_query_search(submission.query, increment=submission.increment)
+    try:
+        new_score = redis_client.record_query_search(submission.query, increment=submission.increment)
+    except Exception:
+        new_score = None
+
     return {
-        "status": "recorded",
+        "status": "recorded" if new_score is not None else "redis_unavailable",
         "query": submission.query,
         "updated_frequency": new_score,
     }
@@ -1330,7 +1339,10 @@ def record_search(submission: SearchSubmission) -> Dict[str, Any]:
 def get_metrics() -> Dict[str, Any]:
     trie_nodes, trie_bytes = trie_service.count_nodes_and_memory()
     hash_bytes = hash_service.memory_footprint_bytes()
-    top_queries = redis_client.get_top_queries(k=5)
+    try:
+        top_queries = redis_client.get_top_queries(k=5)
+    except Exception:
+        top_queries = []
 
     return {
         "trie_engine": {
