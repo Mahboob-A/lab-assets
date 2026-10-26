@@ -1,7 +1,7 @@
 # M16a-L2: Typeahead & Autocomplete Service with a Trie & Hash+Heap Optimization
 
 <p align="center">
-  <img src="images/overview-architecture.svg" width="100%" alt="M16a-L2 End-to-End System Architecture">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/overview-architecture.svg" width="100%" alt="M16a-L2 End-to-End System Architecture">
 </p>
 
 ---
@@ -43,7 +43,7 @@ If your autocomplete suggestion service takes longer than **50 milliseconds** ro
 To guarantee that suggestions render cleanly before the next keystroke lands, the entire end-to-end round-trip latency must strictly remain **under 50 milliseconds at the 99th percentile (p99)**.
 
 <p align="center">
-  <img src="images/diagram-1-keystroke-latency-budget.svg" width="100%" alt="The 50ms Keystroke Latency Budget &amp; Human Typing Rhythm">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-1-keystroke-latency-budget.svg" width="100%" alt="The 50ms Keystroke Latency Budget &amp; Human Typing Rhythm">
 </p>
 
 ### Deconstructing the 50-Millisecond Budget
@@ -121,7 +121,7 @@ The fundamental architectural revelation of autocomplete systems is **The Invers
 * **Autocomplete** inverts this relationship: it precomputes, aggregates, and ranks candidate suggestions **at build time**, so that read-time retrieval is reduced to a trivial, zero-computation memory lookup.
 
 <p align="center">
-  <img src="images/diagram-2-inversion-principle.svg" width="100%" alt="The Inversion Principle: Traditional Search vs. Autocomplete">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-2-inversion-principle.svg" width="100%" alt="The Inversion Principle: Traditional Search vs. Autocomplete">
 </p>
 
 By shifting the computational burden of sorting and ranking to the background build phase, the read path executes in microseconds.
@@ -183,7 +183,7 @@ In this lab, we adopt the industry-standard **hybrid production model**:
 > **Caution — Learning Guidance**:
 > Do not look at the solutions first. For each component, make an honest attempt to implement the `# TODO:` challenges on your own before seeking the solution. Struggling with the tree traversal logic, bottom-up recursion, candidate merging, and heap extraction mechanics is where true engineering intuition develops. Complete, verified solutions for every algorithm and step are fully provided immediately after each challenge block if you get stuck or want to verify your approach.
 
-**Complete solution of the lab is available here: [GitHub Repository](https://github.com/poridhi-labs/m16a-l2-typeahead-trie)**
+**Complete solution of the lab is available here: [GitHub Repository](https://github.com/Mahboob-A/lab-assets/tree/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/code-implementation)**
 
 > [!IMPORTANT]
 > **Pre-populating Foundational Dataset & Support Files**:
@@ -226,7 +226,7 @@ typeahead_lab/
 └── api.py                 # FastAPI microservice for HTTP verification (provided in Milestone 10)
 ```
 <p align="center">
-  <img src="images/terminal-snapshot-01.png" width="100%" alt="Project Setup">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-01.png" width="100%" alt="Project Setup">
 </p>
 
 
@@ -274,7 +274,7 @@ python3 test_redis.py
 Compare your output against the following verified execution checkpoint:
 
 <p align="center">
-  <img src="images/terminal-snapshot-02-redis-test.png" width="100%" alt="Redis-Test">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-02-redis-test.png" width="100%" alt="Redis-Test">
 </p>
 
 With our data access tier verified, we can now turn our attention to memory data structures.
@@ -306,7 +306,7 @@ Under production scale, **runtime subtree DFS is catastrophic**:
 * At 10,000 QPS, this causes billions of pointer dereferences per second. Because nodes are allocated across different areas of the heap, each pointer dereference causes a CPU L1/L2 cache miss, causing latency to balloon beyond 50 milliseconds.
 
 <p align="center">
-  <img src="images/diagram-3-trie-node-topk-cache.svg" width="100%" alt="Trie Query Performance: Subtree DFS vs. Node-Level Top-K Cache">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-3-trie-node-topk-cache.svg" width="100%" alt="Trie Query Performance: Subtree DFS vs. Node-Level Top-K Cache">
 </p>
 
 To eliminate runtime tree walks, we must cache the precomputed top-K results directly on every node:
@@ -396,7 +396,7 @@ Populating `node.top_k` efficiently requires a **post-order depth-first traversa
 5. The combined candidate list is sorted by frequency descending, and sliced to size `K`.
 
 <p align="center">
-  <img src="images/diagram-4-trie-bottom-up-build.svg" width="100%" alt="Post-Order Bottom-Up Top-K Construction &amp; The Self-Ending Word Trap">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-4-trie-bottom-up-build.svg" width="100%" alt="Post-Order Bottom-Up Top-K Construction &amp; The Self-Ending Word Trap">
 </p>
 
 #### The "Self-Ending Word" Edge Case Trap
@@ -616,10 +616,10 @@ python3 main.py
 Compare your console output against the verified snapshots below:
 
 <p align="center">
-  <img src="images/terminal-snapshot-03-trie-service-01.png" width="100%" alt="Trie-Service-01">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-03-trie-service-01.png" width="100%" alt="Trie-Service-01">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-03-trie-service-02.png" width="100%" alt="Trie-Service-02">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-03-trie-service-02.png" width="100%" alt="Trie-Service-02">
 </p>
 
 Notice the Trie lookup latency: **1.208 microseconds (0.00121 ms)** *(exact values will naturally vary depending on your machine hardware and CPU load, but will remain comfortably sub-millisecond)*! This satisfies our 3ms compute budget with room to spare. However, examine the memory statistics: even for a modest seed dataset of 165 queries, the Trie created 2,956 node instances consuming **920 KB of RAM (919.92 KB)** *(memory measurements may vary slightly based on OS pointer architecture)*. 
@@ -635,7 +635,7 @@ As vocabulary scales into the millions, this pointer overhead becomes unsustaina
 While a Prefix Trie is theoretically elegant, engineering teams at companies like LinkedIn, Uber, and Twitter frequently avoid full Tries in favor of a **Flat Prefix Hash Table combined with a Bounded Min-Heap**.
 
 <p align="center">
-  <img src="images/diagram-5-prefix-hash-heap-architecture.svg" width="100%" alt="Optimized Architecture: Flat Prefix Hash Table &amp; Bounded Min-Heap">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-5-prefix-hash-heap-architecture.svg" width="100%" alt="Optimized Architecture: Flat Prefix Hash Table &amp; Bounded Min-Heap">
 </p>
 
 Why does the Hash+Heap architecture dominate production typeahead?
@@ -865,10 +865,10 @@ This verification runner executes the entire end-to-end pipeline:
 Compare your console output against the verified checkpoint below:
 
 <p align="center">
-  <img src="images/terminal-snapshot-04-trie-heap-01.png" width="100%" alt="Trie-Heap-Service-01">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-04-trie-heap-01.png" width="100%" alt="Trie-Heap-Service-01">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-04-trie-heap-02.png" width="100%" alt="Trie-Heap-Service-02">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-04-trie-heap-02.png" width="100%" alt="Trie-Heap-Service-02">
 </p>
 
 *(Note: Exact values for build times, memory allocations, and latencies will vary depending on your host machine specifications and system load, but suggestion parity will be an exact 100% match across all prefixes)*.
@@ -1064,10 +1064,10 @@ python3 benchmark.py
 Compare your console output against the verified benchmark snapshot:
 
 <p align="center">
-  <img src="images/terminal-snapshot-05-benchmark-01.png" width="100%" alt="Benchmark-01">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-05-benchmark-01.png" width="100%" alt="Benchmark-01">
 </p>
 <p align="center">
-  <img src="images/terminal-snapshot-05-benchmark-02.png" width="100%" alt="Benchmark-02">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-05-benchmark-02.png" width="100%" alt="Benchmark-02">
 </p>
 
 #### Analyzing the Empirical Findings & Engineering Trade-Offs
@@ -1325,7 +1325,7 @@ print("GET /metrics ->", client.get("/metrics").json())
 Compare your console output against the verified HTTP checkpoint:
 
 <p align="center">
-  <img src="images/terminal-snapshot-06-fastapi-logs.png" width="100%" alt="FastAPI-Logs">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/terminal-snapshot-06-fastapi-logs.png" width="100%" alt="FastAPI-Logs">
 </p>
 
 
@@ -1342,7 +1342,7 @@ Having implemented single-node Trie and Hash+Heap engines, we now step back to e
 When a search vocabulary exceeds 100,000,000 queries, the dataset cannot fit comfortably in a single server's memory, nor can a single machine handle 500,000 global QPS.
 
 <p align="center">
-  <img src="images/diagram-6-enterprise-sharding-pinned-cache.svg" width="100%" alt="Enterprise Scale: Consistent Hash Sharding &amp; Pinned Caches">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-6-enterprise-sharding-pinned-cache.svg" width="100%" alt="Enterprise Scale: Consistent Hash Sharding &amp; Pinned Caches">
 </p>
 
 Enterprise scaling rules:
@@ -1355,7 +1355,7 @@ Enterprise scaling rules:
 Real-world search volumes change continuously. A breaking news event or viral video causes query spikes within minutes. Conversely, last month's trending meme fades away. How does an enterprise update autocomplete without dropping read throughput?
 
 <p align="center">
-  <img src="images/diagram-7-enterprise-async-rcu-pipeline.svg" width="100%" alt="Real-Time Frequency Decay &amp; Atomic RCU Pointer Swap">
+  <img src="https://raw.githubusercontent.com/Mahboob-A/lab-assets/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/images/diagram-7-enterprise-async-rcu-pipeline.svg" width="100%" alt="Real-Time Frequency Decay &amp; Atomic RCU Pointer Swap">
 </p>
 
 Enterprise update rules:
@@ -1436,7 +1436,7 @@ Production autocomplete engines maintain an explicit **Denylist Filter**:
 
 ---
 
-## Stage 9: Summary & System Design Mastery Checklist
+## Stage 9: Conclusion
 
 ### Codebase File Inventory
 
