@@ -17,8 +17,10 @@ except ImportError:
 
 # ==============================================================================
 # REDIS CREDENTIALS CONFIGURATION
-# Students: In Poridhi Lab, enable your Redis database service and enter the
-# provided host, port, and password below. For local testing, 127.0.0.1:6379 is default.
+# Students: If practicing in Poridhi Lab, enable your Redis database service from
+# the Database panel and enter your provisioned host, port, and password below.
+# For local offline testing without Redis, leave these defaults; the client will
+# automatically operate in in-memory fallback mock mode.
 # ==============================================================================
 REDIS_HOST: str = "127.0.0.1"
 REDIS_PORT: int = 6379

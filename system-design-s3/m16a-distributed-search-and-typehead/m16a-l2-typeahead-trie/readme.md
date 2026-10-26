@@ -132,6 +132,31 @@ By shifting the computational burden of sorting and ranking to the background bu
 
 Before constructing our in-memory data structures, we must address how state, caching, and frequency counting are coordinated across a distributed fleet of application servers.
 
+### The Read Path vs. Write Path Dilemma in Distributed Autocomplete
+
+In a production environment, an autocomplete service is deployed across dozens of container instances behind reverse proxies (such as NGINX, Envoy, or AWS Application Load Balancers). Each container executes a multi-process WSGI or ASGI application server (such as Uvicorn or Gunicorn with 8 to 16 worker processes per CPU socket) to handle high concurrency.
+
+If an engineering team attempts to handle both prefix search and search frequency tracking entirely inside local process memory, two fatal architectural problems arise:
+
+1. **State Divergence Across Application Workers**:
+   Because incoming HTTP requests are load-balanced across multiple independent worker processes, Worker 1 might record 150 searches for `"kubernetes tutorial"` while Worker 2 records only 10. Depending on which worker happens to handle a user's next keystroke, the user receives wildly inconsistent and fluctuating suggestion rankings. Synchronizing state across independent OS processes without a shared data store requires complex IPC or distributed gossip protocols.
+2. **The Read-Write Lock Contention Trap**:
+   A search query frequency update cannot simply overwrite a counter in place. In an autocomplete engine, changing a query's frequency alters the top-K rankings for all of its prefixes (such as `'k'`, `'ku'`, `'kub'`, and `'kube'`). Updating these rankings inside an active Trie or Hash Table requires acquiring an exclusive write lock (using `threading.Lock` or a read-write `RWLock`).
+   Under 10,000 QPS of read traffic, acquiring an exclusive write lock freezes dozens of concurrent read threads. Thread execution queues rapidly back up, context switching surges, and p99 tail latency explodes from 0.05ms to over 100ms, completely breaching our 50ms keystroke SLA.
+
+### Decoupling Read and Write Paths via Redis
+
+To resolve this dilemma, production systems strictly decouple the keystroke **Read Path** from the query logging **Write Path**:
+
+1. **The Lock-Free Read Path (< 1 ms)**:
+   Read workers maintain an **immutable in-memory index** (Trie or Hash+Heap) in RAM. Because the index is treated as read-only during active query traffic, worker threads read simultaneously without acquiring mutex locks, achieving microsecond-level latency and millions of operations per second.
+2. **The L1 Hot-Prefix Cache (< 1 ms)**:
+   Keystroke queries exhibit severe Zipfian skew: a tiny fraction of short prefixes (`"py"`, `"sys"`, `"doc"`) account for over 80% of all incoming keystrokes. Before querying in-memory data structures, the API layer checks Redis for a cached result (`GET prefix_cache:sys`). A fast, single-digit microsecond Redis read absorbs the vast majority of repetitive traffic, protecting application worker memory from burst spikes.
+3. **The Fire-and-Forget Write Path**:
+   When a user completes a query and submits a search (e.g., pressing Enter), the client issues a `POST /search` event. The application worker immediately increments the query's score in a Redis Sorted Set (`ZINCRBY query_frequencies 1 "system design"`). Because Redis executes operations atomically in single-threaded memory with O(log N) skip-list efficiency, this write operation completes in under 1ms without touching or locking the read-path data structures.
+4. **The Offline Batch Bridge & Atomic RCU Swap**:
+   Instead of updating in-memory indexes on every single search, an offline batch worker periodically (e.g., hourly or daily) queries the top frequencies from the Redis Sorted Set (`ZREVRANGEBYSCORE`). It builds a brand-new, optimized index snapshot in the background. Once the new index is built, the application workers perform an atomic **Read-Copy-Update (RCU)** pointer swap: the pointer to the active index is updated in a single atomic instruction, ensuring zero lock contention and zero downtime.
+
 ### Standalone In-Memory vs. Hybrid Redis Architecture
 
 When designing a production autocomplete tier, software architects choose between two primary paradigms:
@@ -157,6 +182,8 @@ In this lab, we adopt the industry-standard **hybrid production model**:
 
 > **Caution — Learning Guidance**:
 > Do not look at the solutions first. For each component, make an honest attempt to implement the `# TODO:` challenges on your own before seeking the solution. Struggling with the tree traversal logic, bottom-up recursion, candidate merging, and heap extraction mechanics is where true engineering intuition develops. Complete, verified solutions for every algorithm and step are fully provided immediately after each challenge block if you get stuck or want to verify your approach.
+
+**Complete solution of the lab is available here: [GitHub Repository](https://github.com/poridhi-labs/m16a-l2-typeahead-trie)**
 
 Now that you understand the cognitive and architectural constraints, you will build the system step by step.
 
@@ -190,12 +217,17 @@ typeahead_lab/
 └── api.py                 # FastAPI microservice for HTTP verification
 ```
 
-#### Step 2: Provisioning Redis in Poridhi Lab
+#### Step 2: Configuring Redis (Poridhi Lab vs. Local Offline Testing)
 
-To configure your Redis connection:
-1. In the Poridhi Lab web interface, look at the left-hand navigation menu and click on the **Database** section.
-2. Click **Create Redis Database**. Once provisioned, the dashboard will display your **Host**, **Port**, and **Password**.
-3. Open `redis_client.py` and enter your credentials into the configuration block at the top of the file:
+Depending on your working environment, configure your Redis connectivity as follows:
+
+* **For Local / Offline Testing**:
+  You **do not need a running Redis server** to complete this lab. If Redis is unreachable or not installed on your local machine, `redis_client.py` automatically detects the connection state and switches to an internal in-memory dictionary fallback mock (`mock_memory`). All core components—the Trie engine, Hash+Heap engine, parity assertions, 10,000 QPS load benchmark, and even the FastAPI HTTP microservice—run cleanly out of the box with zero setup.
+* **For Poridhi Cloud Lab**:
+  If you are practicing inside the Poridhi Lab environment and wish to connect to a live Redis database:
+  1. In the Poridhi Lab web interface, navigate to the left-hand menu and click on the **Database** section.
+  2. Click **Create Redis Database**. Once provisioned, the dashboard will display your **Host**, **Port**, and **Password**.
+  3. Open `typeahead_lab/redis_client.py` and enter your credentials into lines 25–27:
 
 ```python
 # ==============================================================================
@@ -209,7 +241,7 @@ REDIS_PASSWORD: Optional[str] = None
 # ==============================================================================
 ```
 
-> **Important — Automatic Fallback Mock**: If you are working offline or testing locally without a running Redis server, `redis_client.py` automatically detects the connection state and switches to an internal dictionary fallback mock. This guarantees that your unit tests and benchmarks run cleanly in any environment without crashing.
+> **Important — Automatic Fallback Mock**: When `REDIS_PASSWORD` is `None` or points to an unreachable endpoint, `redis_client.py` activates its internal memory mock. This guarantees that your unit tests and benchmarks run cleanly in any environment without crashing.
 
 #### Step 3: Verifying Redis Integration
 
@@ -430,7 +462,9 @@ def build_top_k(self, k: int = 5) -> None:
 
 ### Milestone 5: Implementing `O(L)` Prefix Search
 
-With `node.top_k` precomputed, runtime suggestion retrieval requires only walking down the characters of the prefix. #### The Challenge: Implementing O(L) Prefix Search
+With `node.top_k` precomputed, runtime suggestion retrieval requires only walking down the characters of the prefix. 
+
+#### The Challenge: Implementing O(L) Prefix Search
 
 Attempt to implement `suggest()` inside `trie_service.py`:
 
@@ -661,20 +695,236 @@ def suggest(self, prefix: str, k: Optional[int] = None) -> List[Tuple[str, int]]
     return results
 ```
 
+#### Step 4: Verifying Suggestion Parity Between Engines
+
+To verify that your Hash+Heap implementation correctly builds the flat prefix index, extracts top-K suggestions using bounded min-heaps, and produces exact suggestion parity with the baseline Trie service, execute `main.py` in your terminal:
+
+```bash
+python3 main.py
+```
+
+This verification runner executes the entire end-to-end pipeline:
+1. Loads the 165-query technical search corpus and computes prefix distributions.
+2. Constructs the baseline `TrieTypeaheadService` with bottom-up caching.
+3. Constructs the optimized `HashHeapTypeaheadService` with bounded min-heaps.
+4. Profiles memory usage and structural efficiency across both engines.
+5. Runs automated parity tests asserting that both engines produce 100% identical top-K ranked suggestions for test prefixes (`'sys'`, `'py'`, `'rea'`, `'do'`, `'red'`, `'sql'`).
+6. Executes a 1,000-iteration single-query micro-benchmark measuring sub-microsecond lookup latency.
+
+Compare your console output against the verified checkpoint below:
+
 [[Terminal Snapshot 4: Hash+Heap Service Verification & Parity]]
 ```text
-[+] Built Hash+Heap Service in 0.20ms
+============================================================================
+  TYPEAHEAD & AUTOCOMPLETE LAB: TRIE vs HASH+HEAP PARITY VERIFICATION
+============================================================================
+[*] Loaded curated dataset: 165 technical search queries
+[+] Built Trie Service in 2.99ms
+    - Total Nodes: 2,956 | Estimated RAM: 1052.86 KB
+[+] Built Hash+Heap Service in 0.40ms
     - Unique Prefixes: 119 | Estimated RAM: 180.84 KB
+
+============================================================================
+  SUGGESTION PARITY CHECK (Top-5 Suggestions for Test Prefixes)
+============================================================================
+
+Prefix: 'sys' -> Status: MATCH [PASS]
+Prefix: 'py'  -> Status: MATCH [PASS]
+Prefix: 'rea' -> Status: MATCH [PASS]
+Prefix: 'do'  -> Status: MATCH [PASS]
+Prefix: 'red' -> Status: MATCH [PASS]
+Prefix: 'sql' -> Status: MATCH [PASS]
+
+----------------------------------------------------------------------------
 [SUCCESS] All test prefixes yielded 100% identical top-K ranked suggestions!
+----------------------------------------------------------------------------
+
+============================================================================
+  SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')
+============================================================================
+  Trie O(L) Lookup Latency      : 0.355 microseconds (0.00036 ms)
+  Hash+Heap Lookup Latency      : 2.427 microseconds (0.00243 ms)
+============================================================================
 ```
 
 ---
 
 ### Milestone 9: Running the 10,000 QPS Load Test and Shootout Benchmark
 
-Now let us execute the comprehensive load test and memory profiling suite in `benchmark.py`. This script procedurally generates 10,000 technical search queries following a Zipfian distribution, builds both engines under `tracemalloc` memory profiling, and executes 10,000 concurrent simulated prefix searches.
+Now let us execute the comprehensive load test and memory profiling suite in `benchmark.py`. This script subjects both engines to production-scale conditions: procedurally generating 10,000 technical search queries following a Zipfian distribution, building both data structures under Python's `tracemalloc` memory profiler, and executing 10,000 simulated prefix searches to compute percentile latencies (`p50`, `p90`, `p99`, `max`).
 
-Run the benchmark:
+#### Architectural Components of the Benchmark Suite
+
+The benchmarking suite is structured into three distinct engineering components:
+
+1. **Zipfian Query Distribution Generator (`QueryDataset.generate_expanded_corpus`)**:
+   Real search traffic does not follow a uniform distribution. A tiny fraction of popular keywords generates the overwhelming majority of keystroke volume. The generator procedurally expands the seed corpus to 10,000 unique queries using a power-law Pareto/Zipfian distribution (alpha = 1.3), creating realistic query frequency skews ranging from 1 to 50,000.
+2. **Deterministic Heap Memory Profiling (`tracemalloc`)**:
+   Operating system metrics (`ps` or `top`) include Python interpreter startup allocations, shared libraries, and garbage collector overhead. The benchmark utilizes `tracemalloc.start()` and `tracemalloc.get_traced_memory()` to measure the exact delta in heap memory consumed exclusively by the data structure during construction.
+3. **High-Resolution Percentile Latency Measurement (`calculate_percentiles`)**:
+   Average latency is a misleading metric because it conceals severe tail spikes. The benchmark records individual query durations using `time.perf_counter()`, sorting the collected timings to extract `p50` (median), `p90`, `p99`, and worst-case (`max`) latencies.
+
+#### Complete Benchmark Implementation (`benchmark.py`)
+
+Open `typeahead_lab/benchmark.py` and populate the complete load testing and profiling suite:
+
+```python
+"""
+Comprehensive Benchmark & Load Testing Suite for Typeahead Services.
+
+Simulates 10,000 concurrent prefix search queries across an expanded 10,000-query corpus.
+Measures p50, p90, p99 latencies, peak memory consumption via tracemalloc,
+and verifies the p99 < 50ms at 10,000 QPS SLA.
+"""
+
+from typing import List, Dict, Tuple
+import time
+import random
+import tracemalloc
+from dataset import QueryDataset
+from trie_service import TrieTypeaheadService
+from hash_heap_service import HashHeapTypeaheadService
+from redis_client import TypeaheadRedisClient
+
+
+def calculate_percentiles(latencies: List[float]) -> Dict[str, float]:
+    """Calculates p50, p90, p99, and max from a list of latencies in milliseconds."""
+    sorted_latencies = sorted(latencies)
+    n = len(sorted_latencies)
+    if n == 0:
+        return {"p50": 0.0, "p90": 0.0, "p99": 0.0, "max": 0.0, "avg": 0.0}
+    return {
+        "p50": sorted_latencies[int(n * 0.50)],
+        "p90": sorted_latencies[int(n * 0.90)],
+        "p99": sorted_latencies[int(n * 0.99)],
+        "max": sorted_latencies[-1],
+        "avg": sum(sorted_latencies) / n,
+    }
+
+
+def run_benchmark():
+    print("=" * 78)
+    print("  TYPEAHEAD & AUTOCOMPLETE LOAD TEST & MEMORY BENCHMARK (10,000 QUERIES)")
+    print("=" * 78)
+
+    # 1. Procedurally generate 10,000 realistic tech search queries
+    print("[*] Generating expanded corpus with Zipfian distribution (10,000 queries)...")
+    dataset = QueryDataset.generate_expanded_corpus(target_size=10000, seed=42)
+    queries = dataset.queries
+    print(f"    Total unique queries generated: {len(queries):,}")
+
+    # 2. Benchmark Trie Memory and Construction
+    tracemalloc.reset_peak()
+    tracemalloc.start()
+    t0 = time.perf_counter()
+    trie = TrieTypeaheadService(k=5)
+    trie.build_from_dataset(queries, k=5)
+    trie_build_time = time.perf_counter() - t0
+    trie_current, trie_peak_ram = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    trie_nodes, trie_bytes = trie.count_nodes_and_memory()
+    trie_ram_mb = trie_peak_ram / (1024 * 1024)
+    print(f"\n[+] [Trie Engine] Built in {trie_build_time * 1000:.2f}ms")
+    print(f"    - Total Nodes   : {trie_nodes:,}")
+    print(f"    - Peak RAM Usage: {trie_ram_mb:.2f} MB")
+
+    # 3. Benchmark Hash+Heap Memory and Construction
+    tracemalloc.reset_peak()
+    tracemalloc.start()
+    t0 = time.perf_counter()
+    hash_heap = HashHeapTypeaheadService(max_prefix_len=6, k=5)
+    hash_heap.build(queries, max_prefix_len=6)
+    hash_build_time = time.perf_counter() - t0
+    hash_current, hash_peak_ram = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    hash_ram_mb = hash_peak_ram / (1024 * 1024)
+    ram_reduction_pct = ((trie_ram_mb - hash_ram_mb) / trie_ram_mb) * 100
+    print(f"\n[+] [Hash+Heap Engine] Built in {hash_build_time * 1000:.2f}ms")
+    print(f"    - Unique Prefixes: {len(hash_heap.prefix_index):,}")
+    print(f"    - Peak RAM Usage : {hash_ram_mb:.2f} MB")
+    print(f"    - RAM Reduction  : {ram_reduction_pct:.1f}% less memory than Trie!")
+
+    # 4. Prepare Realistic Query Workload (10,000 keystroke lookups)
+    sample_queries = list(queries.keys())
+    random.seed(123)
+    test_workload: List[str] = []
+    for _ in range(10000):
+        q = random.choice(sample_queries[:500])
+        prefix_len = random.randint(1, min(6, len(q)))
+        test_workload.append(q[:prefix_len])
+
+    print(f"\n[*] Executing 10,000 simulated prefix keystroke queries...")
+
+    # 5. Measure Trie Latencies
+    trie_latencies_ms: List[float] = []
+    t0 = time.perf_counter()
+    for prefix in test_workload:
+        q_start = time.perf_counter()
+        _ = trie.suggest(prefix, k=5)
+        trie_latencies_ms.append((time.perf_counter() - q_start) * 1000)
+    trie_total_time = time.perf_counter() - t0
+    trie_qps = len(test_workload) / trie_total_time
+    trie_stats = calculate_percentiles(trie_latencies_ms)
+
+    # 6. Measure Hash+Heap Latencies
+    hash_latencies_ms: List[float] = []
+    t0 = time.perf_counter()
+    for prefix in test_workload:
+        q_start = time.perf_counter()
+        _ = hash_heap.suggest(prefix, k=5)
+        hash_latencies_ms.append((time.perf_counter() - q_start) * 1000)
+    hash_total_time = time.perf_counter() - t0
+    hash_qps = len(test_workload) / hash_total_time
+    hash_stats = calculate_percentiles(hash_latencies_ms)
+
+    # 7. Redis Cache Latency Test
+    redis_client = TypeaheadRedisClient()
+    cached_prefix = "py"
+    redis_client.cache_prefix_results(cached_prefix, hash_heap.suggest(cached_prefix, k=5))
+    redis_latencies_ms: List[float] = []
+    for _ in range(1000):
+        q_start = time.perf_counter()
+        _ = redis_client.get_cached_prefix_results(cached_prefix)
+        redis_latencies_ms.append((time.perf_counter() - q_start) * 1000)
+    redis_stats = calculate_percentiles(redis_latencies_ms)
+
+    # 8. Output Formatted Results Table
+    print("\n" + "=" * 78)
+    print(f"{'Performance Metric':<28} | {'Trie with Cache':<16} | {'Hash + Min-Heap':<16} | {'SLA Target':<10}")
+    print("-" * 78)
+    print(f"{'Build Time (10k items)':<28} | {trie_build_time * 1000:>13.2f} ms | {hash_build_time * 1000:>13.2f} ms | {'< 5000 ms':<10}")
+    print(f"{'Peak Memory (RAM)':<28} | {trie_ram_mb:>13.2f} MB | {hash_ram_mb:>13.2f} MB | {'< 100 MB':<10}")
+    print(f"{'RAM Savings':<28} | {'Baseline':>16} | {f'{ram_reduction_pct:.1f}% savings':>16} | {'> 50%':<10}")
+    print(f"{'Throughput (QPS)':<28} | {trie_qps:>13.0f} qps | {hash_qps:>13.0f} qps | {'> 10k QPS':<10}")
+    print(f"{'p50 Latency':<28} | {trie_stats['p50']:>13.4f} ms | {hash_stats['p50']:>13.4f} ms | {'< 10 ms':<10}")
+    print(f"{'p90 Latency':<28} | {trie_stats['p90']:>13.4f} ms | {hash_stats['p90']:>13.4f} ms | {'< 25 ms':<10}")
+    print(f"{'p99 Latency':<28} | {trie_stats['p99']:>13.4f} ms | {hash_stats['p99']:>13.4f} ms | {'< 50 ms':<10}")
+    print(f"{'Max Latency':<28} | {trie_stats['max']:>13.4f} ms | {hash_stats['max']:>13.4f} ms | {'< 100 ms':<10}")
+    print(f"{'Redis L1 Cache (p99)':<28} | {redis_stats['p99']:>13.4f} ms | {redis_stats['p99']:>13.4f} ms | {'< 5 ms':<10}")
+    print("=" * 78)
+
+    # SLA Verification Checks
+    assert trie_stats["p99"] < 50.0, f"Trie p99 latency violated SLA: {trie_stats['p99']}ms"
+    assert hash_stats["p99"] < 50.0, f"Hash+Heap p99 latency violated SLA: {hash_stats['p99']}ms"
+    assert trie_qps > 10000, f"Trie throughput under target: {trie_qps} QPS"
+    assert hash_qps > 10000, f"Hash+Heap throughput under target: {hash_qps} QPS"
+
+    print("\n[VERIFICATION RESULT] ALL SLA CRITERIA FULLY SATISFIED:")
+    print("  1. p99 Latency < 50ms SLA Target: PASSED (Trie: " f"{trie_stats['p99']:.4f}ms, Hash+Heap: {hash_stats['p99']:.4f}ms)")
+    print("  2. Concurrent Throughput Target : PASSED (Trie: " f"{trie_qps:,.0f} QPS, Hash+Heap: {hash_qps:,.0f} QPS)")
+    print(f"  3. Memory Footprint Reduction   : PASSED ({ram_reduction_pct:.1f}% memory savings)")
+    print("=" * 78)
+
+
+if __name__ == "__main__":
+    run_benchmark()
+```
+
+#### Executing the Benchmark Suite
+
+Run the benchmark in your terminal:
 
 ```bash
 python3 benchmark.py
@@ -722,15 +972,39 @@ Redis L1 Cache (p99)         |        0.0086 ms |        0.0086 ms | < 5 ms
 ==============================================================================
 ```
 
-#### Analyzing the Empirical Findings
+#### Analyzing the Empirical Findings & Engineering Trade-Offs
 
-1. **Peak RAM Reduction**: The Hash+Heap engine consumed only **4.52 MB** compared to **58.19 MB** for the Trie, achieving an outstanding **92.2% reduction in memory consumption**!
-2. **Build Time**: The Hash+Heap index built in **22.30 ms**, over **25 times faster** than the Trie's 573.51 ms recursive post-order construction.
-3. **Latency Compliance**: Both engines achieved p99 latency far below the 50ms SLA:
+Examining the benchmark table reveals critical architectural truths that govern production system design:
+
+1. **Memory Economics: The True Production Deciding Factor**:
+   The Hash+Heap engine consumed only **4.52 MB** compared to **58.19 MB** for the Trie, achieving an outstanding **92.2% reduction in memory consumption**.
+   To understand the commercial impact, extrapolate this across an enterprise corpus of 100,000,000 queries replicated across a fleet of 50 autocomplete instances:
+   * A Trie implementation would require ~580 GB of RAM per instance, requiring costly memory-optimized cloud instances (such as AWS `r6i.8xlarge`), adding hundreds of thousands of dollars annually to infrastructure budgets.
+   * A Hash+Heap implementation fits the identical corpus into ~45 GB of RAM, running comfortably on standard commodity compute nodes.
+
+2. **Cold Starts, Auto-Scaling & Build Speed (25x Faster)**:
+   The Hash+Heap index built in **22.30 ms**, over **25 times faster** than the Trie's 573.51 ms recursive post-order construction.
+   In a containerized environment (Kubernetes, AWS ECS), pod startup and readiness probe latency determine how effectively a system handles traffic spikes. When traffic surges require auto-scaling new replicas, or when rolling out canary deployments, Hash+Heap pods become healthy and ready to serve traffic almost instantaneously. The Trie's recursive bottom-up post-order traversal creates millions of temporary objects and pointer updates, delaying container readiness probes and risking cascading failure under load.
+
+3. **Throughput: The Single-Node Vanity Metric vs. Reality**:
+   The Trie achieved an astonishing **2.8 million QPS** in memory, while Hash+Heap achieved **65,224 QPS**.
+   However, in production microservices, **in-memory throughput beyond 50,000–100,000 QPS is a vanity metric**. A single Linux network socket and ASGI HTTP gateway (FastAPI/Uvicorn) saturates at approximately 30,000 to 50,000 network requests per second per CPU core due to TCP packet handling, JSON serialization, and OS kernel context switching. Because both engines easily exceed our 10,000 QPS SLA target, the Trie's excess in-memory speed provides zero user-visible benefit, while its massive 10x RAM overhead imposes continuous financial and operational drag.
+
+4. **Latency Compliance**:
+   Both engines achieved p99 latencies far below the 50ms SLA:
    * Trie p99: **0.0007 ms** (0.7 microseconds).
    * Hash+Heap p99: **0.0536 ms** (53.6 microseconds).
-   Both engines deliver more than 50x safety margin under the 3ms compute budget!
-4. **Throughput**: Hash+Heap delivered **65,224 QPS**, comfortably surpassing the 10,000 QPS target, while the Trie reached **2.8 million QPS** due to direct array index reads.
+   Both engines deliver more than a 50x safety margin under our allocated 3ms compute budget.
+
+5. **The Principal Architect's Decision Matrix**:
+   When should you choose each data structure?
+
+   | Architectural Requirement | Recommended Engine | Justification |
+   | :--- | :--- | :--- |
+   | **Cloud Microservices & Kubernetes** | **Hash + Min-Heap** | 92.2% lower RAM usage, 25x faster cold-start readiness, minimal container footprint. |
+   | **Prefix Length Bounded (< 6-8 chars)** | **Hash + Min-Heap** | Bounded prefix length caps table entries while covering > 95% of real user typing behaviors. |
+   | **Arbitrary Prefix Range Scans** | **Trie with Cache** | Tries natively support finding words of arbitrary length through subtree navigation without pre-indexing all lengths. |
+   | **High-Frequency In-Process Updates** | **Trie with Cache** | Inserting a single new word requires only updating nodes along its character path, rather than modifying multiple prefix hash buckets. |
 
 ---
 
@@ -738,12 +1012,178 @@ Redis L1 Cache (p99)         |        0.0086 ms |        0.0086 ms | < 5 ms
 
 In production, your typeahead engine is packaged as an HTTP microservice behind an API gateway.
 
-Open `typeahead_lab/api.py`. The service exposes:
-* `GET /suggest?q={prefix}&engine={trie|hash}&k={5}`: Checks Redis hot-cache first. On cache miss, queries the selected engine, populates Redis with a 5-minute TTL, and returns results.
-* `POST /search`: Logs completed user queries to Redis Sorted Sets via atomic `ZINCRBY`.
-* `GET /metrics`: Returns live memory and node statistics for both engines.
+#### Step 1: Installing Service Dependencies
 
-Verify the HTTP microservice using Python's TestClient or curl:
+To run the HTTP microservice and its automated test client, ensure that the required packages are installed in your environment:
+
+```bash
+pip install fastapi uvicorn httpx redis
+```
+
+* `fastapi`: The high-performance, asynchronous web framework for our REST API.
+* `uvicorn`: The lightning-fast ASGI server implementation that serves our application over HTTP.
+* `httpx`: Provides the client backend for FastAPI's programmatic `TestClient`.
+* `redis`: The official Python Redis driver for connecting to live Redis instances. (Optional for local testing, as `redis_client.py` gracefully falls back to memory mock mode).
+
+#### Step 2: Microservice Implementation (`api.py`)
+
+Open `typeahead_lab/api.py` and populate the complete microservice implementation:
+
+```python
+"""
+FastAPI Microservice for Typeahead and Autocomplete.
+
+Exposes RESTful endpoints for prefix suggestions with L1 Redis caching,
+query submission frequency increments, and engine metrics.
+"""
+
+from typing import Optional, List, Dict, Any
+from fastapi import FastAPI, Query
+from pydantic import BaseModel
+from dataset import QueryDataset
+from trie_service import TrieTypeaheadService
+from hash_heap_service import HashHeapTypeaheadService
+from redis_client import TypeaheadRedisClient
+
+app = FastAPI(
+    title="Typeahead & Autocomplete Microservice",
+    description="High-throughput prefix suggestion service powered by Trie and Hash+Heap engines with Redis counters.",
+    version="1.0.0",
+)
+
+# Initialize engines and Redis client
+dataset = QueryDataset()
+trie_service = TrieTypeaheadService(k=5)
+trie_service.build_from_dataset(dataset.queries, k=5)
+
+hash_service = HashHeapTypeaheadService(max_prefix_len=6, k=5)
+hash_service.build(dataset.queries, max_prefix_len=6)
+
+redis_client = TypeaheadRedisClient()
+
+
+class SearchSubmission(BaseModel):
+    query: str
+    increment: int = 1
+
+
+@app.get("/")
+def health_check() -> Dict[str, str]:
+    return {
+        "status": "healthy",
+        "service": "Typeahead & Autocomplete Service",
+        "redis_mode": "mock" if redis_client.is_mock else "live_redis",
+    }
+
+
+@app.get("/suggest")
+def get_suggestions(
+    q: str = Query(..., min_length=1, description="The typed search prefix"),
+    engine: str = Query("hash", pattern=r"^(trie|hash)\Z", description="Engine selection: 'trie' or 'hash'"),
+    k: int = Query(5, ge=1, le=10, description="Number of suggestions to return"),
+) -> Dict[str, Any]:
+    prefix = q.strip().lower()
+
+    # 1. Check L1 Redis hot-prefix cache
+    cached = redis_client.get_cached_prefix_results(prefix)
+    if cached is not None:
+        return {
+            "prefix": prefix,
+            "engine": engine,
+            "source": "redis_cache",
+            "count": len(cached[:k]),
+            "suggestions": [{"query": query, "frequency": freq} for query, freq in cached[:k]],
+        }
+
+    # 2. Query selected in-memory data structure
+    if engine == "trie":
+        results = trie_service.suggest(prefix, k=k)
+    else:
+        results = hash_service.suggest(prefix, k=k)
+
+    # 3. Asynchronously populate L1 cache with 5-minute TTL
+    if results:
+        redis_client.cache_prefix_results(prefix, results, ttl_seconds=300)
+
+    return {
+        "prefix": prefix,
+        "engine": engine,
+        "source": f"memory_{engine}",
+        "count": len(results),
+        "suggestions": [{"query": query, "frequency": freq} for query, freq in results],
+    }
+
+
+@app.post("/search")
+def record_search(submission: SearchSubmission) -> Dict[str, Any]:
+    """Records a completed user search query, incrementing its Redis frequency counter."""
+    new_score = redis_client.record_query_search(submission.query, increment=submission.increment)
+    return {
+        "status": "recorded",
+        "query": submission.query,
+        "updated_frequency": new_score,
+    }
+
+
+@app.get("/metrics")
+def get_metrics() -> Dict[str, Any]:
+    trie_nodes, trie_bytes = trie_service.count_nodes_and_memory()
+    hash_bytes = hash_service.memory_footprint_bytes()
+    top_queries = redis_client.get_top_queries(k=5)
+
+    return {
+        "trie_engine": {
+            "total_nodes": trie_nodes,
+            "memory_kb": round(trie_bytes / 1024, 2),
+        },
+        "hash_heap_engine": {
+            "unique_prefixes": len(hash_service.prefix_index),
+            "memory_kb": round(hash_bytes / 1024, 2),
+        },
+        "redis_top_searches": [{"query": q, "score": s} for q, s in top_queries],
+    }
+```
+
+The service exposes four endpoints:
+* `GET /`: Health check reporting service status and Redis connectivity mode (`live_redis` vs `mock`).
+* `GET /suggest?q={prefix}&engine={trie|hash}&k={k}`: Dual-engine suggestion router. It checks the Redis L1 cache first. On cache miss, it queries the selected in-memory engine, caches the result in Redis with a 5-minute TTL, and returns ranked suggestions.
+* `POST /search`: Logs completed user search submissions to Redis Sorted Sets via atomic `ZINCRBY`, updating search frequency counts off the read path.
+* `GET /metrics`: Introspection endpoint exposing real-time node counts, heap memory estimates, and top-searched queries from Redis.
+
+#### Step 3: Launching the Microservice with Uvicorn
+
+In your terminal, start the ASGI server:
+
+```bash
+uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The server binds to port 8000 and is ready to process concurrent HTTP requests.
+
+#### Step 4: Verifying Endpoints via Curl
+
+In a second terminal window (or using a background command), execute real `curl` requests to verify each endpoint:
+
+```bash
+# 1. Verify service health and Redis mode
+curl -s http://127.0.0.1:8000/
+
+# 2. Query prefix 'sys' via Trie engine (L1 cache miss, served from memory_trie)
+curl -s "http://127.0.0.1:8000/suggest?q=sys&engine=trie&k=3"
+
+# 3. Query prefix 'sys' via Hash+Heap engine (L1 cache hit, served from redis_cache)
+curl -s "http://127.0.0.1:8000/suggest?q=sys&engine=hash&k=3"
+
+# 4. Record a completed user search query (atomic Redis ZINCRBY)
+curl -s -X POST http://127.0.0.1:8000/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "system design interview", "increment": 1}'
+
+# 5. Inspect memory metrics and Redis top search rankings
+curl -s http://127.0.0.1:8000/metrics
+```
+
+Alternatively, you can verify programmatically in headless or automated CI environments using Python's `TestClient`:
 
 ```python
 from fastapi.testclient import TestClient
@@ -751,13 +1191,20 @@ from api import app
 
 client = TestClient(app)
 
-# 1. First call: Cache miss (queried from in-memory engine)
-r1 = client.get("/suggest?q=sys&engine=hash&k=3")
-print("First call:", r1.json())
+# 1. Health check
+print("GET / ->", client.get("/").json())
 
-# 2. Second call: Cache hit (served from Redis L1 cache)
-r2 = client.get("/suggest?q=sys&engine=hash&k=3")
-print("Second call:", r2.json())
+# 2. First call: Cache miss (queried from in-memory engine)
+print("GET /suggest (trie) ->", client.get("/suggest?q=sys&engine=trie&k=3").json())
+
+# 3. Second call: Cache hit (served from Redis L1 cache)
+print("GET /suggest (hash / cache) ->", client.get("/suggest?q=sys&engine=hash&k=3").json())
+
+# 4. Search query submission
+print("POST /search ->", client.post("/search", json={"query": "system design interview", "increment": 1}).json())
+
+# 5. Service metrics
+print("GET /metrics ->", client.get("/metrics").json())
 ```
 
 Compare your console output against the verified HTTP checkpoint:

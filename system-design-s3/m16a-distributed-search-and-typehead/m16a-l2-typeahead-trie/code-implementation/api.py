@@ -47,7 +47,7 @@ def health_check() -> Dict[str, str]:
 @app.get("/suggest")
 def get_suggestions(
     q: str = Query(..., min_length=1, description="The typed search prefix"),
-    engine: str = Query("hash", pattern="^(trie|hash)$", description="Engine selection: 'trie' or 'hash'"),
+    engine: str = Query("hash", pattern=r"^(trie|hash)\Z", description="Engine selection: 'trie' or 'hash'"),
     k: int = Query(5, ge=1, le=10, description="Number of suggestions to return"),
 ) -> Dict[str, Any]:
     prefix = q.strip().lower()
