@@ -3,28 +3,21 @@ Redis Client for Typeahead and Autocomplete Lab.
 
 Provides query logging via atomic Redis Sorted Sets (ZINCRBY) and prefix result caching (SETEX/GET).
 Students directly enter Poridhi-provisioned Redis credentials in the configuration variables below.
-Includes an automatic in-memory dictionary fallback mock if Redis is temporarily unreachable.
 """
 
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional
 import json
-import time
-
-try:
-    import redis
-except ImportError:
-    redis = None
+import redis
 
 # ==============================================================================
 # REDIS CREDENTIALS CONFIGURATION
-# Students: If practicing in Poridhi Lab, enable your Redis database service from
-# the Database panel and enter your provisioned host, port, and password below.
-# For local offline testing without Redis, leave these defaults; the client will
-# automatically operate in in-memory fallback mock mode.
+# Students: In Poridhi Lab, enable your Redis database service from the Database
+# section and enter the provided host, port, username, and password below.
 # ==============================================================================
-REDIS_HOST: str = "127.0.0.1"
-REDIS_PORT: int = 6379
-REDIS_PASSWORD: Optional[str] = None
+REDIS_HOST: str = "127.0.0.1"      # Replace with your Poridhi Redis Host (e.g., "100.80.224.229")
+REDIS_PORT: int = 6379             # Replace with your Poridhi Redis Port
+REDIS_USERNAME: str = "redis"      # Replace with your Poridhi Redis Username
+REDIS_PASSWORD: str = "redis"      # Replace with your Poridhi Redis Password
 # ==============================================================================
 
 
@@ -35,59 +28,33 @@ class TypeaheadRedisClient:
     Provides:
     1. Query Frequency Counter: Logs completed user searches asynchronously via ZINCRBY.
     2. Hot-Prefix Cache: Absorbs repeated prefix keystrokes (e.g. 'sys', 'py') with TTL.
-    3. Fallback Mock: Emulates operations in memory if Redis is unavailable.
     """
 
     def __init__(
         self,
         host: str = REDIS_HOST,
         port: int = REDIS_PORT,
-        password: Optional[str] = REDIS_PASSWORD,
-        socket_timeout: float = 1.0,
+        username: str = REDIS_USERNAME,
+        password: str = REDIS_PASSWORD,
+        socket_timeout: float = 2.0,
     ):
         self.host = host
         self.port = port
+        self.username = username
         self.password = password
-        self._is_mock = False
-        self._client: Optional["redis.Redis"] = None
 
-        # Fallback in-memory storage if Redis is offline
-        self._mock_kv: Dict[str, Tuple[str, float]] = {}  # key -> (value, expire_timestamp)
-        self._mock_zset: Dict[str, float] = {}             # query -> score
-
-        if redis is None:
-            self._is_mock = True
-            return
-
-        try:
-            client = redis.Redis(
-                host=self.host,
-                port=self.port,
-                password=self.password,
-                socket_timeout=socket_timeout,
-                decode_responses=True,
-            )
-            client.ping()
-            self._client = client
-            self._is_mock = False
-        except Exception:
-            # Fallback gracefully to mock mode without crashing the process
-            self._client = None
-            self._is_mock = True
-
-    @property
-    def is_mock(self) -> bool:
-        """Returns True if the client is operating in fallback mock mode."""
-        return self._is_mock
+        self.client = redis.Redis(
+            host=self.host,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+            socket_timeout=socket_timeout,
+            decode_responses=True,
+        )
 
     def ping(self) -> bool:
         """Checks whether Redis is responsive."""
-        if not self._is_mock and self._client:
-            try:
-                return bool(self._client.ping())
-            except Exception:
-                return False
-        return True
+        return bool(self.client.ping())
 
     def record_query_search(self, query: str, increment: int = 1) -> float:
         """
@@ -101,17 +68,8 @@ class TypeaheadRedisClient:
             The new score for the query.
         """
         normalized = query.strip().lower()
-        if not self._is_mock and self._client:
-            try:
-                new_score = self._client.zincrby("query_frequencies", increment, normalized)
-                return float(new_score)
-            except Exception:
-                pass  # Fall back to mock if Redis throws mid-flight
-
-        # In-memory mock execution
-        current = self._mock_zset.get(normalized, 0.0)
-        self._mock_zset[normalized] = current + float(increment)
-        return self._mock_zset[normalized]
+        new_score = self.client.zincrby("query_frequencies", increment, normalized)
+        return float(new_score)
 
     def get_top_queries(self, k: int = 10) -> List[Tuple[str, float]]:
         """
@@ -123,16 +81,8 @@ class TypeaheadRedisClient:
         Returns:
             List of (query, frequency) tuples ordered by frequency descending.
         """
-        if not self._is_mock and self._client:
-            try:
-                raw = self._client.zrevrange("query_frequencies", 0, k - 1, withscores=True)
-                return [(item[0], float(item[1])) for item in raw]
-            except Exception:
-                pass
-
-        # In-memory mock execution
-        sorted_items = sorted(self._mock_zset.items(), key=lambda x: x[1], reverse=True)
-        return sorted_items[:k]
+        raw = self.client.zrevrange("query_frequencies", 0, k - 1, withscores=True)
+        return [(item[0], float(item[1])) for item in raw]
 
     def cache_prefix_results(
         self,
@@ -153,16 +103,7 @@ class TypeaheadRedisClient:
         """
         key = f"prefix_cache:{prefix.strip().lower()}"
         payload = json.dumps(results)
-        if not self._is_mock and self._client:
-            try:
-                self._client.setex(key, ttl_seconds, payload)
-                return True
-            except Exception:
-                pass
-
-        # In-memory mock execution
-        expire_at = time.time() + ttl_seconds
-        self._mock_kv[key] = (payload, expire_at)
+        self.client.setex(key, ttl_seconds, payload)
         return True
 
     def get_cached_prefix_results(self, prefix: str) -> Optional[List[Tuple[str, int]]]:
@@ -176,33 +117,13 @@ class TypeaheadRedisClient:
             List of (query, frequency) suggestions if found, None otherwise.
         """
         key = f"prefix_cache:{prefix.strip().lower()}"
-        if not self._is_mock and self._client:
-            try:
-                cached = self._client.get(key)
-                if cached:
-                    return [tuple(item) for item in json.loads(cached)]
-                return None
-            except Exception:
-                pass
-
-        # In-memory mock execution
-        if key in self._mock_kv:
-            payload, expire_at = self._mock_kv[key]
-            if time.time() < expire_at:
-                return [tuple(item) for item in json.loads(payload)]
-            else:
-                del self._mock_kv[key]
+        cached = self.client.get(key)
+        if cached:
+            return [tuple(item) for item in json.loads(cached)]
         return None
 
     def flush_test_data(self) -> None:
         """Cleans up keys created during testing."""
-        if not self._is_mock and self._client:
-            try:
-                self._client.delete("query_frequencies")
-                # Pattern match to delete prefix cache keys
-                for key in self._client.scan_iter("prefix_cache:*"):
-                    self._client.delete(key)
-            except Exception:
-                pass
-        self._mock_kv.clear()
-        self._mock_zset.clear()
+        self.client.delete("query_frequencies")
+        for key in self.client.scan_iter("prefix_cache:*"):
+            self.client.delete(key)

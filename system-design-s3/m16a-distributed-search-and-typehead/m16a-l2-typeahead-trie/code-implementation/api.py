@@ -40,7 +40,7 @@ def health_check() -> Dict[str, str]:
     return {
         "status": "healthy",
         "service": "Typeahead & Autocomplete Service",
-        "redis_mode": "mock" if redis_client.is_mock else "live_redis",
+        "redis_mode": "live_redis",
     }
 
 

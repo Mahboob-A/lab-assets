@@ -2,29 +2,38 @@
 Redis Connectivity and Operations Test.
 
 Students run this script immediately after entering their Redis host, port,
-and password in redis_client.py to verify network connectivity and functionality.
+username, and password in redis_client.py to verify network connectivity and functionality.
 """
 
 import sys
-from redis_client import TypeaheadRedisClient, REDIS_HOST, REDIS_PORT
+import redis
+from redis_client import TypeaheadRedisClient, REDIS_HOST, REDIS_PORT, REDIS_USERNAME
 
 
 def run_test():
     print("=" * 68)
-    print(f"Testing Redis Integration against: {REDIS_HOST}:{REDIS_PORT}")
+    print(f"Testing Redis Integration against: {REDIS_HOST}:{REDIS_PORT} (User: {REDIS_USERNAME})")
     print("=" * 68)
 
-    client = TypeaheadRedisClient()
-
-    if client.is_mock:
-        print("[NOTICE] Running in in-memory fallback mock mode.")
-        print("         (If using Poridhi Redis, verify host/port/credentials in redis_client.py)")
-    else:
-        print("[SUCCESS] Successfully connected to live Redis server at " f"{REDIS_HOST}:{REDIS_PORT}")
+    try:
+        client = TypeaheadRedisClient()
+        ping_ok = client.ping()
+        if ping_ok:
+            print(f"[SUCCESS] Successfully connected to live Redis server at {REDIS_HOST}:{REDIS_PORT}")
+    except redis.AuthenticationError as e:
+        print(f"[ERROR] Redis Authentication Failed: {e}")
+        print("        Check your REDIS_USERNAME and REDIS_PASSWORD in redis_client.py")
+        sys.exit(1)
+    except redis.ConnectionError as e:
+        print(f"[ERROR] Could not connect to Redis server: {e}")
+        print("        Ensure your Redis database is provisioned and running in Poridhi Lab,")
+        print("        and verify REDIS_HOST and REDIS_PORT in redis_client.py")
+        sys.exit(1)
+    except Exception as e:
+        print(f"[ERROR] Unexpected error connecting to Redis: {e}")
+        sys.exit(1)
 
     # Test 1: PING
-    ping_ok = client.ping()
-    assert ping_ok, "Redis PING failed"
     print("[TEST 1/4] PING test passed (Server active: PONG)")
 
     # Test 2: Cache Prefix Results (SETEX)
