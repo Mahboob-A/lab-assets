@@ -389,8 +389,6 @@ Run the connectivity test:
 python3 test_es.py
 ```
 
-> **Terminal Snapshot 1: Docker Container Status & Elasticsearch Cluster Health Verification**
-
 <p align="center">
   <img src="images/ts-04-test_es_py.png" alt="Test-ES" width="100%" />
 </p>
@@ -724,8 +722,6 @@ Run `es_client.py`:
 python3 es_client.py
 ```
 
-> **Terminal Snapshot 2: Multi-Field Index Creation, Ingestion & Sanity Search**
-
 <p align="center">
   <img src="images/ts-05-es_client_py.png" alt="Test-ES-Client" width="100%" />
 </p>
@@ -895,8 +891,6 @@ Run `homemade_adapter.py`:
 ```bash
 python3 homemade_adapter.py
 ```
-
-> **Terminal Snapshot 3: Homemade Adapter Verification & Hit Structure**
 
 <p align="center">
   <img src="images/ts-06-homemade_adapter_py.png" alt="Test-Homemade-Adapter" width="100%" />
@@ -1341,8 +1335,6 @@ Run `evaluator.py`:
 python3 evaluator.py
 ```
 
-> **Terminal Snapshot 4: Information Retrieval Evaluator Self-Test**
-
 <p align="center">
   <img src="images/ts-08-evaluator_py.png" alt="Evaluator-Py" width="100%" />
 </p>
@@ -1767,17 +1759,12 @@ Run the master benchmark suite in your terminal:
 python3 benchmark.py
 ```
 
-> **Terminal Snapshot 5: Dual-Engine Benchmark Execution (Category A & B Queries)**
-
 <p align="center">
   <img src="images/ts-benchmark-01.png" alt="Benchmark-01" width="100%" />
 </p>
 <p align="center">
   <img src="images/ts-benchmark-02.png" alt="Benchmark-02" width="100%" />
 </p>
-
-> **Terminal Snapshot 6: Aggregated Benchmark Summary Table & Scorecard**
-
 <p align="center">
   <img src="images/ts-benchmark-03.png" alt="Benchmark-03" width="100%" />
 </p>
@@ -1891,8 +1878,6 @@ You can run and inspect this scoring comparison in three ways:
    ```bash
    grep -A 20 "BM25 SCORING EXPLAIN" shootout_results.txt
    ```
-
-> **Terminal Snapshot 7: BM25 Scoring Explain Deep-Dive (Homemade vs. Lucene _explain)**
 
 <p align="center">
   <img src="images/ts-benchmark-explain.png" alt="Benchmark-Explain" width="100%" />
