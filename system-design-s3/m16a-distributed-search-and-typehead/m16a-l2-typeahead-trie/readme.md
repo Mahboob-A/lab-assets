@@ -185,6 +185,15 @@ In this lab, we adopt the industry-standard **hybrid production model**:
 
 **Complete solution of the lab is available here: [GitHub Repository](https://github.com/poridhi-labs/m16a-l2-typeahead-trie)**
 
+> [!IMPORTANT]
+> **Pre-populating Foundational Dataset & Support Files**:
+> Before running the verification scripts in this lab, you must pre-populate the non-trivial helper and dataset files from the GitHub repository into your `typeahead_lab/` workspace:
+> 1. `dataset.py`: Contains the curated 165-query technical search corpus and the procedural Zipfian power-law query generator.
+> 2. `redis_client.py`: Contains the production Redis client wrapper for atomic query frequency increments (`ZINCRBY`) and L1 prefix caching.
+> 3. `test_redis.py`: Contains the standalone 4-step connectivity and operations test suite.
+>
+> *(You will build the core data structure algorithms in `trie_node.py`, `trie_service.py`, and `hash_heap_service.py` hands-on step by step in the upcoming milestones.)*
+
 Now that you understand the cognitive and architectural constraints, you will build the system step by step.
 
 ### Milestone 1: Environment Setup & Redis Integration
@@ -206,16 +215,19 @@ Your workspace layout should match the following structure:
 ```text
 typeahead_lab/
 ├── __init__.py
-├── dataset.py            # Technical search query dataset with Zipfian distribution
-├── redis_client.py        # Redis client with atomic ZINCRBY counters & cache
-├── test_redis.py          # Standalone verification script for Redis connectivity
-├── trie_node.py           # Memory-optimized TrieNode using __slots__
-├── trie_service.py        # Trie implementation with bottom-up Top-K caching
-├── hash_heap_service.py   # Optimized Hash+Heap implementation
-├── main.py                # Suggestion parity and micro-benchmark runner
-├── benchmark.py           # 10,000 QPS load test and memory profiler
-└── api.py                 # FastAPI microservice for HTTP verification
+├── dataset.py            # Technical search query dataset with Zipfian distribution (pre-populate from GitHub)
+├── redis_client.py        # Redis client with atomic ZINCRBY counters & cache (pre-populate from GitHub)
+├── test_redis.py          # Standalone verification script for Redis connectivity (pre-populate from GitHub)
+├── trie_node.py           # Memory-optimized TrieNode using __slots__ (implement in Milestone 3 & 4)
+├── trie_service.py        # Trie implementation with bottom-up Top-K caching (implement in Milestone 5)
+├── hash_heap_service.py   # Optimized Hash+Heap implementation (implement in Milestone 7 & 8)
+├── main.py                # Suggestion parity and micro-benchmark runner (provided in Milestone 6 & 8)
+├── benchmark.py           # 10,000 QPS load test and memory profiler (provided in Milestone 9)
+└── api.py                 # FastAPI microservice for HTTP verification (provided in Milestone 10)
 ```
+
+> [!NOTE]
+> Visit the [GitHub Repository](https://github.com/poridhi-labs/m16a-l2-typeahead-trie) and copy the complete contents of `dataset.py`, `redis_client.py`, and `test_redis.py` into your newly created files before continuing.
 
 #### Step 2: Provisioning Redis in Poridhi Cloud Lab
 
@@ -242,6 +254,15 @@ REDIS_PASSWORD: str = "redis"      # Replace with your Poridhi Redis Password
 > **Redis 6+ Access Control Lists (ACL)**: Poridhi Cloud Lab provisions Redis with modern ACL security enabled. You must supply both `REDIS_USERNAME` (e.g., `"redis"`) and `REDIS_PASSWORD`. If the username is omitted, Redis defaults authentication to the `"default"` user, which will cause authentication to fail.
 
 #### Step 3: Verifying Redis Integration
+
+Before executing the verification test, ensure the `redis` Python driver is installed:
+
+```bash
+pip install redis
+```
+
+> [!TIP]
+> If you encounter `ModuleNotFoundError: No module named 'redis'` when executing the verification script, run `pip install redis` in your terminal to install the driver.
 
 Execute the standalone verification script to confirm connectivity, cache writing, cache reading, and atomic Sorted Set increments against your provisioned database:
 
@@ -642,7 +663,7 @@ Prefix: 'rea' -> Retrieved 5 suggestions:
 ============================================================================
 ```
 
-Notice the Trie lookup latency: **0.264 microseconds (0.00026 ms)**! This satisfies our 3ms compute budget with room to spare. However, examine the memory statistics: even for a modest seed dataset of 165 queries, the Trie created 2,956 node instances consuming **1,052 KB of RAM**. 
+Notice the Trie lookup latency: **0.264 microseconds (0.00026 ms)** *(exact values will naturally vary depending on your machine hardware and CPU load, but will remain comfortably sub-millisecond)*! This satisfies our 3ms compute budget with room to spare. However, examine the memory statistics: even for a modest seed dataset of 165 queries, the Trie created 2,956 node instances consuming **1,052 KB of RAM** *(memory measurements may vary slightly based on OS pointer architecture)*. 
 
 As vocabulary scales into the millions, this pointer overhead becomes unsustainable. In the next section, we examine how modern production systems eliminate this memory tax.
 
@@ -918,6 +939,8 @@ Prefix: 'sql' -> Status: MATCH [PASS]
 ============================================================================
 ```
 
+*(Note: Exact values for build times, memory allocations, and latencies will vary depending on your host machine specifications and system load, but suggestion parity will be an exact 100% match across all prefixes)*.
+
 ---
 
 ### Milestone 9: Running the 10,000 QPS Load Test and Shootout Benchmark
@@ -1149,6 +1172,8 @@ Redis L1 Cache (p99)         |        0.0086 ms |        0.0086 ms | < 5 ms
 ```
 
 #### Analyzing the Empirical Findings & Engineering Trade-Offs
+
+*(Note: The empirical metrics below reflect a standard cloud VM benchmark run; exact build times, RAM measurements, and QPS throughput will naturally vary depending on your host machine specifications and current CPU load, but the relative ~92% memory reduction and order-of-magnitude performance advantages will remain identical)*.
 
 Examining the benchmark table reveals critical architectural truths that govern production system design:
 
