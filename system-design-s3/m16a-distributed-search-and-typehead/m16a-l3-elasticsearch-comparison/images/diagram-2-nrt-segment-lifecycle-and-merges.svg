@@ -1,221 +1,199 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 700" width="100%" height="100%" style="background-color: #0b1120; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 520" width="100%" height="100%">
   <defs>
-    <!-- Gradients -->
-    <linearGradient id="cardGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0f172a"/>
-    </linearGradient>
+    <!-- Arrowhead Markers -->
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
 
-    <!-- Filters -->
-    <filter id="dropGlow2" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
     </filter>
 
-    <!-- Markers -->
-    <marker id="arrBlue2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#3b82f6"/>
-    </marker>
-    <marker id="arrAmber2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#f59e0b"/>
-    </marker>
-    <marker id="arrGreen2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#10b981"/>
-    </marker>
-    <marker id="arrRose2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#f43f5e"/>
-    </marker>
-
-    <!-- Styles -->
     <style>
-      .flow-blue2 {
-        stroke: #3b82f6;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow2 1.6s linear infinite;
-        fill: none;
-      }
-      .flow-amber2 {
-        stroke: #f59e0b;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow2 1.6s linear infinite;
-        fill: none;
-      }
-      .flow-green2 {
-        stroke: #10b981;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow2 1.6s linear infinite;
-        fill: none;
-      }
-      .flow-rose2 {
-        stroke: #f43f5e;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow2 1.6s linear infinite;
-        fill: none;
-      }
-      .static-line2 {
-        stroke: #475569;
-        stroke-width: 1.5;
-        fill: none;
-      }
-      @keyframes flow2 {
-        from { stroke-dashoffset: 20; }
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
         to { stroke-dashoffset: 0; }
+      }
+      .flow-blue {
+        stroke: #2563EB;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
     </style>
   </defs>
 
-  <!-- Title Card -->
-  <rect x="30" y="20" width="1160" height="60" rx="12" fill="url(#cardGrad2)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow2)"/>
-  <rect x="30" y="20" width="8" height="60" rx="4" fill="#3b82f6"/>
-  <text x="55" y="45" fill="#f8fafc" font-size="18" font-weight="700">The Near-Real-Time (NRT) Lifecycle, Translog &amp; Background Segment Merges</text>
-  <text x="55" y="65" fill="#94a3b8" font-size="12">From In-Memory Buffer to Searchable OS Page Cache, Translog fsync, and TieredMergePolicy Compaction</text>
-  <rect x="1030" y="35" width="145" height="28" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
-  <text x="1102" y="53" fill="#60a5fa" font-size="11" font-weight="600" text-anchor="middle">Lucene Ingestion Path</text>
+  <!-- Canvas Background -->
+  <rect width="1260" height="520" fill="#F8FAFC" rx="16"/>
+  <rect x="1" y="1" width="1258" height="518" fill="none" stroke="#E2E8F0" stroke-width="2" rx="16"/>
 
-  <!-- STEP 1: Ingestion & Dual Writes (Top Left) -->
-  <rect x="30" y="100" width="360" height="260" rx="12" fill="url(#cardGrad2)" stroke="#3b82f6" stroke-width="1.5" filter="url(#dropGlow2)"/>
-  <rect x="45" y="115" width="330" height="28" rx="5" fill="#1e3a8a" stroke="#2563eb" stroke-width="1"/>
-  <text x="210" y="134" fill="#bfdbfe" font-size="12" font-weight="700" text-anchor="middle">STAGE 1: DUAL-WRITE INGESTION</text>
+  <!-- Diagram Title Header -->
+  <text x="630" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Near-Real-Time (NRT) Segment Lifecycle, Translog &amp; Tiered Merges</text>
+  <text x="630" y="58" text-anchor="middle" font-size="12" font-weight="500" fill="#64748B">Decoupling 1-Second Search Visibility from Heavy Disk Commit Durability</text>
 
-  <!-- Box 1A: RAM Buffer -->
-  <rect x="45" y="155" width="330" height="85" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-  <text x="60" y="177" fill="#60a5fa" font-size="12" font-weight="700">1. Indexing RAM Buffer</text>
-  <text x="60" y="197" fill="#94a3b8" font-size="10.5">DocumentsWriterPerThread (DWPT)</text>
-  <text x="60" y="215" fill="#cbd5e1" font-size="10">Analyzes and accumulates inverted index in RAM</text>
-  <text x="60" y="230" fill="#f87171" font-size="9.5" font-weight="600">INVISIBLE to IndexSearcher until Refresh!</text>
+  <!-- ============================================================== -->
+  <!-- STEP 1: DUAL INGESTION                                         -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="35" y="95" width="270" height="395" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" rx="10"/>
+    <rect x="35" y="95" width="270" height="34" fill="#F1F5F9" rx="10"/>
+    <path d="M 35 119 H 305 V 129 H 35 Z" fill="#F1F5F9"/>
+    <text x="50" y="117" font-size="12" font-weight="700" fill="#1E293B">1. Ingestion Split</text>
+    <rect x="225" y="102" width="70" height="18" fill="#E2E8F0" rx="4"/>
+    <text x="260" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569">RAM + Disk</text>
 
-  <!-- Box 1B: Translog -->
-  <rect x="45" y="255" width="330" height="85" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
-  <text x="60" y="277" fill="#fbbf24" font-size="12" font-weight="700">2. Translog (Transaction Log)</text>
-  <text x="60" y="297" fill="#94a3b8" font-size="10.5">Append-only disk write on primary &amp; replicas</text>
-  <text x="60" y="315" fill="#cbd5e1" font-size="10">Guarantees durability if node crashes mid-flight</text>
-  <text x="60" y="330" fill="#fde68a" font-size="9.5">Replayed during cluster crash recovery</text>
+    <!-- RAM Buffer -->
+    <rect x="50" y="145" width="240" height="95" fill="#EFF6FF" stroke="#BFDBFE" rx="8"/>
+    <text x="60" y="167" font-size="11" font-weight="700" fill="#1E40AF">In-Memory Indexing Buffer</text>
+    <text x="60" y="187" font-size="9" fill="#334155">• DocumentsWriterPerThread</text>
+    <text x="60" y="203" font-size="9" fill="#334155">• Constructs postings directly in RAM</text>
+    <text x="60" y="219" font-size="9" fill="#059669">• High-throughput parallel ingestion</text>
 
-  <!-- STEP 2: The NRT Refresh Gate (Top Right) -->
-  <rect x="430" y="100" width="360" height="260" rx="12" fill="url(#cardGrad2)" stroke="#10b981" stroke-width="1.5" filter="url(#dropGlow2)"/>
-  <rect x="445" y="115" width="330" height="28" rx="5" fill="#064e3b" stroke="#059669" stroke-width="1"/>
-  <text x="610" y="134" fill="#a7f3d0" font-size="12" font-weight="700" text-anchor="middle">STAGE 2: THE NRT REFRESH GATE</text>
+    <!-- Translog -->
+    <rect x="50" y="255" width="240" height="95" fill="#F8FAFC" stroke="#CBD5E1" rx="8"/>
+    <text x="60" y="277" font-size="11" font-weight="700" fill="#1E293B">On-Disk Translog (WAL)</text>
+    <text x="60" y="297" font-size="9" fill="#334155">• Append-only transaction log</text>
+    <text x="60" y="313" font-size="9" fill="#334155">• Sequential disk writes (low latency)</text>
+    <text x="60" y="329" font-size="9" fill="#2563EB">• Guarantees durability before flush</text>
 
-  <!-- Box 2A: Segment Write to OS Page Cache -->
-  <rect x="445" y="155" width="330" height="85" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
-  <text x="460" y="177" fill="#34d399" font-size="12" font-weight="700">Write to OS Page Cache</text>
-  <text x="460" y="197" fill="#94a3b8" font-size="10.5">Flushes RAM buffer into new immutable segment</text>
-  <text x="460" y="215" fill="#cbd5e1" font-size="10">Segment is held in kernel page cache (not disk fsync)</text>
-  <text x="460" y="230" fill="#6ee7b7" font-size="9.5" font-weight="600">Extremely fast: avoids heavy disk I/O cost</text>
-
-  <!-- Box 2B: Reader Reopen -->
-  <rect x="445" y="255" width="330" height="85" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
-  <text x="460" y="277" fill="#34d399" font-size="12" font-weight="700">Reopen IndexSearcher</text>
-  <text x="460" y="297" fill="#94a3b8" font-size="10.5">Point-in-time directory reader sees new segment</text>
-  <text x="460" y="315" fill="#cbd5e1" font-size="10">Default interval: 1000ms (1 second)</text>
-  <text x="460" y="330" fill="#a7f3d0" font-size="9.5" font-family="monospace">Explicit: client.indices.refresh(index)</text>
-
-  <!-- STEP 3: Flush & Commit (Right Column) -->
-  <rect x="830" y="100" width="360" height="260" rx="12" fill="url(#cardGrad2)" stroke="#f59e0b" stroke-width="1.5" filter="url(#dropGlow2)"/>
-  <rect x="845" y="115" width="330" height="28" rx="5" fill="#78350f" stroke="#d97706" stroke-width="1"/>
-  <text x="1010" y="134" fill="#fde68a" font-size="12" font-weight="700" text-anchor="middle">STAGE 3: FLUSH &amp; COMMIT (DURABILITY)</text>
-
-  <!-- Box 3A: fsync to Disk -->
-  <rect x="845" y="155" width="330" height="85" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
-  <text x="860" y="177" fill="#fbbf24" font-size="12" font-weight="700">Physical fsync to Disk</text>
-  <text x="860" y="197" fill="#94a3b8" font-size="10.5">Executes Lucene two-phase commit</text>
-  <text x="860" y="215" fill="#cbd5e1" font-size="10">All kernel page cache buffers forced to storage</text>
-  <text x="860" y="230" fill="#fde68a" font-size="9.5">Interval: 30 minutes or 512MB threshold</text>
-
-  <!-- Box 3B: Commit Point & Truncation -->
-  <rect x="845" y="255" width="330" height="85" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
-  <text x="860" y="277" fill="#fbbf24" font-size="12" font-weight="700">Commit Point &amp; Translog Truncate</text>
-  <text x="860" y="297" fill="#94a3b8" font-size="10.5">Writes 'segments_N' file containing segment list</text>
-  <text x="860" y="315" fill="#cbd5e1" font-size="10">Translog emptied because data is safely persistent</text>
-  <text x="860" y="330" fill="#60a5fa" font-size="9.5">Clean checkpoint established</text>
-
-  <!-- STEP 4: Segment Merges & .del Bitmap Reclamation (Bottom Area) -->
-  <rect x="30" y="380" width="1160" height="295" rx="14" fill="url(#cardGrad2)" stroke="#a855f7" stroke-width="1.8" filter="url(#dropGlow2)"/>
-  <rect x="45" y="395" width="1130" height="30" rx="5" fill="#3b0764" stroke="#7e22ce" stroke-width="1"/>
-  <text x="610" y="415" fill="#f3e8ff" font-size="13" font-weight="700" text-anchor="middle">STAGE 4: BACKGROUND SEGMENT MERGES (TieredMergePolicy &amp; .del Tombstone Purging)</text>
-
-  <!-- Small Segments Before Merge -->
-  <g transform="translate(60, 440)">
-    <rect x="0" y="0" width="150" height="150" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-    <text x="75" y="25" fill="#60a5fa" font-size="11" font-weight="700" text-anchor="middle">Segment _0</text>
-    <text x="75" y="45" fill="#94a3b8" font-size="10" text-anchor="middle">1,000 docs</text>
-    <rect x="15" y="65" width="120" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-    <text x="75" y="81" fill="#cbd5e1" font-size="10" text-anchor="middle">Size: 2.1 MB</text>
-    <rect x="15" y="100" width="120" height="35" rx="4" fill="#3f121a" stroke="#f43f5e" stroke-width="1"/>
-    <text x="75" y="115" fill="#fda4af" font-size="9" text-anchor="middle">.del bitmap: 200 docs</text>
-    <text x="75" y="128" fill="#f87171" font-size="8.5" text-anchor="middle">(20% deleted)</text>
+    <!-- Explanatory footer -->
+    <rect x="50" y="365" width="240" height="110" fill="#F8FAFC" stroke="#E2E8F0" rx="6"/>
+    <text x="60" y="385" font-size="9.5" font-weight="700" fill="#0F172A">The Durability Paradox</text>
+    <text x="60" y="405" font-size="8.5" fill="#64748B">Calling fsync on every doc caps</text>
+    <text x="60" y="420" font-size="8.5" fill="#64748B">throughput to &lt; 300 ops/sec.</text>
+    <text x="60" y="440" font-size="8.5" fill="#1E40AF">The Translog provides crash safety</text>
+    <text x="60" y="455" font-size="8.5" fill="#1E40AF">without halting CPU indexation.</text>
   </g>
 
-  <g transform="translate(230, 440)">
-    <rect x="0" y="0" width="150" height="150" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-    <text x="75" y="25" fill="#60a5fa" font-size="11" font-weight="700" text-anchor="middle">Segment _1</text>
-    <text x="75" y="45" fill="#94a3b8" font-size="10" text-anchor="middle">1,200 docs</text>
-    <rect x="15" y="65" width="120" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-    <text x="75" y="81" fill="#cbd5e1" font-size="10" text-anchor="middle">Size: 2.5 MB</text>
-    <rect x="15" y="100" width="120" height="35" rx="4" fill="#3f121a" stroke="#f43f5e" stroke-width="1"/>
-    <text x="75" y="115" fill="#fda4af" font-size="9" text-anchor="middle">.del bitmap: 120 docs</text>
-    <text x="75" y="128" fill="#f87171" font-size="8.5" text-anchor="middle">(10% deleted)</text>
+  <!-- Connector 1 -> 2 -->
+  <path d="M 305 200 L 345 200" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 305 200 L 340 200" class="base-line flow-blue"/>
+
+  <!-- ============================================================== -->
+  <!-- STEP 2: NRT REFRESH GATE                                       -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="345" y="95" width="280" height="395" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.8" rx="10"/>
+    <rect x="345" y="95" width="280" height="34" fill="#DBEAFE" rx="10"/>
+    <path d="M 345 119 H 625 V 129 H 345 Z" fill="#DBEAFE"/>
+    <text x="360" y="117" font-size="12" font-weight="700" fill="#1E40AF">2. NRT Refresh (Every 1s)</text>
+    <rect x="535" y="102" width="80" height="18" fill="#2563EB" rx="4"/>
+    <text x="575" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Searchable!</text>
+
+    <!-- Buffer Flush to Page Cache -->
+    <rect x="360" y="145" width="250" height="100" fill="#EFF6FF" stroke="#BFDBFE" rx="8"/>
+    <text x="370" y="167" font-size="11" font-weight="700" fill="#1D4ED8">Flushed to OS Page Cache</text>
+    <text x="370" y="187" font-size="9" fill="#334155">• RAM buffer written as new segment</text>
+    <text x="370" y="203" font-size="9" fill="#334155">• Resides in kernel Page Cache (RAM)</text>
+    <text x="370" y="219" font-size="9" fill="#DC2626">• No fsync to physical disk yet!</text>
+
+    <!-- Point-in-Time Reader -->
+    <rect x="360" y="255" width="250" height="95" fill="#F8FAFC" stroke="#CBD5E1" rx="8"/>
+    <text x="370" y="277" font-size="11" font-weight="700" fill="#1E293B">Open New IndexSearcher</text>
+    <text x="370" y="297" font-size="9" fill="#334155">• Point-in-time reader opened</text>
+    <text x="370" y="313" font-size="9" fill="#334155">• Segment now visible to queries</text>
+    <text x="370" y="329" font-size="9" fill="#059669">• Near-real-time search visibility</text>
+
+    <!-- Explanatory footer -->
+    <rect x="360" y="365" width="250" height="110" fill="#EFF6FF" stroke="#BFDBFE" rx="6"/>
+    <text x="370" y="385" font-size="9.5" font-weight="700" fill="#1E40AF">Why "Near-Real-Time"?</text>
+    <text x="370" y="405" font-size="8.5" fill="#334155">A document indexed at 200ms is not</text>
+    <text x="370" y="420" font-size="8.5" fill="#334155">visible until the 1s refresh boundary.</text>
+    <text x="370" y="440" font-size="8.5" fill="#059669">Achieves sub-second visibility</text>
+    <text x="370" y="455" font-size="8.5" fill="#059669">without waiting for physical disk I/O.</text>
   </g>
 
-  <g transform="translate(400, 440)">
-    <rect x="0" y="0" width="150" height="150" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-    <text x="75" y="25" fill="#60a5fa" font-size="11" font-weight="700" text-anchor="middle">Segment _2</text>
-    <text x="75" y="45" fill="#94a3b8" font-size="10" text-anchor="middle">800 docs</text>
-    <rect x="15" y="65" width="120" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-    <text x="75" y="81" fill="#cbd5e1" font-size="10" text-anchor="middle">Size: 1.8 MB</text>
-    <rect x="15" y="100" width="120" height="35" rx="4" fill="#3f121a" stroke="#f43f5e" stroke-width="1"/>
-    <text x="75" y="115" fill="#fda4af" font-size="9" text-anchor="middle">.del bitmap: 280 docs</text>
-    <text x="75" y="128" fill="#f87171" font-size="8.5" text-anchor="middle">(35% deleted)</text>
+  <!-- Connector 2 -> 3 -->
+  <path d="M 625 200 L 665 200" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 625 200 L 660 200" class="base-line flow-blue"/>
+
+  <!-- ============================================================== -->
+  <!-- STEP 3: FLUSH & DURABILITY COMMIT                              -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="665" y="95" width="280" height="395" fill="#FFFFFF" stroke="#059669" stroke-width="1.8" rx="10"/>
+    <rect x="665" y="95" width="280" height="34" fill="#D1FAE5" rx="10"/>
+    <path d="M 665 119 H 945 V 129 H 665 Z" fill="#D1FAE5"/>
+    <text x="680" y="117" font-size="12" font-weight="700" fill="#065F46">3. Flush (Commit to Disk)</text>
+    <rect x="850" y="102" width="85" height="18" fill="#059669" rx="4"/>
+    <text x="892" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">fsync Durability</text>
+
+    <!-- Physical Disk fsync -->
+    <rect x="680" y="145" width="250" height="100" fill="#ECFDF5" stroke="#A7F3D0" rx="8"/>
+    <text x="690" y="167" font-size="11" font-weight="700" fill="#047857">Physical Disk fsync()</text>
+    <text x="690" y="187" font-size="9" fill="#334155">• Trigger: Every 30m or 512MB Translog</text>
+    <text x="690" y="203" font-size="9" fill="#334155">• Kernel writes Page Cache to flash storage</text>
+    <text x="690" y="219" font-size="9" fill="#059669">• Non-volatile hardware persistence</text>
+
+    <!-- Commit Point & Truncation -->
+    <rect x="680" y="255" width="250" height="95" fill="#F8FAFC" stroke="#CBD5E1" rx="8"/>
+    <text x="690" y="277" font-size="11" font-weight="700" fill="#1E293B">Commit Marker &amp; Truncation</text>
+    <text x="690" y="297" font-size="9" fill="#334155">• Commit point (segments_N) written</text>
+    <text x="690" y="313" font-size="9" fill="#334155">• Translog is safely truncated</text>
+    <text x="690" y="329" font-size="9" fill="#059669">• Safe crash recovery guaranteed</text>
+
+    <!-- Explanatory footer -->
+    <rect x="680" y="365" width="250" height="110" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
+    <text x="690" y="385" font-size="9.5" font-weight="700" fill="#047857">The True Durability Barrier</text>
+    <text x="690" y="405" font-size="8.5" fill="#334155">If server crashes before a flush,</text>
+    <text x="690" y="420" font-size="8.5" fill="#334155">Elasticsearch boots, reads last commit,</text>
+    <text x="690" y="440" font-size="8.5" fill="#1E40AF">and replays operations from Translog.</text>
+    <text x="690" y="455" font-size="8.5" fill="#1E40AF">Zero data loss on node failure.</text>
   </g>
 
-  <!-- Merge Engine Box (Center) -->
-  <g transform="translate(580, 440)">
-    <rect x="0" y="0" width="220" height="150" rx="10" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="1.5"/>
-    <text x="110" y="25" fill="#c084fc" font-size="11.5" font-weight="700" text-anchor="middle">TieredMergePolicy</text>
-    <text x="110" y="45" fill="#94a3b8" font-size="10" text-anchor="middle">ConcurrentMergeScheduler</text>
-    <line x1="20" y1="58" x2="200" y2="58" stroke="#475569" stroke-width="1"/>
-    <text x="20" y="80" fill="#e2e8f0" font-size="9.5">* Logarithmic staircase tiers</text>
-    <text x="20" y="98" fill="#e2e8f0" font-size="9.5">* Sorts segments by size</text>
-    <text x="20" y="116" fill="#e2e8f0" font-size="9.5">* Sequential streaming merge</text>
-    <text x="20" y="134" fill="#f43f5e" font-size="9.5" font-weight="600">* Skips deleted doc records</text>
-  </g>
+  <!-- Connector 3 -> 4 -->
+  <path d="M 945 200 L 985 200" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 945 200 L 980 200" class="base-line flow-green"/>
 
-  <!-- Merged New Segment (Right) -->
-  <g transform="translate(835, 440)">
-    <rect x="0" y="0" width="190" height="150" rx="10" fill="#064e3b" stroke="#10b981" stroke-width="1.8"/>
-    <text x="95" y="25" fill="#a7f3d0" font-size="12" font-weight="700" text-anchor="middle">Merged Segment _3</text>
-    <text x="95" y="45" fill="#cbd5e1" font-size="10" text-anchor="middle">2,400 Active Documents</text>
-    <rect x="20" y="60" width="150" height="26" rx="4" fill="#022c22" stroke="#059669" stroke-width="1"/>
-    <text x="95" y="77" fill="#6ee7b7" font-size="10" font-weight="600" text-anchor="middle">Final Size: 5.1 MB</text>
-    <rect x="20" y="95" width="150" height="42" rx="4" fill="#022c22" stroke="#10b981" stroke-width="1"/>
-    <text x="95" y="112" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">600 Deleted Docs Purged</text>
-    <text x="95" y="127" fill="#a7f3d0" font-size="9" text-anchor="middle">Disk space 100% reclaimed</text>
-  </g>
+  <!-- ============================================================== -->
+  <!-- STEP 4: TIERED MERGES & TOMBSTONE PURGING                     -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="985" y="95" width="240" height="395" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" rx="10"/>
+    <rect x="985" y="95" width="240" height="34" fill="#F1F5F9" rx="10"/>
+    <path d="M 985 119 H 1225 V 129 H 985 Z" fill="#F1F5F9"/>
+    <text x="1000" y="117" font-size="12" font-weight="700" fill="#1E293B">4. Segment Merges</text>
+    <rect x="1135" y="102" width="80" height="18" fill="#E2E8F0" rx="4"/>
+    <text x="1175" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#475569">TieredMerge</text>
 
-  <!-- Old Segments Trashed -->
-  <g transform="translate(1055, 440)">
-    <rect x="0" y="0" width="120" height="150" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1" stroke-dasharray="4 4"/>
-    <text x="60" y="30" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">Old Segments</text>
-    <text x="60" y="45" fill="#64748b" font-size="9" text-anchor="middle">_0, _1, _2</text>
-    <circle cx="60" cy="85" r="24" fill="#3f121a" stroke="#f43f5e" stroke-width="1.5"/>
-    <path d="M 48 73 L 72 97 M 72 73 L 48 97" stroke="#f43f5e" stroke-width="2.5"/>
-    <text x="60" y="130" fill="#f87171" font-size="9.5" font-weight="600" text-anchor="middle">Unlinked &amp; Deleted</text>
-  </g>
+    <!-- Deletion Bitmaps -->
+    <rect x="1000" y="145" width="210" height="100" fill="#F8FAFC" stroke="#CBD5E1" rx="8"/>
+    <text x="1010" y="167" font-size="11" font-weight="700" fill="#1E293B">Deletions via .del Bitset</text>
+    <text x="1010" y="187" font-size="9" fill="#334155">• Segments are immutable</text>
+    <text x="1010" y="203" font-size="9" fill="#334155">• Deletes set tombstone bit</text>
+    <text x="1010" y="219" font-size="9" fill="#64748B">• Filtered during search traversal</text>
 
-  <!-- Flow Arrows -->
-  <!-- Stage 1 RAM to Stage 2 OS Page Cache -->
-  <path d="M 375 197 L 445 197" class="flow-green2" marker-end="url(#arrGreen2)"/>
-  <!-- Stage 1 Translog to Stage 3 fsync -->
-  <path d="M 375 297 C 410 297, 410 370, 820 370 C 820 370, 835 370, 845 297" class="flow-amber2" marker-end="url(#arrAmber2)"/>
-  <!-- Stage 2 to Stage 4 (Searchable segments ready to merge) -->
-  <path d="M 610 340 L 610 380" class="flow-blue2" marker-end="url(#arrBlue2)"/>
-  <!-- Small Segments to Merge Engine -->
-  <path d="M 550 515 L 580 515" class="flow-blue2" marker-end="url(#arrBlue2)"/>
-  <!-- Merge Engine to Merged Segment -->
-  <path d="M 800 515 L 835 515" class="flow-green2" marker-end="url(#arrGreen2)"/>
-  <!-- Merged Segment to Old Segments Unlink -->
-  <path d="M 1025 515 L 1055 515" class="flow-rose2" marker-end="url(#arrRose2)"/>
+    <!-- Background Tiered Merge -->
+    <rect x="1000" y="255" width="210" height="95" fill="#EFF6FF" stroke="#BFDBFE" rx="8"/>
+    <text x="1010" y="277" font-size="11" font-weight="700" fill="#1E40AF">TieredMergePolicy</text>
+    <text x="1010" y="297" font-size="9" fill="#334155">• Combines small segments</text>
+    <text x="1010" y="313" font-size="9" fill="#334155">• Physically drops .del docs</text>
+    <text x="1010" y="329" font-size="9" fill="#059669">• Reclaims disk storage</text>
+
+    <!-- Explanatory footer -->
+    <rect x="1000" y="365" width="210" height="110" fill="#F8FAFC" stroke="#E2E8F0" rx="6"/>
+    <text x="1010" y="385" font-size="9.5" font-weight="700" fill="#1E293B">Write Amplification Tax</text>
+    <text x="1010" y="405" font-size="8.5" fill="#64748B">Background merges consume I/O</text>
+    <text x="1010" y="420" font-size="8.5" fill="#64748B">to prevent query degradation</text>
+    <text x="1010" y="440" font-size="8.5" fill="#059669">from having too many small</text>
+    <text x="1010" y="455" font-size="8.5" fill="#059669">open segment readers.</text>
+  </g>
 </svg>

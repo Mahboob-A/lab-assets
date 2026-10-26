@@ -1,186 +1,173 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 660" width="100%" height="100%" style="background-color: #0b1120; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 480" width="100%" height="100%">
   <defs>
-    <!-- Gradients -->
-    <linearGradient id="cardGrad6" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0f172a"/>
-    </linearGradient>
+    <!-- Arrowhead Markers -->
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
 
-    <!-- Filters -->
-    <filter id="dropGlow6" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
     </filter>
 
-    <!-- Markers -->
-    <marker id="arrPurple6" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#a855f7"/>
-    </marker>
-    <marker id="arrGreen6" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#10b981"/>
-    </marker>
-    <marker id="arrBlue6" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#3b82f6"/>
-    </marker>
-
-    <!-- Styles -->
     <style>
-      .flow-purple6 {
-        stroke: #a855f7;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow6 1.8s linear infinite;
-        fill: none;
-      }
-      .flow-green6 {
-        stroke: #10b981;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow6 1.8s linear infinite;
-        fill: none;
-      }
-      @keyframes flow6 {
-        from { stroke-dashoffset: 20; }
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
         to { stroke-dashoffset: 0; }
+      }
+      .flow-blue {
+        stroke: #2563EB;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
     </style>
   </defs>
 
-  <!-- Title Card -->
-  <rect x="30" y="20" width="1160" height="60" rx="12" fill="url(#cardGrad6)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow6)"/>
-  <rect x="30" y="20" width="8" height="60" rx="4" fill="#a855f7"/>
-  <text x="55" y="45" fill="#f8fafc" font-size="18" font-weight="700">Information Retrieval Evaluation Pipeline: Precision@k, Recall@k, MAP &amp; MRR</text>
-  <text x="55" y="65" fill="#94a3b8" font-size="12">How Evaluator.py Quantifies Search Quality: From Ranked Candidate Lists and Ground Truth to Corpus-Wide Benchmarks</text>
-  <rect x="1035" y="35" width="140" height="28" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
-  <text x="1105" y="53" fill="#c084fc" font-size="11" font-weight="600" text-anchor="middle">IR Evaluation Math</text>
+  <!-- Canvas Background -->
+  <rect width="1240" height="480" fill="#F8FAFC" rx="16"/>
+  <rect x="1" y="1" width="1238" height="478" fill="none" stroke="#E2E8F0" stroke-width="2" rx="16"/>
 
-  <!-- SECTION 1: Inputs Layer (Left Column) -->
-  <rect x="30" y="100" width="340" height="535" rx="12" fill="url(#cardGrad6)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow6)"/>
-  <rect x="45" y="115" width="310" height="28" rx="5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
-  <text x="200" y="134" fill="#e2e8f0" font-size="12" font-weight="700" text-anchor="middle">1. INPUT DATA STREAMS</text>
+  <!-- Diagram Title Header -->
+  <text x="620" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Information Retrieval Evaluation Engine Pipeline (Cranfield Paradigm)</text>
+  <text x="620" y="58" text-anchor="middle" font-size="12" font-weight="500" fill="#64748B">Evaluating Search Engine Output Against Human Ground-Truth Judgments via Standardized IR Metrics</text>
 
-  <!-- Box 1A: Engine Output -->
-  <rect x="45" y="155" width="310" height="185" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-  <text x="60" y="177" fill="#60a5fa" font-size="12" font-weight="700">Engine Output (Top-K Hits)</text>
-  <text x="60" y="195" fill="#94a3b8" font-size="10">Ranked by BM25 score descending:</text>
+  <!-- ============================================================== -->
+  <!-- 1. LEFT COLUMN: EVALUATION INPUTS                              -->
+  <!-- ============================================================== -->
 
-  <rect x="60" y="210" width="280" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="75" y="230" fill="#38bdf8" font-size="11" font-family="monospace">Rank 1: Doc 1 (Score: 3.10)</text>
+  <!-- Input 1: Search Engine Output -->
+  <g filter="url(#shadow)">
+    <rect x="45" y="95" width="280" height="175" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.8" rx="10"/>
+    <rect x="45" y="95" width="280" height="34" fill="#DBEAFE" rx="10"/>
+    <path d="M 45 119 H 325 V 129 H 45 Z" fill="#DBEAFE"/>
+    <text x="60" y="117" font-size="12" font-weight="700" fill="#1E40AF">1. Engine Ranked Results</text>
+    <rect x="235" y="102" width="80" height="18" fill="#2563EB" rx="4"/>
+    <text x="275" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Retrieved</text>
 
-  <rect x="60" y="250" width="280" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="75" y="270" fill="#38bdf8" font-size="11" font-family="monospace">Rank 2: Doc 8 (Score: 2.32)</text>
+    <text x="60" y="147" font-size="10.5" font-weight="700" fill="#1E293B">Ordered List of Top-K Hits:</text>
+    <text x="60" y="167" font-size="9.5" fill="#64748B">• Rank 1: DocID = 1 (Score: 5.77)</text>
+    <text x="60" y="183" font-size="9.5" fill="#64748B">• Rank 2: DocID = 3 (Score: 2.83)</text>
+    <text x="60" y="199" font-size="9.5" fill="#64748B">• Rank 3: DocID = 9 (Score: 2.50)</text>
+    <rect x="60" y="215" width="250" height="42" fill="#EFF6FF" stroke="#BFDBFE" rx="6"/>
+    <text x="70" y="232" font-size="9" font-weight="700" fill="#1E40AF">System Output Vector R(Q)</text>
+    <text x="70" y="247" font-size="8.5" fill="#64748B">Captured with nanosecond execution latency</text>
+  </g>
 
-  <rect x="60" y="290" width="280" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="75" y="310" fill="#cbd5e1" font-size="11" font-family="monospace">Rank 3: Doc 5 (Score: 2.28)</text>
+  <!-- Input 2: Ground-Truth Judgments -->
+  <g filter="url(#shadow)">
+    <rect x="45" y="285" width="280" height="175" fill="#FFFFFF" stroke="#059669" stroke-width="1.8" rx="10"/>
+    <rect x="45" y="285" width="280" height="34" fill="#D1FAE5" rx="10"/>
+    <path d="M 45 309 H 325 V 319 H 45 Z" fill="#D1FAE5"/>
+    <text x="60" y="307" font-size="12" font-weight="700" fill="#065F46">2. Ground-Truth Judgments</text>
+    <rect x="235" y="292" width="80" height="18" fill="#059669" rx="4"/>
+    <text x="275" y="305" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Annotated</text>
 
-  <!-- Box 1B: Ground Truth Judgments -->
-  <rect x="45" y="355" width="310" height="260" rx="8" fill="#0f172a" stroke="#8b5cf6" stroke-width="1.2"/>
-  <text x="60" y="377" fill="#c084fc" font-size="12" font-weight="700">Relevance Judgments Ground Truth</text>
-  <text x="60" y="395" fill="#94a3b8" font-size="10">Human expert labels for Query A1:</text>
+    <text x="60" y="337" font-size="10.5" font-weight="700" fill="#1E293B">Human-Curated Relevance:</text>
+    <text x="60" y="357" font-size="9.5" fill="#64748B">• Seed file: relevance_judgments.json</text>
+    <text x="60" y="373" font-size="9.5" fill="#64748B">• 6 benchmark queries annotated</text>
+    <text x="60" y="389" font-size="9.5" fill="#64748B">• Binary relevance: rel(Doc) ∈ {0, 1}</text>
+    <rect x="60" y="405" width="250" height="42" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
+    <text x="70" y="422" font-size="9" font-weight="700" fill="#065F46">Cranfield Evaluation Standard</text>
+    <text x="70" y="437" font-size="8.5" fill="#64748B">Objective benchmark against known gold standard</text>
+  </g>
 
-  <rect x="60" y="410" width="280" height="42" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
-  <text x="75" y="428" fill="#a7f3d0" font-size="10.5" font-weight="700">Doc 1: Grade 2 (Highly Relevant)</text>
-  <text x="75" y="443" fill="#6ee7b7" font-size="9.5">Covers distributed cache replication</text>
+  <!-- Connectors: Inputs -> Evaluation Engine -->
+  <path d="M 325 180 L 375 220" class="base-line" stroke="#BFDBFE" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 325 180 L 370 220" class="base-line flow-blue"/>
 
-  <rect x="60" y="460" width="280" height="42" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
-  <text x="75" y="478" fill="#a7f3d0" font-size="10.5" font-weight="700">Doc 8: Grade 1 (Partially Relevant)</text>
-  <text x="75" y="493" fill="#6ee7b7" font-size="9.5">Covers sync vs async data replication</text>
+  <path d="M 325 370 L 375 330" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 325 370 L 370 330" class="base-line flow-green"/>
 
-  <rect x="60" y="510" width="280" height="42" rx="4" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
-  <text x="75" y="528" fill="#94a3b8" font-size="10.5">Doc 5: Grade 0 (Irrelevant)</text>
-  <text x="75" y="543" fill="#64748b" font-size="9.5">Covers consistent hashing, not replication</text>
+  <!-- ============================================================== -->
+  <!-- 2. CENTER COLUMN: IR METRICS COMPUTATION (evaluator.py)        -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="375" y="95" width="490" height="365" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" rx="10"/>
+    <rect x="375" y="95" width="490" height="34" fill="#F1F5F9" rx="10"/>
+    <path d="M 375 119 H 865 V 129 H 375 Z" fill="#F1F5F9"/>
+    <text x="390" y="117" font-size="13" font-weight="700" fill="#0F172A">SearchEvaluator Engine (evaluator.py)</text>
+    <rect x="745" y="102" width="110" height="20" fill="#0F172A" rx="4"/>
+    <text x="800" y="116" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">Formulas Computed</text>
 
-  <rect x="60" y="565" width="280" height="35" rx="4" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1"/>
-  <text x="200" y="583" fill="#e9d5ff" font-size="10" font-weight="700" text-anchor="middle">Total Relevant in Corpus: |Rel| = 2</text>
-  <text x="200" y="595" fill="#c084fc" font-size="9" text-anchor="middle">(Grade &gt;= 1 threshold)</text>
+    <!-- Metric 1: Precision@k -->
+    <rect x="390" y="140" width="460" height="65" fill="#F8FAFC" stroke="#CBD5E1" rx="6"/>
+    <text x="400" y="158" font-size="11" font-weight="700" fill="#1E40AF">1. Precision@k = (Count of relevant docs in top k) / k</text>
+    <text x="400" y="176" font-size="9.5" fill="#334155">• Evaluates viewport purity: of the top k items seen by user, how many are good?</text>
+    <text x="400" y="192" font-size="9" fill="#64748B">• P@1 measures the first impression; P@3 measures top-3 viewport relevance.</text>
 
-  <!-- SECTION 2: Mapping & Binary Evaluation (Middle Column) -->
-  <rect x="400" y="100" width="370" height="535" rx="12" fill="url(#cardGrad6)" stroke="#10b981" stroke-width="1.5" filter="url(#dropGlow6)"/>
-  <rect x="415" y="115" width="340" height="28" rx="5" fill="#064e3b" stroke="#059669" stroke-width="1"/>
-  <text x="585" y="134" fill="#a7f3d0" font-size="12" font-weight="700" text-anchor="middle">2. BINARY RELEVANCE EVALUATION</text>
+    <!-- Metric 2: Recall@k -->
+    <rect x="390" y="215" width="460" height="65" fill="#F8FAFC" stroke="#CBD5E1" rx="6"/>
+    <text x="400" y="233" font-size="11" font-weight="700" fill="#1E40AF">2. Recall@k = (Count of relevant docs in top k) / (Total relevant in corpus)</text>
+    <text x="400" y="251" font-size="9.5" fill="#334155">• Evaluates global coverage: what fraction of all known relevant docs did we retrieve?</text>
+    <text x="400" y="267" font-size="9" fill="#64748B">• Counterbalances precision: prevents systems from hiding poor coverage.</text>
 
-  <!-- Alignment Table Card -->
-  <rect x="415" y="155" width="340" height="210" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="430" y="177" fill="#34d399" font-size="11.5" font-weight="700">Rank-by-Rank Truth Mapping rel(k)</text>
+    <!-- Metric 3: Reciprocal Rank -->
+    <rect x="390" y="290" width="460" height="65" fill="#F8FAFC" stroke="#CBD5E1" rx="6"/>
+    <text x="400" y="308" font-size="11" font-weight="700" fill="#059669">3. Reciprocal Rank (RR) = 1 / rank_of_first_relevant_doc</text>
+    <text x="400" y="326" font-size="9.5" fill="#334155">• Models "time to first satisfaction": rank 1 gives 1.0; rank 2 gives 0.5; rank 4 gives 0.25</text>
+    <text x="400" y="342" font-size="9" fill="#64748B">• Rewards systems that nail the very first document click.</text>
 
-  <rect x="430" y="195" width="310" height="45" rx="5" fill="#06251b" stroke="#059669" stroke-width="1"/>
-  <text x="445" y="215" fill="#6ee7b7" font-size="11" font-weight="700">k = 1: Doc 1</text>
-  <text x="445" y="230" fill="#a7f3d0" font-size="9.5">Relevant (Grade 2) -&gt; rel(1) = 1</text>
-  <rect x="670" y="205" width="60" height="24" rx="4" fill="#047857"/>
-  <text x="700" y="221" fill="#ecfdf5" font-size="10" font-weight="700" text-anchor="middle">HIT</text>
+    <!-- Metric 4: Average Precision -->
+    <rect x="390" y="365" width="460" height="82" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
+    <text x="400" y="383" font-size="11" font-weight="700" fill="#047857">4. Average Precision (AP) = (1 / |Relevant|) * ∑ (Precision@k * rel(k))</text>
+    <text x="400" y="401" font-size="9.5" fill="#047857">• Calculates precision at each position where a relevant document appears</text>
+    <text x="400" y="417" font-size="9" fill="#334155">• Gold standard metric: heavily penalizes algorithms that bury relevant results.</text>
+    <text x="400" y="433" font-size="9" fill="#059669">• Macro-averaged across queries to produce Mean Average Precision (MAP).</text>
+  </g>
 
-  <rect x="430" y="250" width="310" height="45" rx="5" fill="#06251b" stroke="#059669" stroke-width="1"/>
-  <text x="445" y="270" fill="#6ee7b7" font-size="11" font-weight="700">k = 2: Doc 8</text>
-  <text x="445" y="285" fill="#a7f3d0" font-size="9.5">Relevant (Grade 1) -&gt; rel(2) = 1</text>
-  <rect x="670" y="260" width="60" height="24" rx="4" fill="#047857"/>
-  <text x="700" y="276" fill="#ecfdf5" font-size="10" font-weight="700" text-anchor="middle">HIT</text>
+  <!-- Connector: Evaluator -> Macro Report -->
+  <path d="M 865 275 L 910 275" class="base-line" stroke="#A7F3D0" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <path d="M 865 275 L 905 275" class="base-line flow-green"/>
 
-  <rect x="430" y="305" width="310" height="45" rx="5" fill="#240c12" stroke="#f43f5e" stroke-width="1"/>
-  <text x="445" y="325" fill="#fca5a5" font-size="11" font-weight="700">k = 3: Doc 5</text>
-  <text x="445" y="340" fill="#fda4af" font-size="9.5">Irrelevant (Grade 0) -&gt; rel(3) = 0</text>
-  <rect x="670" y="315" width="60" height="24" rx="4" fill="#be123c"/>
-  <text x="700" y="331" fill="#fff1f2" font-size="10" font-weight="700" text-anchor="middle">MISS</text>
+  <!-- ============================================================== -->
+  <!-- 3. RIGHT COLUMN: MACRO AGGREGATION & REPORT EXPORT             -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="910" y="95" width="285" height="365" fill="#FFFFFF" stroke="#059669" stroke-width="1.8" rx="10"/>
+    <rect x="910" y="95" width="285" height="34" fill="#D1FAE5" rx="10"/>
+    <path d="M 910 119 H 1195 V 129 H 910 Z" fill="#D1FAE5"/>
+    <text x="925" y="117" font-size="12" font-weight="700" fill="#065F46">3. Macro Benchmark Metrics</text>
+    <rect x="1105" y="102" width="80" height="18" fill="#059669" rx="4"/>
+    <text x="1145" y="115" text-anchor="middle" font-size="8.5" font-weight="700" fill="#FFFFFF">Aggregated</text>
 
-  <!-- Metric Formulas Box -->
-  <rect x="415" y="380" width="340" height="235" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="430" y="402" fill="#e2e8f0" font-size="11.5" font-weight="700">Step-by-Step Metric Formulas</text>
+    <!-- Mean Average Precision (MAP) -->
+    <rect x="925" y="145" width="255" height="90" fill="#ECFDF5" stroke="#A7F3D0" rx="8"/>
+    <text x="935" y="167" font-size="11" font-weight="700" fill="#047857">Mean Average Precision (MAP)</text>
+    <text x="935" y="187" font-size="9" fill="#334155">• Macro-average of AP across 6 queries</text>
+    <text x="935" y="203" font-size="9" fill="#059669">• ES English: MAP = 0.8472 (Dominant)</text>
+    <text x="935" y="219" font-size="9" fill="#DC2626">• Homemade: MAP = 0.4167 (AND drops)</text>
 
-  <text x="430" y="425" fill="#60a5fa" font-size="10.5" font-weight="700">Precision@k:</text>
-  <text x="430" y="442" fill="#cbd5e1" font-size="10">P@1 = 1 / 1 = 1.0000</text>
-  <text x="430" y="458" fill="#cbd5e1" font-size="10">P@2 = 2 / 2 = 1.0000</text>
-  <text x="430" y="474" fill="#cbd5e1" font-size="10">P@3 = 2 / 3 = 0.6667</text>
+    <!-- Mean Reciprocal Rank (MRR) -->
+    <rect x="925" y="245" width="255" height="90" fill="#EFF6FF" stroke="#BFDBFE" rx="8"/>
+    <text x="935" y="267" font-size="11" font-weight="700" fill="#1E40AF">Mean Reciprocal Rank (MRR)</text>
+    <text x="935" y="287" font-size="9" fill="#334155">• Macro-average of RR across 6 queries</text>
+    <text x="935" y="303" font-size="9" fill="#059669">• ES English: MRR = 1.0000 (100% P@1!)</text>
+    <text x="935" y="319" font-size="9" fill="#64748B">• Homemade: MRR = 0.5000 (3 queries miss)</text>
 
-  <text x="430" y="500" fill="#34d399" font-size="10.5" font-weight="700">Recall@k:</text>
-  <text x="430" y="517" fill="#cbd5e1" font-size="10">R@1 = 1 / 2 = 0.5000</text>
-  <text x="430" y="533" fill="#cbd5e1" font-size="10">R@3 = 2 / 2 = 1.0000 (100% Corpus Recall!)</text>
-
-  <text x="430" y="560" fill="#f59e0b" font-size="10.5" font-weight="700">Reciprocal Rank (RR):</text>
-  <text x="430" y="577" fill="#cbd5e1" font-size="10">First relevant at rank 1 -&gt; RR = 1 / 1 = 1.0000</text>
-
-  <text x="430" y="598" fill="#c084fc" font-size="10.5" font-weight="700">Average Precision (AP):</text>
-  <text x="430" y="612" fill="#e9d5ff" font-size="9.5">AP = (P@1*1 + P@2*1) / 2 = (1.0 + 1.0) / 2 = 1.0000</text>
-
-  <!-- SECTION 3: Macro Aggregation & Benchmarks (Right Column) -->
-  <rect x="800" y="100" width="390" height="535" rx="12" fill="url(#cardGrad6)" stroke="#8b5cf6" stroke-width="1.5" filter="url(#dropGlow6)"/>
-  <rect x="815" y="115" width="360" height="28" rx="5" fill="#3b0764" stroke="#7c3aed" stroke-width="1"/>
-  <text x="995" y="134" fill="#f3e8ff" font-size="12" font-weight="700" text-anchor="middle">3. MACRO SUITE AGGREGATION</text>
-
-  <!-- Box 3A: MAP and MRR Definitions -->
-  <rect x="815" y="155" width="360" height="155" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="830" y="177" fill="#c084fc" font-size="12" font-weight="700">Corpus-Wide Macro Metrics</text>
-
-  <rect x="830" y="195" width="330" height="48" rx="5" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1"/>
-  <text x="845" y="215" fill="#d8b4fe" font-size="11" font-weight="700">Mean Average Precision (MAP)</text>
-  <text x="845" y="232" fill="#cbd5e1" font-size="10" font-family="monospace">MAP = (1 / |Q|) * Sum_{q=1}^{|Q|} AP_q</text>
-
-  <rect x="830" y="250" width="330" height="48" rx="5" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1"/>
-  <text x="845" y="270" fill="#d8b4fe" font-size="11" font-weight="700">Mean Reciprocal Rank (MRR)</text>
-  <text x="845" y="287" fill="#cbd5e1" font-size="10" font-family="monospace">MRR = (1 / |Q|) * Sum_{q=1}^{|Q|} (1 / rank_q)</text>
-
-  <!-- Box 3B: Final Shootout Scorecard -->
-  <rect x="815" y="325" width="360" height="290" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
-  <text x="830" y="347" fill="#34d399" font-size="12" font-weight="700">Empirical Shootout Scoreboard (6 Queries)</text>
-  <line x1="830" y1="360" x2="1160" y2="360" stroke="#334155" stroke-width="1"/>
-
-  <!-- Row 1: Homemade Index -->
-  <rect x="830" y="375" width="330" height="65" rx="6" fill="#06251b" stroke="#059669" stroke-width="1"/>
-  <text x="845" y="395" fill="#a7f3d0" font-size="11" font-weight="700">Homemade Index (Boolean AND + BM25)</text>
-  <text x="845" y="415" fill="#6ee7b7" font-size="10" font-weight="600">Mean Latency: 0.02 ms (150x faster!)</text>
-  <text x="845" y="430" fill="#cbd5e1" font-size="9.5">MAP: 0.4167 | MRR: 0.5000 | P@1: 0.5000</text>
-
-  <!-- Row 2: Elasticsearch Standard -->
-  <rect x="830" y="450" width="330" height="65" rx="6" fill="#0c1938" stroke="#3b82f6" stroke-width="1"/>
-  <text x="845" y="470" fill="#bfdbfe" font-size="11" font-weight="700">Elasticsearch (Standard Analyzer)</text>
-  <text x="845" y="490" fill="#93c5fd" font-size="10" font-weight="600">Mean Latency: 3.64 ms</text>
-  <text x="845" y="505" fill="#cbd5e1" font-size="9.5">MAP: 0.7731 | MRR: 0.9167 | P@1: 0.8333</text>
-
-  <!-- Row 3: Elasticsearch English -->
-  <rect x="830" y="525" width="330" height="75" rx="6" fill="#20053b" stroke="#a855f7" stroke-width="1.2"/>
-  <text x="845" y="545" fill="#f3e8ff" font-size="11" font-weight="700">Elasticsearch (English + Stemming)</text>
-  <text x="845" y="565" fill="#d8b4fe" font-size="10" font-weight="600">Mean Latency: 3.07 ms</text>
-  <text x="845" y="580" fill="#34d399" font-size="10" font-weight="700">MAP: 0.8472 | MRR: 1.0000 | P@1: 1.0000</text>
-  <text x="845" y="593" fill="#a7f3d0" font-size="9">Decisive qualitative and quantitative champion</text>
-
-  <!-- Flow Arrows -->
-  <path d="M 370 240 L 400 240" class="flow-purple6" marker-end="url(#arrPurple6)"/>
-  <path d="M 770 240 L 800 240" class="flow-green6" marker-end="url(#arrGreen6)"/>
+    <!-- Export Files -->
+    <rect x="925" y="345" width="255" height="100" fill="#F8FAFC" stroke="#CBD5E1" rx="8"/>
+    <text x="935" y="367" font-size="10.5" font-weight="700" fill="#1E293B">Persisted Benchmark Outputs:</text>
+    <text x="935" y="387" font-size="9" fill="#2563EB">✔ comparison_report.json</text>
+    <text x="935" y="403" font-size="9" fill="#64748B">  (Structured test data &amp; latencies)</text>
+    <text x="935" y="421" font-size="9" fill="#059669">✔ shootout_results.txt</text>
+    <text x="935" y="437" font-size="9" fill="#64748B">  (Human-readable summary scorecard)</text>
+  </g>
 </svg>

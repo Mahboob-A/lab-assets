@@ -1,167 +1,146 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 660" width="100%" height="100%" style="background-color: #0b1120; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="100%" height="100%">
   <defs>
-    <!-- Gradients -->
-    <linearGradient id="headerGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e3a8a"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
-    </linearGradient>
-    <linearGradient id="cardGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0f172a"/>
-    </linearGradient>
+    <!-- Arrowhead Markers -->
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
 
-    <!-- Filters -->
-    <filter id="dropGlow1" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
     </filter>
 
-    <!-- Markers -->
-    <marker id="arrBlue1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#3b82f6"/>
-    </marker>
-    <marker id="arrGreen1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#10b981"/>
-    </marker>
-    <marker id="arrPurple1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-      <path d="M 0 1 L 6 4 L 0 7 z" fill="#a855f7"/>
-    </marker>
-
-    <!-- Styles -->
     <style>
-      .flow-blue1 {
-        stroke: #3b82f6;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow1 1.8s linear infinite;
-        fill: none;
-      }
-      .flow-green1 {
-        stroke: #10b981;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow1 1.8s linear infinite;
-        fill: none;
-      }
-      .flow-purple1 {
-        stroke: #a855f7;
-        stroke-width: 2.2;
-        stroke-dasharray: 6 4;
-        animation: flow1 1.8s linear infinite;
-        fill: none;
-      }
-      .subtle-line {
-        stroke: #475569;
-        stroke-width: 1.2;
-        stroke-dasharray: 4 4;
-        fill: none;
-      }
-      @keyframes flow1 {
-        from { stroke-dashoffset: 20; }
+      @keyframes flow {
+        from { stroke-dashoffset: 24; }
         to { stroke-dashoffset: 0; }
+      }
+      .flow-blue {
+        stroke: #2563EB;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .flow-green {
+        stroke: #059669;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 6;
+        animation: flow 1s linear infinite;
+      }
+      .base-line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
     </style>
   </defs>
 
-  <!-- Title Card -->
-  <rect x="30" y="20" width="1120" height="60" rx="12" fill="url(#cardGrad1)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow1)"/>
-  <rect x="30" y="20" width="8" height="60" rx="4" fill="#3b82f6"/>
-  <text x="55" y="45" fill="#f8fafc" font-size="18" font-weight="700">Apache Lucene Shard Architecture: Three Concurrent On-Disk Storage Engines</text>
-  <text x="55" y="65" fill="#94a3b8" font-size="12">Why Lucene Is More Than an Inverted Index: Specialized Columnar and Row Stores inside Every Immutable Segment</text>
-  <rect x="1000" y="35" width="135" height="28" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
-  <text x="1067" y="53" fill="#60a5fa" font-size="11" font-weight="600" text-anchor="middle">Segment Internals</text>
+  <!-- Canvas Background -->
+  <rect width="1200" height="480" fill="#F8FAFC" rx="16"/>
+  <rect x="1" y="1" width="1198" height="478" fill="none" stroke="#E2E8F0" stroke-width="2" rx="16"/>
 
-  <!-- Query Dispatch Layer (Top Row) -->
-  <rect x="30" y="100" width="1120" height="90" rx="12" fill="url(#cardGrad1)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow1)"/>
-  <text x="50" y="125" fill="#e2e8f0" font-size="12" font-weight="700" letter-spacing="0.5">INCOMING QUERY DISPATCH &amp; ACCESS PATTERNS</text>
+  <!-- Diagram Title Header -->
+  <text x="600" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Inside an Apache Lucene Segment: Three Specialized Storage Formats</text>
+  <text x="600" y="58" text-anchor="middle" font-size="12" font-weight="500" fill="#64748B">Physical Separation of Inverted Search, Columnar Aggregations, and Compressed Document Hydration</text>
 
-  <!-- Query Box A: Full Text -->
-  <rect x="50" y="135" width="320" height="42" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-  <circle cx="70" cy="156" r="6" fill="#3b82f6"/>
-  <text x="85" y="153" fill="#f8fafc" font-size="11" font-weight="700">Full-Text Search Query</text>
-  <text x="85" y="167" fill="#94a3b8" font-size="10">match: "replicating cache nodes"</text>
+  <!-- Segment Outer Container -->
+  <rect x="35" y="85" width="1130" height="365" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4" rx="12"/>
+  <rect x="50" y="75" width="230" height="22" fill="#1E293B" rx="6"/>
+  <text x="165" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">LUCENE IMMUTABLE SEGMENT</text>
 
-  <!-- Query Box B: Sort/Agg -->
-  <rect x="430" y="135" width="320" height="42" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
-  <circle cx="450" cy="156" r="6" fill="#10b981"/>
-  <text x="465" y="153" fill="#f8fafc" font-size="11" font-weight="700">Aggregations, Facets &amp; Sorting</text>
-  <text x="465" y="167" fill="#94a3b8" font-size="10">terms aggregation, sort by price</text>
+  <!-- ============================================================== -->
+  <!-- CARD 1: INVERTED INDEX (.tim + .doc)                          -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="55" y="115" width="350" height="315" fill="#F8FAFC" stroke="#059669" stroke-width="1.8" rx="10"/>
+    <rect x="55" y="115" width="350" height="34" fill="#D1FAE5" rx="10"/>
+    <path d="M 55 139 H 405 V 149 H 55 Z" fill="#D1FAE5"/>
+    <text x="70" y="137" font-size="13" font-weight="700" fill="#065F46">1. Inverted Index (.tim + .doc)</text>
+    <rect x="305" y="122" width="90" height="18" fill="#059669" rx="4"/>
+    <text x="350" y="135" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">Term ──▶ DocIDs</text>
 
-  <!-- Query Box C: Fetch Source -->
-  <rect x="810" y="135" width="320" height="42" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
-  <circle cx="830" cy="156" r="6" fill="#a855f7"/>
-  <text x="845" y="153" fill="#f8fafc" font-size="11" font-weight="700">Top-K Document Retrieval</text>
-  <text x="845" y="167" fill="#94a3b8" font-size="10">Hydrate _source JSON for Hits</text>
+    <!-- FST Prefix Index -->
+    <rect x="70" y="160" width="320" height="52" fill="#FFFFFF" stroke="#A7F3D0" rx="6"/>
+    <text x="80" y="178" font-size="10.5" font-weight="700" fill="#065F46">FST Prefix Index (.tip) in RAM</text>
+    <text x="80" y="195" font-size="9" fill="#64748B">Maps term prefixes to disk byte offsets in .tim file</text>
 
-  <!-- MAIN SEGMENT CONTAINER (Bottom Area) -->
-  <rect x="30" y="210" width="1120" height="430" rx="14" fill="#0f172a" stroke="#334155" stroke-width="1.8" filter="url(#dropGlow1)"/>
-  <rect x="50" y="225" width="1080" height="34" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
-  <text x="590" y="247" fill="#f1f5f9" font-size="13" font-weight="700" text-anchor="middle">PHYSICAL LAYOUT OF A SINGLE IMMUTABLE LUCENE SEGMENT (Disk Files Memory-Mapped via mmap)</text>
+    <!-- Term Dictionary & Postings -->
+    <rect x="70" y="222" width="320" height="110" fill="#ECFDF5" stroke="#A7F3D0" rx="6"/>
+    <text x="80" y="240" font-size="10.5" font-weight="700" fill="#047857">Term Dictionary &amp; Postings (.doc)</text>
+    <text x="80" y="258" font-size="9" fill="#334155">• Terms: Lexicographically sorted terms</text>
+    <text x="80" y="274" font-size="9" fill="#334155">• Postings: Packed in blocks of 128 DocIDs</text>
+    <text x="80" y="290" font-size="9" fill="#334155">• SIMD PFOR-DELTA bit-packing compression</text>
+    <text x="80" y="306" font-size="9" fill="#059669">• Skip lists allow skipping non-matching blocks</text>
 
-  <!-- COLUMN 1: Inverted Index (Blue) -->
-  <rect x="50" y="275" width="340" height="345" rx="10" fill="url(#cardGrad1)" stroke="#3b82f6" stroke-width="1.5"/>
-  <rect x="65" y="290" width="310" height="28" rx="5" fill="#1e3a8a" stroke="#2563eb" stroke-width="1"/>
-  <text x="220" y="309" fill="#bfdbfe" font-size="12" font-weight="700" text-anchor="middle">1. INVERTED INDEX (.tim / .doc / .pos)</text>
+    <!-- Access Pattern Badge -->
+    <rect x="70" y="342" width="320" height="42" fill="#FFFFFF" stroke="#CBD5E1" rx="6"/>
+    <text x="80" y="358" font-size="9.5" font-weight="700" fill="#1E293B">Primary Access Pattern: Search</text>
+    <text x="80" y="373" font-size="9" fill="#64748B">Given query terms, quickly intersect matching DocIDs.</text>
+  </g>
 
-  <rect x="65" y="330" width="310" height="100" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="75" y="350" fill="#60a5fa" font-size="11" font-weight="700">Term Dictionary (.tim) + FST Index</text>
-  <text x="75" y="370" fill="#94a3b8" font-size="10">Sorted lexicographical vocabulary</text>
-  <text x="75" y="388" fill="#94a3b8" font-size="10">Finite State Transducer (FST) kept in RAM</text>
-  <text x="75" y="406" fill="#cbd5e1" font-size="9.5" font-family="monospace">Term: "replic" -&gt; pointer to postings</text>
+  <!-- ============================================================== -->
+  <!-- CARD 2: DOC VALUES (.dvd + .dvm)                              -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="425" y="115" width="350" height="315" fill="#F8FAFC" stroke="#2563EB" stroke-width="1.8" rx="10"/>
+    <rect x="425" y="115" width="350" height="34" fill="#DBEAFE" rx="10"/>
+    <path d="M 425 139 H 775 V 149 H 425 Z" fill="#DBEAFE"/>
+    <text x="440" y="137" font-size="13" font-weight="700" fill="#1E40AF">2. Doc Values (.dvd + .dvm)</text>
+    <rect x="675" y="122" width="90" height="18" fill="#2563EB" rx="4"/>
+    <text x="720" y="135" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">DocID ──▶ Value</text>
 
-  <rect x="65" y="445" width="310" height="105" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="75" y="465" fill="#60a5fa" font-size="11" font-weight="700">Posting Lists (.doc / .pos)</text>
-  <text x="75" y="485" fill="#94a3b8" font-size="10">DocIDs delta-compressed in 128-doc blocks</text>
-  <text x="75" y="503" fill="#94a3b8" font-size="10">Includes Term Frequency and Byte Norms</text>
-  <text x="75" y="521" fill="#cbd5e1" font-size="9.5" font-family="monospace">Postings: [Doc 1, Doc 8] + positions</text>
+    <!-- Columnar Architecture -->
+    <rect x="440" y="160" width="320" height="52" fill="#FFFFFF" stroke="#BFDBFE" rx="6"/>
+    <text x="450" y="178" font-size="10.5" font-weight="700" fill="#1E40AF">Column-Oriented Disk Storage</text>
+    <text x="450" y="195" font-size="9" fill="#64748B">Values stored contiguously for high-speed sequential scan</text>
 
-  <rect x="65" y="565" width="310" height="40" rx="6" fill="#0b1329" stroke="#1d4ed8" stroke-width="1"/>
-  <text x="220" y="582" fill="#93c5fd" font-size="10" font-weight="600" text-anchor="middle">Access Mode: Random term lookup</text>
-  <text x="220" y="596" fill="#94a3b8" font-size="9" text-anchor="middle">Maps: Term -&gt; [DocID_1, DocID_2, ...]</text>
+    <!-- OS Page Cache mmap -->
+    <rect x="440" y="222" width="320" height="110" fill="#EFF6FF" stroke="#BFDBFE" rx="6"/>
+    <text x="450" y="240" font-size="10.5" font-weight="700" fill="#1D4ED8">Linux OS Page Cache (mmap)</text>
+    <text x="450" y="258" font-size="9" fill="#334155">• Files mapped directly into kernel memory cache</text>
+    <text x="450" y="274" font-size="9" fill="#334155">• Zero JVM Garbage Collection heap overhead</text>
+    <text x="450" y="290" font-size="9" fill="#334155">• Linux kernel manages paging and cache evictions</text>
+    <text x="450" y="306" font-size="9" fill="#059669">• Prevents Out-Of-Memory (OOM) heap crashes</text>
 
-  <!-- COLUMN 2: Doc Values (Green) -->
-  <rect x="420" y="275" width="340" height="345" rx="10" fill="url(#cardGrad1)" stroke="#10b981" stroke-width="1.5"/>
-  <rect x="435" y="290" width="310" height="28" rx="5" fill="#064e3b" stroke="#059669" stroke-width="1"/>
-  <text x="590" y="309" fill="#a7f3d0" font-size="12" font-weight="700" text-anchor="middle">2. DOC VALUES (.dvd / .dvm)</text>
+    <!-- Access Pattern Badge -->
+    <rect x="440" y="342" width="320" height="42" fill="#FFFFFF" stroke="#CBD5E1" rx="6"/>
+    <text x="450" y="358" font-size="9.5" font-weight="700" fill="#1E293B">Primary Access Pattern: Analytics</text>
+    <text x="450" y="373" font-size="9" fill="#64748B">Given candidate DocIDs, extract values for sorting &amp; facets.</text>
+  </g>
 
-  <rect x="435" y="330" width="310" height="100" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="445" y="350" fill="#34d399" font-size="11" font-weight="700">Columnar Field Storage (.dvd)</text>
-  <text x="445" y="370" fill="#94a3b8" font-size="10">Un-inverted data layout (Column-Oriented)</text>
-  <text x="445" y="388" fill="#94a3b8" font-size="10">Sequential array indexed directly by DocID</text>
-  <text x="445" y="406" fill="#cbd5e1" font-size="9.5" font-family="monospace">DocID 1: timestamp=1710, tag="redis"</text>
+  <!-- ============================================================== -->
+  <!-- CARD 3: STORED FIELDS (.fdt + .fdx)                           -->
+  <!-- ============================================================== -->
+  <g filter="url(#shadow)">
+    <rect x="795" y="115" width="350" height="315" fill="#F8FAFC" stroke="#64748B" stroke-width="1.8" rx="10"/>
+    <rect x="795" y="115" width="350" height="34" fill="#F1F5F9" rx="10"/>
+    <path d="M 795 139 H 1145 V 149 H 795 Z" fill="#F1F5F9"/>
+    <text x="810" y="137" font-size="13" font-weight="700" fill="#1E293B">3. Stored Fields (.fdt + .fdx)</text>
+    <rect x="1045" y="122" width="90" height="18" fill="#64748B" rx="4"/>
+    <text x="1090" y="135" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">DocID ──▶ JSON</text>
 
-  <rect x="435" y="445" width="310" height="105" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="445" y="465" fill="#34d399" font-size="11" font-weight="700">OS Page Cache Offloading (mmap)</text>
-  <text x="445" y="485" fill="#94a3b8" font-size="10">Bypasses Java Garbage Collection (JVM Heap)</text>
-  <text x="445" y="503" fill="#94a3b8" font-size="10">Bit-packed dense numerics and ordinals</text>
-  <text x="445" y="521" fill="#cbd5e1" font-size="9.5" font-family="monospace">Prevents Stop-The-World GC Pauses</text>
+    <!-- Field Index -->
+    <rect x="810" y="160" width="320" height="52" fill="#FFFFFF" stroke="#CBD5E1" rx="6"/>
+    <text x="820" y="178" font-size="10.5" font-weight="700" fill="#1E293B">Field Index (.fdx)</text>
+    <text x="820" y="195" font-size="9" fill="#64748B">Binary radix tree mapping DocID to byte offsets in .fdt</text>
 
-  <rect x="435" y="565" width="310" height="40" rx="6" fill="#06251b" stroke="#047857" stroke-width="1"/>
-  <text x="590" y="582" fill="#6ee7b7" font-size="10" font-weight="600" text-anchor="middle">Access Mode: Sequential DocID scan</text>
-  <text x="590" y="596" fill="#94a3b8" font-size="9" text-anchor="middle">Maps: DocID -&gt; Field Value (Price, Date)</text>
+    <!-- Compressed Field Data -->
+    <rect x="810" y="222" width="320" height="110" fill="#FFFFFF" stroke="#CBD5E1" rx="6"/>
+    <text x="820" y="240" font-size="10.5" font-weight="700" fill="#334155">Compressed Field Data (.fdt)</text>
+    <text x="820" y="258" font-size="9" fill="#334155">• Chunks of 16KB compressed with LZ4 / Deflate</text>
+    <text x="820" y="274" font-size="9" fill="#334155">• Row-oriented storage of raw _source document</text>
+    <text x="820" y="290" font-size="9" fill="#334155">• Point lookup: only top-K hits are decompressed</text>
+    <text x="820" y="306" font-size="9" fill="#059669">• Never parsed or touched during posting traversal</text>
 
-  <!-- COLUMN 3: Stored Fields (Purple) -->
-  <rect x="790" y="275" width="340" height="345" rx="10" fill="url(#cardGrad1)" stroke="#a855f7" stroke-width="1.5"/>
-  <rect x="805" y="290" width="310" height="28" rx="5" fill="#3b0764" stroke="#7e22ce" stroke-width="1"/>
-  <text x="960" y="309" fill="#f3e8ff" font-size="12" font-weight="700" text-anchor="middle">3. STORED FIELDS (.fdt / .fdx)</text>
-
-  <rect x="805" y="330" width="310" height="100" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="815" y="350" fill="#c084fc" font-size="11" font-weight="700">Row-Oriented Document Store (.fdt)</text>
-  <text x="815" y="370" fill="#94a3b8" font-size="10">LZ4 / Deflate compressed chunk storage</text>
-  <text x="815" y="388" fill="#94a3b8" font-size="10">Stores complete verbatim _source JSON</text>
-  <text x="815" y="406" fill="#cbd5e1" font-size="9.5" font-family="monospace">Doc 1: {"title": "Distributed Caching"}</text>
-
-  <rect x="805" y="445" width="310" height="105" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="815" y="465" fill="#c084fc" font-size="11" font-weight="700">Fast Block Index Pointer (.fdx)</text>
-  <text x="815" y="485" fill="#94a3b8" font-size="10">B-tree mapping DocID to disk byte offset</text>
-  <text x="815" y="503" fill="#94a3b8" font-size="10">Only decompressed when returning hits to user</text>
-  <text x="815" y="521" fill="#cbd5e1" font-size="9.5" font-family="monospace">O(1) Block Seek for Top-10 Results</text>
-
-  <rect x="805" y="565" width="310" height="40" rx="6" fill="#20053b" stroke="#6b21a8" stroke-width="1"/>
-  <text x="960" y="582" fill="#d8b4fe" font-size="10" font-weight="600" text-anchor="middle">Access Mode: Point lookup by DocID</text>
-  <text x="960" y="596" fill="#94a3b8" font-size="9" text-anchor="middle">Hydrates payload for client display</text>
-
-  <!-- Connectors from Dispatch to Stores -->
-  <path d="M 210 177 L 210 275" class="flow-blue1" marker-end="url(#arrBlue1)"/>
-  <path d="M 590 177 L 590 275" class="flow-green1" marker-end="url(#arrGreen1)"/>
-  <path d="M 970 177 L 970 275" class="flow-purple1" marker-end="url(#arrPurple1)"/>
+    <!-- Access Pattern Badge -->
+    <rect x="810" y="342" width="320" height="42" fill="#FFFFFF" stroke="#CBD5E1" rx="6"/>
+    <text x="820" y="358" font-size="9.5" font-weight="700" fill="#1E293B">Primary Access Pattern: Hydration</text>
+    <text x="820" y="373" font-size="9" fill="#64748B">Extract full JSON title &amp; content for top 10 search hits.</text>
+  </g>
 </svg>
