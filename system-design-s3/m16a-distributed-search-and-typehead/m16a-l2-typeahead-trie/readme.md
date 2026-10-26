@@ -17,7 +17,7 @@ You never pressed the **Enter** key. You never clicked a **Search** button. The 
 
 Before we write a single line of code, let us establish a fundamental terminology rule: in backend and distributed systems engineering, **Typeahead**, **Autocomplete**, and **Prefix Suggestion** refer to the exact same architectural capability. Whether you are building product discovery for Amazon, document navigation for Notion, or channel search for Slack, the engineering objective is identical: predict and rank the user's intent after every individual keystroke.
 
-In [Lab 1: Inverted Index](../m16a-l1-inverted-index/readme.md), you explored Information Retrieval from the perspective of complete queries. You built an inverted index with BM25 ranking that processes search terms *after* the user submits their full query.
+In Lab 1 - Inverted Index, you explored Information Retrieval from the perspective of complete queries. You built an inverted index with BM25 ranking that processes search terms *after* the user submits their full query.
 
 In this lab, you step into a radically different engineering reality. Autocomplete does not wait for a complete query. It operates under severe real-time constraints, handling ten to twenty times higher request volume with an order of magnitude tighter latency. Over the course of this lab, you will design, build, and benchmark a production-grade typeahead service from the ground up, evolving from a baseline Prefix Tree to an optimized Hash and Heap architecture that cuts memory consumption by **92%**.
 
@@ -225,6 +225,10 @@ typeahead_lab/
 ├── benchmark.py           # 10,000 QPS load test and memory profiler (provided in Milestone 9)
 └── api.py                 # FastAPI microservice for HTTP verification (provided in Milestone 10)
 ```
+<p align="center">
+  <img src="images/terminal-snapshot-01.png" width="100%" alt="Project Setup">
+</p>
+
 
 #### Step 2: Provisioning Redis in Poridhi Cloud Lab
 
@@ -269,20 +273,9 @@ python3 test_redis.py
 
 Compare your output against the following verified execution checkpoint:
 
-[[Terminal Snapshot 1: Redis Connectivity & Operations Verification]]
-```text
-====================================================================
-Testing Redis Integration against: 127.0.0.1:6379 (User: redis)
-====================================================================
-[SUCCESS] Successfully connected to live Redis server at 127.0.0.1:6379
-[TEST 1/4] PING test passed (Server active: PONG)
-[TEST 2/4] Cache write test passed (Key: prefix_cache:sys)
-[TEST 3/4] Cache read test passed (Retrieved 3 items: 'system design interview')
-[TEST 4/4] Sorted Set increment test passed (Query: 'system design interview', Score: 5.0)
-====================================================================
-[ALL TESTS PASSED] Redis integration is operating normally.
-====================================================================
-```
+<p align="center">
+  <img src="images/terminal-snapshot-02-redis-test.png" width="100%" alt="Redis-Test">
+</p>
 
 With our data access tier verified, we can now turn our attention to memory data structures.
 
@@ -622,58 +615,12 @@ python3 main.py
 
 Compare your console output against the verified snapshots below:
 
-[[Terminal Snapshot 2: Trie Service Construction & Verification]]
-```text
-======================================================================
- TYPEAHEAD LAB: BASELINE TRIE VERIFICATION
-======================================================================
-[*] Loaded curated dataset: 165 technical search queries
-[+] Built Trie Service in 9.86ms
-    - Total Nodes: 2,956 | Estimated RAM: 919.92 KB
-
-======================================================================
- TRIE SUGGESTION ACCURACY CHECK (Top-5 Suggestions)
-======================================================================
-
-Prefix: 'sys' -> Retrieved 5 suggestions:
-  - 'system design interview' (frequency: 9850)
-  - 'system design rate limiter' (frequency: 8420)
-  - 'system design caching' (frequency: 7650)
-
-Prefix: 'py' -> Retrieved 5 suggestions:
-  - 'python tutorial' (frequency: 9650)
-  - 'python list comprehension' (frequency: 8720)
-  - 'python dictionary methods' (frequency: 7890)
-
-Prefix: 'rea' -> Retrieved 5 suggestions:
-  - 'react hooks guide' (frequency: 9210)
-  - 'react useeffect dependency array' (frequency: 8340)
-  - 'react usestate functional update' (frequency: 7720)
-
-Prefix: 'do' -> Retrieved 5 suggestions:
-  - 'docker container run' (frequency: 9120)
-  - 'docker compose up' (frequency: 8540)
-  - 'docker build command' (frequency: 7930)
-
-Prefix: 'red' -> Retrieved 5 suggestions:
-  - 'redis cache architecture' (frequency: 8940)
-  - 'redis sorted set zset' (frequency: 8120)
-  - 'redis pub sub messaging' (frequency: 7450)
-
-Prefix: 'sql' -> Retrieved 5 suggestions:
-  - 'sql indexing b tree' (frequency: 8760)
-  - 'sql join inner left right' (frequency: 8010)
-  - 'sql query optimization explain' (frequency: 7390)
-```
-
-[[Terminal Snapshot 3: Single-Query Micro-Benchmark Latency]]
-```text
-======================================================================
- SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')
-======================================================================
-  Trie O(L) Lookup Latency     : 1.208 microseconds (0.00121 ms)
-======================================================================
-```
+<p align="center">
+  <img src="images/terminal-snapshot-03-trie-service-01.png" width="100%" alt="Trie-Service-01">
+</p>
+<p align="center">
+  <img src="images/terminal-snapshot-03-trie-service-02.png" width="100%" alt="Trie-Service-02">
+</p>
 
 Notice the Trie lookup latency: **1.208 microseconds (0.00121 ms)** *(exact values will naturally vary depending on your machine hardware and CPU load, but will remain comfortably sub-millisecond)*! This satisfies our 3ms compute budget with room to spare. However, examine the memory statistics: even for a modest seed dataset of 165 queries, the Trie created 2,956 node instances consuming **920 KB of RAM (919.92 KB)** *(memory measurements may vary slightly based on OS pointer architecture)*. 
 
@@ -917,56 +864,12 @@ This verification runner executes the entire end-to-end pipeline:
 
 Compare your console output against the verified checkpoint below:
 
-[[Terminal Snapshot 4: Hash+Heap Service Verification & Parity]]
-```text
-============================================================================
-  TYPEAHEAD & AUTOCOMPLETE LAB: TRIE vs HASH+HEAP PARITY VERIFICATION
-============================================================================
-[*] Loaded curated dataset: 165 technical search queries
-[+] Built Trie Service in 9.78ms
-    - Total Nodes: 2,956 | Estimated RAM: 919.92 KB
-[+] Built Hash+Heap Service in 0.66ms
-    - Unique Prefixes: 119 | Estimated RAM: 170.84 KB
-
-============================================================================
-  SUGGESTION PARITY CHECK (Top-5 Suggestions for Test Prefixes)
-============================================================================
-
-Prefix: 'sys' -> Status: MATCH [PASS]
-  Trie Results      : [('system design interview', 9850), ('system design rate limiter', 8420), ('system design caching', 7650)]
-  Hash+Heap Results : [('system design interview', 9850), ('system design rate limiter', 8420), ('system design caching', 7650)]
-
-Prefix: 'py' -> Status: MATCH [PASS]
-  Trie Results      : [('python tutorial', 9650), ('python list comprehension', 8720), ('python dictionary methods', 7890)]
-  Hash+Heap Results : [('python tutorial', 9650), ('python list comprehension', 8720), ('python dictionary methods', 7890)]
-
-Prefix: 'rea' -> Status: MATCH [PASS]
-  Trie Results      : [('react hooks guide', 9210), ('react useeffect dependency array', 8340), ('react usestate functional update', 7720)]
-  Hash+Heap Results : [('react hooks guide', 9210), ('react useeffect dependency array', 8340), ('react usestate functional update', 7720)]
-
-Prefix: 'do' -> Status: MATCH [PASS]
-  Trie Results      : [('docker container run', 9120), ('docker compose up', 8540), ('docker build command', 7930)]
-  Hash+Heap Results : [('docker container run', 9120), ('docker compose up', 8540), ('docker build command', 7930)]
-
-Prefix: 'red' -> Status: MATCH [PASS]
-  Trie Results      : [('redis cache architecture', 8940), ('redis sorted set zset', 8120), ('redis pub sub messaging', 7450)]
-  Hash+Heap Results : [('redis cache architecture', 8940), ('redis sorted set zset', 8120), ('redis pub sub messaging', 7450)]
-
-Prefix: 'sql' -> Status: MATCH [PASS]
-  Trie Results      : [('sql indexing b tree', 8760), ('sql join inner left right', 8010), ('sql query optimization explain', 7390)]
-  Hash+Heap Results : [('sql indexing b tree', 8760), ('sql join inner left right', 8010), ('sql query optimization explain', 7390)]
-
-----------------------------------------------------------------------------
-[SUCCESS] All test prefixes yielded 100% identical top-K ranked suggestions!
-----------------------------------------------------------------------------
-
-============================================================================
-  SINGLE-QUERY LATENCY MICRO-BENCHMARK (1,000 iterations for 'sys')
-============================================================================
-  Trie O(L) Lookup Latency      : 0.696 microseconds (0.00070 ms)
-  Hash+Heap Lookup Latency      : 11.163 microseconds (0.01116 ms)
-============================================================================
-```
+<p align="center">
+  <img src="images/terminal-snapshot-04-trie-heap-01.png" width="100%" alt="Trie-Heap-Service-01">
+</p>
+<p align="center">
+  <img src="images/terminal-snapshot-04-trie-heap-02.png" width="100%" alt="Trie-Heap-Service-02">
+</p>
 
 *(Note: Exact values for build times, memory allocations, and latencies will vary depending on your host machine specifications and system load, but suggestion parity will be an exact 100% match across all prefixes)*.
 
@@ -1160,45 +1063,12 @@ python3 benchmark.py
 
 Compare your console output against the verified benchmark snapshot:
 
-[[Terminal Snapshot 5: 10,000 QPS Load Test & Memory Shootout Benchmark]]
-```text
-==============================================================================
-  TYPEAHEAD & AUTOCOMPLETE LOAD TEST & MEMORY BENCHMARK (10,000 QUERIES)
-==============================================================================
-[*] Generating expanded corpus with Zipfian distribution (10,000 queries)...
-    Total unique queries generated: 10,000
-
-[+] [Trie Engine] Built in 2900.59ms
-    - Total Nodes   : 136,472
-    - Peak RAM Usage: 52.20 MB
-
-[+] [Hash+Heap Engine] Built in 219.83ms
-    - Unique Prefixes: 449
-    - Peak RAM Usage : 4.43 MB
-    - RAM Reduction  : 91.5% less memory than Trie!
-
-[*] Executing 10,000 simulated prefix keystroke queries...
-
-==============================================================================
-Performance Metric           | Trie with Cache  | Hash + Min-Heap  | SLA Target
-------------------------------------------------------------------------------
-Build Time (10k items)       |       2900.59 ms |        219.83 ms | < 5000 ms 
-Peak Memory (RAM)            |         52.20 MB |          4.43 MB | < 100 MB  
-RAM Savings                  |         Baseline |    91.5% savings | > 50%     
-Throughput (QPS)             |       1084674 qps |         25778 qps | > 10k QPS 
-p50 Latency                  |        0.0007 ms |        0.0273 ms | < 10 ms   
-p90 Latency                  |        0.0009 ms |        0.0757 ms | < 25 ms   
-p99 Latency                  |        0.0015 ms |        0.1423 ms | < 50 ms   
-Max Latency                  |        0.0225 ms |        0.2617 ms | < 100 ms  
-Redis L1 Cache (p99)         |        3.6877 ms |        3.6877 ms | < 5 ms    
-==============================================================================
-
-[VERIFICATION RESULT] ALL SLA CRITERIA FULLY SATISFIED:
-  1. p99 Latency < 50ms SLA Target: PASSED (Trie: 0.0015ms, Hash+Heap: 0.1423ms)
-  2. Concurrent Throughput Target : PASSED (Trie: 1,084,674 QPS, Hash+Heap: 25,778 QPS)
-  3. Memory Footprint Reduction   : PASSED (91.5% memory savings)
-==============================================================================
-```
+<p align="center">
+  <img src="images/terminal-snapshot-05-benchmark-01.png" width="100%" alt="Benchmark-01">
+</p>
+<p align="center">
+  <img src="images/terminal-snapshot-05-benchmark-02.png" width="100%" alt="Benchmark-02">
+</p>
 
 #### Analyzing the Empirical Findings & Engineering Trade-Offs
 
@@ -1454,14 +1324,10 @@ print("GET /metrics ->", client.get("/metrics").json())
 
 Compare your console output against the verified HTTP checkpoint:
 
-[[Terminal Snapshot 6: FastAPI HTTP Microservice Verification & L1 Cache Hit]]
-```text
-[PASS] GET / -> {'status': 'healthy', 'service': 'Typeahead & Autocomplete Service', 'redis_mode': 'live_redis'}
-[PASS] GET /suggest (trie) -> {'prefix': 'sys', 'engine': 'trie', 'source': 'memory_trie', 'count': 3, 'suggestions': [{'query': 'system design interview', 'frequency': 9850}, {'query': 'system design rate limiter', 'frequency': 8420}, {'query': 'system design caching', 'frequency': 7650}]}
-[PASS] GET /suggest (hash / cache) -> {'prefix': 'sys', 'engine': 'hash', 'source': 'redis_cache', 'count': 3, 'suggestions': [{'query': 'system design interview', 'frequency': 9850}, {'query': 'system design rate limiter', 'frequency': 8420}, {'query': 'system design caching', 'frequency': 7650}]}
-[PASS] POST /search -> {'status': 'recorded', 'query': 'system design interview', 'updated_frequency': 10.0}
-[PASS] GET /metrics -> {'trie_engine': {'total_nodes': 2956, 'memory_kb': 919.92}, 'hash_heap_engine': {'unique_prefixes': 119, 'memory_kb': 170.84}, 'redis_top_searches': [{'query': 'system design interview', 'score': 10.0}]}
-```
+<p align="center">
+  <img src="images/terminal-snapshot-06-fastapi-logs.png" width="100%" alt="FastAPI-Logs">
+</p>
+
 
 The L1 Redis cache absorbs subsequent repeated keystrokes with zero query overhead on application worker memory!
 
