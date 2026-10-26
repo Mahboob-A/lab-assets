@@ -1,0 +1,79 @@
+
+>>> [Query A1] "replicating cache nodes"
+    Category:  ES Win: Morphological Stemming
+    Rationale: Tests stemming: Corpus has 'replication' (Doc 1 & 8). Homemade Boolean AND fails looking for exact 'replicating'. ES English stems to 'replic', achieving high recall.
+    Ground-Truth Relevant Docs: [1, 8, 9]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.02ms | P@1: 0.00 | R@3: 0.00 | AP: 0.00 | Hits: [0 hits (Boolean AND miss)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   7.36ms | P@1: 0.00 | R@3: 0.67 | AP: 0.39 | Hits: [Doc 5(s=2.29), Doc 9(s=1.66), Doc 1(s=1.65)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   4.67ms | P@1: 1.00 | R@3: 0.67 | AP: 0.92 | Hits: [Doc 1(s=3.10), Doc 8(s=2.32), Doc 5(s=2.28)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   3.46ms | P@1: 0.00 | R@3: 0.67 | AP: 0.39 | Hits: [Doc 5(s=2.26), Doc 1(s=1.68), Doc 9(s=1.65)]
+
+>>> [Query A2] "redis cache clustering and sharding"
+    Category:  ES Win: Disjunctive Candidate Retrieval
+    Rationale: Tests disjunction: Doc 1 covers Redis/cache/cluster, Doc 3 covers sharding. Homemade Boolean AND fails because no single doc has all 4 terms. ES match (OR) surfaces and ranks both relevant documents.
+    Ground-Truth Relevant Docs: [1, 3, 5]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.01ms | P@1: 0.00 | R@3: 0.00 | AP: 0.00 | Hits: [0 hits (Boolean AND miss)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   3.22ms | P@1: 1.00 | R@3: 0.67 | AP: 0.92 | Hits: [Doc 1(s=4.30), Doc 3(s=2.22), Doc 9(s=1.74)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   3.09ms | P@1: 1.00 | R@3: 0.67 | AP: 0.92 | Hits: [Doc 1(s=5.77), Doc 3(s=2.83), Doc 9(s=2.50)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   3.26ms | P@1: 1.00 | R@3: 0.67 | AP: 0.92 | Hits: [Doc 1(s=4.42), Doc 3(s=2.29), Doc 9(s=1.72)]
+
+>>> [Query A3] "how to achieve consensus across distributed servers"
+    Category:  ES Win: Stopword Filtering & IDF Weighting
+    Rationale: Tests conversational query: 'achieve' is absent from Doc 2. Homemade AND drops to 0 hits. ES English removes stopwords and weights 'consensus' and 'servers' heavily, placing Raft at Rank 1.
+    Ground-Truth Relevant Docs: [2, 6]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.02ms | P@1: 0.00 | R@3: 0.00 | AP: 0.00 | Hits: [0 hits (Boolean AND miss)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   3.98ms | P@1: 1.00 | R@3: 1.00 | AP: 0.83 | Hits: [Doc 2(s=5.05), Doc 5(s=2.02), Doc 6(s=1.35)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   3.31ms | P@1: 1.00 | R@3: 0.50 | AP: 0.75 | Hits: [Doc 2(s=4.27), Doc 5(s=1.84), Doc 9(s=1.43)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   3.22ms | P@1: 1.00 | R@3: 1.00 | AP: 0.83 | Hits: [Doc 2(s=5.00), Doc 5(s=2.00), Doc 6(s=1.35)]
+
+>>> [Query B1] "in-memory key-value"
+    Category:  Homemade Win: Hyphenated Compound Terms
+    Rationale: Tests compound preservation: Homemade regex keeps 'in-memory' and 'key-value' intact, matching Doc 1 with 100% precision. Standard analyzer splits punctuation into 4 tokens, causing false hits.
+    Ground-Truth Relevant Docs: [1]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.03ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 1(s=4.74)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   2.62ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 1(s=6.56), Doc 9(s=1.64), Doc 3(s=1.58)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   2.31ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 1(s=4.86), Doc 3(s=1.19), Doc 5(s=1.14)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   2.29ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 1(s=3.95)]
+
+>>> [Query B2] "scatter-gather"
+    Category:  Homemade Win: Small-Corpus IDF Separation
+    Rationale: Tests IDF precision: Homemade unquantized float IDF yields high score separation for rare technical terms on tiny corpora, whereas Lucene quantizes norms to 1 byte.
+    Ground-Truth Relevant Docs: [3]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.02ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 3(s=2.18)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   2.07ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 3(s=4.33)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   2.22ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 3(s=4.29)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   3.42ms | P@1: 1.00 | R@3: 1.00 | AP: 1.00 | Hits: [Doc 3(s=2.23)]
+
+>>> [Query B3] "raft consensus leader election"
+    Category:  Homemade Win: Microsecond Execution Latency
+    Rationale: Tests pure CPU speed: Homemade two-pointer merge runs in RAM in under 0.05ms with 0 serialization overhead, vs 3-8ms HTTP/REST round-trip.
+    Ground-Truth Relevant Docs: [2, 6]
+    Homemade (Boolean AND + BM25)                  | Latency:   0.03ms | P@1: 1.00 | R@3: 0.50 | AP: 0.50 | Hits: [Doc 2(s=11.42)]
+    Elasticsearch (Standard Analyzer, OR)          | Latency:   2.58ms | P@1: 1.00 | R@3: 0.50 | AP: 0.50 | Hits: [Doc 2(s=9.25)]
+    Elasticsearch (English Analyzer + Stemming, OR) | Latency:   2.84ms | P@1: 1.00 | R@3: 0.50 | AP: 0.50 | Hits: [Doc 2(s=9.15)]
+    Elasticsearch (Exact Hyphen Analyzer, OR)      | Latency:   2.70ms | P@1: 1.00 | R@3: 0.50 | AP: 0.50 | Hits: [Doc 2(s=9.16)]
+
+==========================================================================================
+  FINAL AGGREGATED BENCHMARK SUMMARY (6 BENCHMARK QUERIES)
+==========================================================================================
+Engine Configuration                             | Mean Latency | P@1      | P@3      | R@3      | MAP      | MRR     
+------------------------------------------------------------------------------------------
+Homemade (Boolean AND + BM25)                    | 0.02 ms      | 0.5000   | 0.1666   | 0.4167   | 0.4167   | 0.5000  
+Elasticsearch (Standard Analyzer, OR)            | 3.64 ms      | 0.8333   | 0.5000   | 0.8056   | 0.7731   | 0.9167  
+Elasticsearch (English Analyzer + Stemming, OR)  | 3.07 ms      | 1.0000   | 0.4444   | 0.7222   | 0.8472   | 1.0000  
+Elasticsearch (Exact Hyphen Analyzer, OR)        | 3.06 ms      | 0.8333   | 0.5000   | 0.8056   | 0.7731   | 0.9167  
+------------------------------------------------------------------------------------------
+
+==========================================================================================
+  DEEP DIVE: BM25 SCORING EXPLAIN COMPARISON (Query: 'raft consensus leader election')
+==========================================================================================
+--- Homemade Inverted Index BM25 Calculation (Doc 2) ---
+  Total BM25 Score: 11.4203 (Doc Length: 29, AvgDL: 36.44)
+    * Term 'raft      ' | TF=2 | IDF=1.8971 | TF_Norm=1.4588 | BM25 Contribution=2.7675
+    * Term 'consensus ' | TF=2 | IDF=1.8971 | TF_Norm=1.4588 | BM25 Contribution=2.7675
+    * Term 'leader    ' | TF=3 | IDF=1.8971 | TF_Norm=1.6434 | BM25 Contribution=3.1177
+    * Term 'election  ' | TF=2 | IDF=1.8971 | TF_Norm=1.4588 | BM25 Contribution=2.7675
+
+--- Elasticsearch Lucene BM25 Calculation (Doc 2, field: content.english) ---
+  Total BM25 Score: 9.1549
+  Top-level description: sum of:...

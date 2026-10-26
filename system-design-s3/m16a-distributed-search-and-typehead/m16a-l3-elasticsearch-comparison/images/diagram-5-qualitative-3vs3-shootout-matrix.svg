@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 720" width="100%" height="100%" style="background-color: #0b1120; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="cardGrad5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="dropGlow5" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrBlue5" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 6 4 L 0 7 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrGreen5" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 6 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+
+    <!-- Styles -->
+    <style>
+      .flow-blue5 {
+        stroke: #3b82f6;
+        stroke-width: 2;
+        stroke-dasharray: 6 4;
+        animation: flow5 2s linear infinite;
+        fill: none;
+      }
+      .flow-green5 {
+        stroke: #10b981;
+        stroke-width: 2;
+        stroke-dasharray: 6 4;
+        animation: flow5 2s linear infinite;
+        fill: none;
+      }
+      @keyframes flow5 {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Title Card -->
+  <rect x="30" y="20" width="1180" height="60" rx="12" fill="url(#cardGrad5)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow5)"/>
+  <rect x="30" y="20" width="8" height="60" rx="4" fill="#8b5cf6"/>
+  <text x="55" y="45" fill="#f8fafc" font-size="18" font-weight="700">The 3 vs 3 Shootout Qualitative Decision Matrix</text>
+  <text x="55" y="65" fill="#94a3b8" font-size="12">Empirical Case Studies: Mapping Query Behavior to Underlying Architectural &amp; Algorithmic Root Causes</text>
+  <rect x="1030" y="35" width="160" height="28" rx="6" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="1110" y="53" fill="#c084fc" font-size="11" font-weight="600" text-anchor="middle">Architectural Taxonomy</text>
+
+  <!-- COLUMN 1: Category A - Elasticsearch Wins (Left Column) -->
+  <rect x="30" y="95" width="575" height="605" rx="14" fill="url(#cardGrad5)" stroke="#3b82f6" stroke-width="1.5" filter="url(#dropGlow5)"/>
+  <rect x="45" y="110" width="545" height="32" rx="6" fill="#1e3a8a" stroke="#2563eb" stroke-width="1"/>
+  <text x="317" y="131" fill="#bfdbfe" font-size="13" font-weight="700" text-anchor="middle">CATEGORY A: 3 QUERIES WHERE ELASTICSEARCH WINS</text>
+
+  <!-- Case A1 -->
+  <g transform="translate(45, 155)">
+    <rect x="0" y="0" width="545" height="155" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="45" y="27" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="middle">Case A1</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="12.5" font-family="monospace" font-weight="700">"replicating cache nodes"</text>
+    
+    <text x="15" y="55" fill="#38bdf8" font-size="11" font-weight="700">Architectural Advantage: Morphological Suffix Stemming</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: Strict Boolean AND requires literal token "replicating".</text>
+    <text x="25" y="90" fill="#f87171" font-size="9.5">Result: 0 hits (Recall@10 = 0.0, AP = 0.0). Vocabulary only has "replication".</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch (English Analyzer): Porter stemmer strips suffix: "replicating" -&gt; "replic".</text>
+    <text x="25" y="124" fill="#34d399" font-size="9.5">Result: Doc 1 (Score: 3.10) and Doc 8 (Score: 2.32) surfaced at 100% P@1!</text>
+    <rect x="15" y="133" width="515" height="15" rx="3" fill="#08152e"/>
+    <text x="272" y="144" fill="#60a5fa" font-size="9" text-anchor="middle">Verdict: Industrial full-text search requires linguistic normalization</text>
+  </g>
+
+  <!-- Case A2 -->
+  <g transform="translate(45, 325)">
+    <rect x="0" y="0" width="545" height="155" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="45" y="27" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="middle">Case A2</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="12.5" font-family="monospace" font-weight="700">"redis cache clustering and sharding"</text>
+    
+    <text x="15" y="55" fill="#38bdf8" font-size="11" font-weight="700">Architectural Advantage: Disjunctive Candidate Union + WAND</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: Two-pointer AND fails because no single doc has all 4 terms.</text>
+    <text x="25" y="90" fill="#f87171" font-size="9.5">Result: 0 hits (Recall@10 = 0.0). Doc 1 has Redis, Doc 3 has Sharding.</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch (match query): Evaluates OR union with BM25 score accumulation.</text>
+    <text x="25" y="124" fill="#34d399" font-size="9.5">Result: Doc 1 (Score: 5.77) and Doc 3 (Score: 2.83) both returned (R@3: 0.67).</text>
+    <rect x="15" y="133" width="515" height="15" rx="3" fill="#08152e"/>
+    <text x="272" y="144" fill="#60a5fa" font-size="9" text-anchor="middle">Verdict: Multi-term exploratory queries demand disjunctive candidate retrieval</text>
+  </g>
+
+  <!-- Case A3 -->
+  <g transform="translate(45, 495)">
+    <rect x="0" y="0" width="545" height="185" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="45" y="27" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="middle">Case A3</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="11.5" font-family="monospace" font-weight="700">"how to achieve consensus across distributed servers"</text>
+    
+    <text x="15" y="55" fill="#38bdf8" font-size="11" font-weight="700">Architectural Advantage: Stopword Stripping &amp; BM25 IDF Weighting</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: 'how'/'to' stripped, but 'achieve' is kept and missing in Doc 2.</text>
+    <text x="25" y="90" fill="#f87171" font-size="9.5">Result: 0 hits (AND fails). Cannot rank partially matching documents.</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch (English Analyzer): Eliminates stopwords and dampens common words.</text>
+    <text x="25" y="124" fill="#cbd5e1" font-size="9.5">Heavily weights rare tokens 'consensus' and 'servers' via BM25 IDF.</text>
+    <text x="25" y="140" fill="#34d399" font-size="9.5">Result: Doc 2 (Raft) placed at Rank 1 (Score: 4.27) with 100% Precision@1!</text>
+    <rect x="15" y="153" width="515" height="20" rx="3" fill="#08152e"/>
+    <text x="272" y="167" fill="#60a5fa" font-size="9" text-anchor="middle">Verdict: Conversational human queries require stopword filters and IDF weighting</text>
+  </g>
+
+  <!-- COLUMN 2: Category B - Custom Index Wins / Competitive (Right Column) -->
+  <rect x="635" y="95" width="575" height="605" rx="14" fill="url(#cardGrad5)" stroke="#10b981" stroke-width="1.5" filter="url(#dropGlow5)"/>
+  <rect x="650" y="110" width="545" height="32" rx="6" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+  <text x="922" y="131" fill="#a7f3d0" font-size="13" font-weight="700" text-anchor="middle">CATEGORY B: 3 QUERIES WHERE CUSTOM INDEX IS COMPETITIVE / WINS</text>
+
+  <!-- Case B1 -->
+  <g transform="translate(650, 155)">
+    <rect x="0" y="0" width="545" height="155" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+    <text x="45" y="27" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Case B1</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="12.5" font-family="monospace" font-weight="700">"in-memory key-value"</text>
+    
+    <text x="15" y="55" fill="#34d399" font-size="11" font-weight="700">Custom Advantage: Hyphenated Compound Phrase Preservation</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: Regex tokenizer preserves 'in-memory' and 'key-value' intact.</text>
+    <text x="25" y="90" fill="#34d399" font-size="9.5">Result: Exactly 1 document matched: Doc 1 (Score: 4.74) with 100% precision!</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch (Standard): Splits hyphens into 4 independent words: in, memory, key, value.</text>
+    <text x="25" y="124" fill="#fbbf24" font-size="9.5">Result: Precision dilution matches Doc 3 (partition key) and Doc 5 (data keys).</text>
+    <rect x="15" y="133" width="515" height="15" rx="3" fill="#06281e"/>
+    <text x="272" y="144" fill="#6ee7b7" font-size="9" text-anchor="middle">Verdict: Domain-specific tokenizers outperform generic Unicode word splitting</text>
+  </g>
+
+  <!-- Case B2 -->
+  <g transform="translate(650, 325)">
+    <rect x="0" y="0" width="545" height="155" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+    <text x="45" y="27" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Case B2</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="12.5" font-family="monospace" font-weight="700">"scatter-gather"</text>
+    
+    <text x="15" y="55" fill="#34d399" font-size="11" font-weight="700">Custom Advantage: Exact 64-Bit Float IDF on Miniature Collections</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: ln(1 + (N - df + 0.5) / (df + 0.5)) computed in IEEE 754 float64.</text>
+    <text x="25" y="90" fill="#34d399" font-size="9.5">Result: Sharp, unquantized score separation for rare technical terms (Doc 3).</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch: Quantizes doc length norms into single 1-byte lossy floats.</text>
+    <text x="25" y="124" fill="#cbd5e1" font-size="9.5">Result: Slightly dampened contrast on tiny datasets, though ranking is correct.</text>
+    <rect x="15" y="133" width="515" height="15" rx="3" fill="#06281e"/>
+    <text x="272" y="144" fill="#6ee7b7" font-size="9" text-anchor="middle">Verdict: Production engines trade exact precision for 1-byte storage efficiency</text>
+  </g>
+
+  <!-- Case B3 -->
+  <g transform="translate(650, 495)">
+    <rect x="0" y="0" width="545" height="185" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="12" width="60" height="22" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+    <text x="45" y="27" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Case B3</text>
+    <text x="85" y="28" fill="#f8fafc" font-size="12.5" font-family="monospace" font-weight="700">"raft consensus leader election"</text>
+    
+    <text x="15" y="55" fill="#34d399" font-size="11" font-weight="700">Custom Advantage: Microsecond Pure CPU Cache Execution</text>
+    <text x="15" y="74" fill="#cbd5e1" font-size="10">• Custom Index: In-memory sorted posting scan executes directly in L1/L2 cache.</text>
+    <text x="25" y="90" fill="#34d399" font-size="9.5">Execution Latency: 0.02ms (over 150x faster than Elasticsearch!). P@1: 1.0000.</text>
+    <text x="15" y="108" fill="#cbd5e1" font-size="10">• Elasticsearch: Round-trip involves HTTP REST serialization, Netty thread dispatch,</text>
+    <text x="25" y="124" fill="#cbd5e1" font-size="9.5">Lucene IndexSearcher segment traversal, and JSON response encoding.</text>
+    <text x="25" y="140" fill="#fbbf24" font-size="9.5">Execution Latency: 2.58ms to 3.64ms for the exact same top-1 result.</text>
+    <rect x="15" y="153" width="515" height="20" rx="3" fill="#06281e"/>
+    <text x="272" y="167" fill="#6ee7b7" font-size="9" text-anchor="middle">Verdict: Embedded in-process indexes dominate read latency for small data volumes</text>
+  </g>
+</svg>

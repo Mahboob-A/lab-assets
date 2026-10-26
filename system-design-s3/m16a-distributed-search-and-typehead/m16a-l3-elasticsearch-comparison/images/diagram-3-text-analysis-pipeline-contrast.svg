@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 660" width="100%" height="100%" style="background-color: #0b1120; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="cardGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="dropGlow3" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrBlue3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 6 4 L 0 7 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrGreen3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 6 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="arrPurple3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 6 4 L 0 7 z" fill="#a855f7"/>
+    </marker>
+
+    <!-- Styles -->
+    <style>
+      .flow-blue3 {
+        stroke: #3b82f6;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 4;
+        animation: flow3 1.6s linear infinite;
+        fill: none;
+      }
+      .flow-green3 {
+        stroke: #10b981;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 4;
+        animation: flow3 1.6s linear infinite;
+        fill: none;
+      }
+      .flow-purple3 {
+        stroke: #a855f7;
+        stroke-width: 2.2;
+        stroke-dasharray: 6 4;
+        animation: flow3 1.6s linear infinite;
+        fill: none;
+      }
+      @keyframes flow3 {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Title Card -->
+  <rect x="30" y="20" width="1160" height="60" rx="12" fill="url(#cardGrad3)" stroke="#334155" stroke-width="1.5" filter="url(#dropGlow3)"/>
+  <rect x="30" y="20" width="8" height="60" rx="4" fill="#10b981"/>
+  <text x="55" y="45" fill="#f8fafc" font-size="18" font-weight="700">Text Analysis Pipeline Shootout: Regex vs. Standard vs. English Stemmer</text>
+  <text x="55" y="65" fill="#94a3b8" font-size="12">Linguistic Normalization Contrast: Tokenization Rules, Stopword Removal, and Algorithmic Suffix Stemming</text>
+  <rect x="1035" y="35" width="140" height="28" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  <text x="1105" y="53" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">Linguistic Analysis</text>
+
+  <!-- Input Sentence Banner (Top) -->
+  <rect x="30" y="100" width="1160" height="65" rx="10" fill="#0f172a" stroke="#475569" stroke-width="1.5" filter="url(#dropGlow3)"/>
+  <text x="50" y="125" fill="#94a3b8" font-size="11" font-weight="700" letter-spacing="0.5">RAW TEXT INPUT CORPUS / QUERY STRING:</text>
+  <text x="50" y="150" fill="#38bdf8" font-size="16" font-family="monospace" font-weight="700">"Replicating in-memory cache nodes!"</text>
+  <rect x="940" y="115" width="230" height="32" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="1055" y="135" fill="#f1f5f9" font-size="11" text-anchor="middle">Contains: Suffix, Hyphen, Punctuation</text>
+
+  <!-- PIPELINE 1: Custom Regex Analyzer (Left) -->
+  <rect x="30" y="190" width="365" height="445" rx="12" fill="url(#cardGrad3)" stroke="#10b981" stroke-width="1.5" filter="url(#dropGlow3)"/>
+  <rect x="45" y="205" width="335" height="28" rx="5" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+  <text x="212" y="224" fill="#a7f3d0" font-size="12" font-weight="700" text-anchor="middle">1. CUSTOM REGEX ANALYZER (L1)</text>
+
+  <!-- Stage 1.1 Tokenizer -->
+  <rect x="45" y="250" width="335" height="75" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="60" y="272" fill="#34d399" font-size="11.5" font-weight="700">Custom Regex Tokenizer</text>
+  <text x="60" y="292" fill="#94a3b8" font-size="10">Pattern: \b[a-zA-Z0-9_-]+\b</text>
+  <text x="60" y="310" fill="#6ee7b7" font-size="10" font-weight="600">Preserves hyphen: keeps "in-memory" intact</text>
+
+  <!-- Stage 1.2 Lowercasing -->
+  <rect x="45" y="340" width="335" height="60" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="60" y="362" fill="#34d399" font-size="11.5" font-weight="700">Lowercase &amp; Filter</text>
+  <text x="60" y="382" fill="#94a3b8" font-size="10">Case-folding: 'Replicating' -&gt; 'replicating'</text>
+
+  <!-- Stage 1.3 Missing Stemmer Notice -->
+  <rect x="45" y="415" width="335" height="60" rx="8" fill="#2d1217" stroke="#f43f5e" stroke-width="1"/>
+  <text x="60" y="437" fill="#fda4af" font-size="11" font-weight="700">No Stemmer / Morphology</text>
+  <text x="60" y="457" fill="#f87171" font-size="10">Token 'replicating' != 'replication' (0 hits!)</text>
+
+  <!-- Output Tokens -->
+  <rect x="45" y="495" width="335" height="120" rx="8" fill="#091e16" stroke="#10b981" stroke-width="1.2"/>
+  <text x="60" y="520" fill="#a7f3d0" font-size="11" font-weight="700">Final Inverted Index Tokens:</text>
+  <text x="60" y="542" fill="#f1f5f9" font-size="10.5" font-family="monospace">1. "replicating" (exact)</text>
+  <text x="60" y="562" fill="#34d399" font-size="10.5" font-family="monospace" font-weight="700">2. "in-memory"   (compound!)</text>
+  <text x="60" y="582" fill="#f1f5f9" font-size="10.5" font-family="monospace">3. "cache"</text>
+  <text x="60" y="602" fill="#f1f5f9" font-size="10.5" font-family="monospace">4. "nodes"</text>
+
+  <!-- PIPELINE 2: ES Standard Analyzer (Middle) -->
+  <rect x="425" y="190" width="365" height="445" rx="12" fill="url(#cardGrad3)" stroke="#3b82f6" stroke-width="1.5" filter="url(#dropGlow3)"/>
+  <rect x="440" y="205" width="335" height="28" rx="5" fill="#1e3a8a" stroke="#2563eb" stroke-width="1"/>
+  <text x="607" y="224" fill="#bfdbfe" font-size="12" font-weight="700" text-anchor="middle">2. ELASTICSEARCH STANDARD ANALYZER</text>
+
+  <!-- Stage 2.1 Tokenizer -->
+  <rect x="440" y="250" width="335" height="75" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="455" y="272" fill="#60a5fa" font-size="11.5" font-weight="700">Standard Tokenizer (Unicode UAX #29)</text>
+  <text x="455" y="292" fill="#94a3b8" font-size="10">Word boundary algorithm</text>
+  <text x="455" y="310" fill="#f87171" font-size="10" font-weight="600">Splits hyphens: "in-memory" -&gt; "in", "memory"</text>
+
+  <!-- Stage 2.2 Lowercasing -->
+  <rect x="440" y="340" width="335" height="60" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="455" y="362" fill="#60a5fa" font-size="11.5" font-weight="700">Lowercase Token Filter</text>
+  <text x="455" y="382" fill="#94a3b8" font-size="10">Converts all Unicode terms to lower case</text>
+
+  <!-- Stage 2.3 Stopwords/Stemming Notice -->
+  <rect x="440" y="415" width="335" height="60" rx="8" fill="#1f1b2e" stroke="#64748b" stroke-width="1"/>
+  <text x="455" y="437" fill="#cbd5e1" font-size="11" font-weight="700">Default: No Stopwords, No Stemmer</text>
+  <text x="455" y="457" fill="#94a3b8" font-size="10">Keeps "in", leaves suffixes unmodified</text>
+
+  <!-- Output Tokens -->
+  <rect x="440" y="495" width="335" height="120" rx="8" fill="#0c1938" stroke="#3b82f6" stroke-width="1.2"/>
+  <text x="455" y="520" fill="#93c5fd" font-size="11" font-weight="700">Final Inverted Index Tokens:</text>
+  <text x="455" y="538" fill="#f1f5f9" font-size="10" font-family="monospace">1. "replicating" (unstemmed)</text>
+  <text x="455" y="554" fill="#f87171" font-size="10" font-family="monospace">2. "in"          (stopword kept)</text>
+  <text x="455" y="570" fill="#fbbf24" font-size="10" font-family="monospace">3. "memory"      (split!)</text>
+  <text x="455" y="586" fill="#f1f5f9" font-size="10" font-family="monospace">4. "cache"</text>
+  <text x="455" y="602" fill="#f1f5f9" font-size="10" font-family="monospace">5. "nodes"</text>
+
+  <!-- PIPELINE 3: ES English Analyzer (Right) -->
+  <rect x="820" y="190" width="370" height="445" rx="12" fill="url(#cardGrad3)" stroke="#a855f7" stroke-width="1.5" filter="url(#dropGlow3)"/>
+  <rect x="835" y="205" width="340" height="28" rx="5" fill="#3b0764" stroke="#7e22ce" stroke-width="1"/>
+  <text x="1005" y="224" fill="#f3e8ff" font-size="12" font-weight="700" text-anchor="middle">3. ELASTICSEARCH ENGLISH ANALYZER</text>
+
+  <!-- Stage 3.1 Tokenizer -->
+  <rect x="835" y="250" width="340" height="48" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="850" y="270" fill="#c084fc" font-size="11" font-weight="700">Standard Tokenizer + Lowercase</text>
+  <text x="850" y="288" fill="#94a3b8" font-size="9.5">['replicating', 'in', 'memory', 'cache', 'nodes']</text>
+
+  <!-- Stage 3.2 Stopwords Filter -->
+  <rect x="835" y="310" width="340" height="52" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="850" y="330" fill="#c084fc" font-size="11" font-weight="700">English Stopword Filter</text>
+  <text x="850" y="348" fill="#f43f5e" font-size="9.5" font-weight="600">Drops 'in' (removes low-value noise)</text>
+
+  <!-- Stage 3.3 Porter Stemmer -->
+  <rect x="835" y="375" width="340" height="60" rx="8" fill="#2e1065" stroke="#a855f7" stroke-width="1.2"/>
+  <text x="850" y="397" fill="#d8b4fe" font-size="11.5" font-weight="700">Porter Stemmer Filter</text>
+  <text x="850" y="415" fill="#e9d5ff" font-size="10">Algorithmic morphological suffix removal</text>
+  <text x="850" y="428" fill="#34d399" font-size="9.5" font-weight="600">"replicating" -&gt; "replic" = "replication"!</text>
+
+  <!-- Output Tokens -->
+  <rect x="835" y="445" width="340" height="170" rx="8" fill="#1b0833" stroke="#a855f7" stroke-width="1.2"/>
+  <text x="850" y="470" fill="#e9d5ff" font-size="11" font-weight="700">Final Inverted Index Tokens (Stemmed):</text>
+  <text x="850" y="492" fill="#34d399" font-size="11" font-family="monospace" font-weight="700">1. "replic" (matches replication!)</text>
+  <text x="850" y="512" fill="#cbd5e1" font-size="10.5" font-family="monospace">2. "memori" (y -&gt; i normalized)</text>
+  <text x="850" y="532" fill="#cbd5e1" font-size="10.5" font-family="monospace">3. "cach"   (trailing e stripped)</text>
+  <text x="850" y="552" fill="#cbd5e1" font-size="10.5" font-family="monospace">4. "node"   (plural s stripped)</text>
+  <rect x="850" y="568" width="310" height="35" rx="5" fill="#3b0764" stroke="#7e22ce" stroke-width="1"/>
+  <text x="1005" y="584" fill="#a7f3d0" font-size="10" font-weight="700" text-anchor="middle">Empirical MAP Score: 0.8472 (100% P@1)</text>
+  <text x="1005" y="597" fill="#c084fc" font-size="9" text-anchor="middle">Wins Query A1, A2, and A3 decisively</text>
+
+  <!-- Flow Arrows from Input to Pipelines -->
+  <path d="M 210 165 L 210 190" class="flow-green3" marker-end="url(#arrGreen3)"/>
+  <path d="M 605 165 L 605 190" class="flow-blue3" marker-end="url(#arrBlue3)"/>
+  <path d="M 1000 165 L 1000 190" class="flow-purple3" marker-end="url(#arrPurple3)"/>
+</svg>

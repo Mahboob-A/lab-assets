@@ -1,0 +1,1193 @@
+{
+  "benchmark_queries": [
+    {
+      "id": "A1",
+      "category": "ES Win: Morphological Stemming",
+      "query": "replicating cache nodes",
+      "rationale": "Tests stemming: Corpus has 'replication' (Doc 1 & 8). Homemade Boolean AND fails looking for exact 'replicating'. ES English stems to 'replic', achieving high recall."
+    },
+    {
+      "id": "A2",
+      "category": "ES Win: Disjunctive Candidate Retrieval",
+      "query": "redis cache clustering and sharding",
+      "rationale": "Tests disjunction: Doc 1 covers Redis/cache/cluster, Doc 3 covers sharding. Homemade Boolean AND fails because no single doc has all 4 terms. ES match (OR) surfaces and ranks both relevant documents."
+    },
+    {
+      "id": "A3",
+      "category": "ES Win: Stopword Filtering & IDF Weighting",
+      "query": "how to achieve consensus across distributed servers",
+      "rationale": "Tests conversational query: 'achieve' is absent from Doc 2. Homemade AND drops to 0 hits. ES English removes stopwords and weights 'consensus' and 'servers' heavily, placing Raft at Rank 1."
+    },
+    {
+      "id": "B1",
+      "category": "Homemade Win: Hyphenated Compound Terms",
+      "query": "in-memory key-value",
+      "rationale": "Tests compound preservation: Homemade regex keeps 'in-memory' and 'key-value' intact, matching Doc 1 with 100% precision. Standard analyzer splits punctuation into 4 tokens, causing false hits."
+    },
+    {
+      "id": "B2",
+      "category": "Homemade Win: Small-Corpus IDF Separation",
+      "query": "scatter-gather",
+      "rationale": "Tests IDF precision: Homemade unquantized float IDF yields high score separation for rare technical terms on tiny corpora, whereas Lucene quantizes norms to 1 byte."
+    },
+    {
+      "id": "B3",
+      "category": "Homemade Win: Microsecond Execution Latency",
+      "query": "raft consensus leader election",
+      "rationale": "Tests pure CPU speed: Homemade two-pointer merge runs in RAM in under 0.05ms with 0 serialization overhead, vs 3-8ms HTTP/REST round-trip."
+    }
+  ],
+  "summary": [
+    {
+      "config_key": "homemade_bm25",
+      "config_name": "Homemade (Boolean AND + BM25)",
+      "mean_latency_ms": 0.021,
+      "metrics": {
+        "query_count": 6,
+        "mean_average_precision": 0.4167,
+        "mean_reciprocal_rank": 0.5,
+        "mean_precision@1": 0.5,
+        "mean_recall@1": 0.4167,
+        "mean_precision@3": 0.1666,
+        "mean_recall@3": 0.4167,
+        "mean_precision@5": 0.1,
+        "mean_recall@5": 0.4167,
+        "mean_precision@10": 0.05,
+        "mean_recall@10": 0.4167
+      }
+    },
+    {
+      "config_key": "es_standard",
+      "config_name": "Elasticsearch (Standard Analyzer, OR)",
+      "mean_latency_ms": 3.638,
+      "metrics": {
+        "query_count": 6,
+        "mean_average_precision": 0.7731,
+        "mean_reciprocal_rank": 0.9167,
+        "mean_precision@1": 0.8333,
+        "mean_recall@1": 0.5555,
+        "mean_precision@3": 0.5,
+        "mean_recall@3": 0.8056,
+        "mean_precision@5": 0.3333,
+        "mean_recall@5": 0.8611,
+        "mean_precision@10": 0.1667,
+        "mean_recall@10": 0.8611
+      }
+    },
+    {
+      "config_key": "es_english",
+      "config_name": "Elasticsearch (English Analyzer + Stemming, OR)",
+      "mean_latency_ms": 3.073,
+      "metrics": {
+        "query_count": 6,
+        "mean_average_precision": 0.8472,
+        "mean_reciprocal_rank": 1.0,
+        "mean_precision@1": 1.0,
+        "mean_recall@1": 0.6111,
+        "mean_precision@3": 0.4444,
+        "mean_recall@3": 0.7222,
+        "mean_precision@5": 0.3667,
+        "mean_recall@5": 0.9167,
+        "mean_precision@10": 0.1833,
+        "mean_recall@10": 0.9167
+      }
+    },
+    {
+      "config_key": "es_exact",
+      "config_name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+      "mean_latency_ms": 3.058,
+      "metrics": {
+        "query_count": 6,
+        "mean_average_precision": 0.7731,
+        "mean_reciprocal_rank": 0.9167,
+        "mean_precision@1": 0.8333,
+        "mean_recall@1": 0.5555,
+        "mean_precision@3": 0.5,
+        "mean_recall@3": 0.8056,
+        "mean_precision@5": 0.3333,
+        "mean_recall@5": 0.8611,
+        "mean_precision@10": 0.1667,
+        "mean_recall@10": 0.8611
+      }
+    }
+  ],
+  "detailed_results": [
+    {
+      "query_id": "A1",
+      "category": "ES Win: Morphological Stemming",
+      "query": "replicating cache nodes",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.017,
+          "hits_count": 0,
+          "retrieved": [],
+          "metrics": {
+            "query": "replicating cache nodes",
+            "retrieved_count": 0,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [],
+            "relevant_doc_ids": [
+              1,
+              8,
+              9
+            ],
+            "reciprocal_rank": 0.0,
+            "average_precision": 0.0,
+            "precision@1": 0.0,
+            "recall@1": 0.0,
+            "precision@3": 0.0,
+            "recall@3": 0.0,
+            "precision@5": 0.0,
+            "recall@5": 0.0,
+            "precision@10": 0.0,
+            "recall@10": 0.0
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 7.357,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 5,
+              "score": 2.2873,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.6644,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 1,
+              "score": 1.6477,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 2,
+              "score": 1.1845,
+              "title": "Raft Consensus and Leader Election"
+            },
+            {
+              "doc_id": 6,
+              "score": 1.1845,
+              "title": "Distributed Transactions with Two-Phase Commit"
+            }
+          ],
+          "metrics": {
+            "query": "replicating cache nodes",
+            "retrieved_count": 5,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              5,
+              9,
+              1,
+              2,
+              6
+            ],
+            "relevant_doc_ids": [
+              1,
+              8,
+              9
+            ],
+            "reciprocal_rank": 0.5,
+            "average_precision": 0.3889,
+            "precision@1": 0.0,
+            "recall@1": 0.0,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.4,
+            "recall@5": 0.6667,
+            "precision@10": 0.2,
+            "recall@10": 0.6667
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 4.67,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 3.105,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 8,
+              "score": 2.3188,
+              "title": "Data Replication Strategies: Sync vs Async"
+            },
+            {
+              "doc_id": 5,
+              "score": 2.2793,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.6722,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 2,
+              "score": 1.1708,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "replicating cache nodes",
+            "retrieved_count": 5,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              1,
+              8,
+              5,
+              9,
+              2
+            ],
+            "relevant_doc_ids": [
+              1,
+              8,
+              9
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.9167,
+            "precision@1": 1.0,
+            "recall@1": 0.3333,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.6,
+            "recall@5": 1.0,
+            "precision@10": 0.3,
+            "recall@10": 1.0
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 3.464,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 5,
+              "score": 2.2611,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 1,
+              "score": 1.6839,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.651,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 6,
+              "score": 1.1862,
+              "title": "Distributed Transactions with Two-Phase Commit"
+            },
+            {
+              "doc_id": 2,
+              "score": 1.1718,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "replicating cache nodes",
+            "retrieved_count": 5,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              5,
+              1,
+              9,
+              6,
+              2
+            ],
+            "relevant_doc_ids": [
+              1,
+              8,
+              9
+            ],
+            "reciprocal_rank": 0.5,
+            "average_precision": 0.3889,
+            "precision@1": 0.0,
+            "recall@1": 0.0,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.4,
+            "recall@5": 0.6667,
+            "precision@10": 0.2,
+            "recall@10": 0.6667
+          }
+        }
+      }
+    },
+    {
+      "query_id": "A2",
+      "category": "ES Win: Disjunctive Candidate Retrieval",
+      "query": "redis cache clustering and sharding",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.014,
+          "hits_count": 0,
+          "retrieved": [],
+          "metrics": {
+            "query": "redis cache clustering and sharding",
+            "retrieved_count": 0,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [],
+            "relevant_doc_ids": [
+              1,
+              3,
+              5
+            ],
+            "reciprocal_rank": 0.0,
+            "average_precision": 0.0,
+            "precision@1": 0.0,
+            "recall@1": 0.0,
+            "precision@3": 0.0,
+            "recall@3": 0.0,
+            "precision@5": 0.0,
+            "recall@5": 0.0,
+            "precision@10": 0.0,
+            "recall@10": 0.0
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 3.216,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 4.3032,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 3,
+              "score": 2.2249,
+              "title": "Database Sharding and Horizontal Partitioning"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.7375,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 5,
+              "score": 1.1995,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 2,
+              "score": 0.0765,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "redis cache clustering and sharding",
+            "retrieved_count": 5,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              1,
+              3,
+              9,
+              5,
+              2
+            ],
+            "relevant_doc_ids": [
+              1,
+              3,
+              5
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.9167,
+            "precision@1": 1.0,
+            "recall@1": 0.3333,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.6,
+            "recall@5": 1.0,
+            "precision@10": 0.3,
+            "recall@10": 1.0
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 3.091,
+          "hits_count": 4,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 5.7683,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 3,
+              "score": 2.8336,
+              "title": "Database Sharding and Horizontal Partitioning"
+            },
+            {
+              "doc_id": 9,
+              "score": 2.5037,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 5,
+              "score": 1.1397,
+              "title": "Consistent Hashing and Virtual Nodes"
+            }
+          ],
+          "metrics": {
+            "query": "redis cache clustering and sharding",
+            "retrieved_count": 4,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              1,
+              3,
+              9,
+              5
+            ],
+            "relevant_doc_ids": [
+              1,
+              3,
+              5
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.9167,
+            "precision@1": 1.0,
+            "recall@1": 0.3333,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.6,
+            "recall@5": 1.0,
+            "precision@10": 0.3,
+            "recall@10": 1.0
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 3.257,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 4.4171,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 3,
+              "score": 2.286,
+              "title": "Database Sharding and Horizontal Partitioning"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.7234,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 5,
+              "score": 1.1858,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 7,
+              "score": 0.0766,
+              "title": "Application Load Balancing with Nginx"
+            }
+          ],
+          "metrics": {
+            "query": "redis cache clustering and sharding",
+            "retrieved_count": 5,
+            "relevant_count": 3,
+            "retrieved_doc_ids": [
+              1,
+              3,
+              9,
+              5,
+              7
+            ],
+            "relevant_doc_ids": [
+              1,
+              3,
+              5
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.9167,
+            "precision@1": 1.0,
+            "recall@1": 0.3333,
+            "precision@3": 0.6667,
+            "recall@3": 0.6667,
+            "precision@5": 0.6,
+            "recall@5": 1.0,
+            "precision@10": 0.3,
+            "recall@10": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "A3",
+      "category": "ES Win: Stopword Filtering & IDF Weighting",
+      "query": "how to achieve consensus across distributed servers",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.017,
+          "hits_count": 0,
+          "retrieved": [],
+          "metrics": {
+            "query": "how to achieve consensus across distributed servers",
+            "retrieved_count": 0,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 0.0,
+            "average_precision": 0.0,
+            "precision@1": 0.0,
+            "recall@1": 0.0,
+            "precision@3": 0.0,
+            "recall@3": 0.0,
+            "precision@5": 0.0,
+            "recall@5": 0.0,
+            "precision@10": 0.0,
+            "recall@10": 0.0
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 3.976,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 5.0537,
+              "title": "Raft Consensus and Leader Election"
+            },
+            {
+              "doc_id": 5,
+              "score": 2.0201,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 6,
+              "score": 1.3491,
+              "title": "Distributed Transactions with Two-Phase Commit"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.2067,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 1,
+              "score": 0.8207,
+              "title": "Distributed In-Memory Caching with Redis"
+            }
+          ],
+          "metrics": {
+            "query": "how to achieve consensus across distributed servers",
+            "retrieved_count": 5,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2,
+              5,
+              6,
+              9,
+              1
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.8333,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.6667,
+            "recall@3": 1.0,
+            "precision@5": 0.4,
+            "recall@5": 1.0,
+            "precision@10": 0.2,
+            "recall@10": 1.0
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 3.315,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 4.2739,
+              "title": "Raft Consensus and Leader Election"
+            },
+            {
+              "doc_id": 5,
+              "score": 1.8385,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.4263,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 6,
+              "score": 0.9875,
+              "title": "Distributed Transactions with Two-Phase Commit"
+            },
+            {
+              "doc_id": 7,
+              "score": 0.9742,
+              "title": "Application Load Balancing with Nginx"
+            }
+          ],
+          "metrics": {
+            "query": "how to achieve consensus across distributed servers",
+            "retrieved_count": 5,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2,
+              5,
+              9,
+              6,
+              7
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.75,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.3333,
+            "recall@3": 0.5,
+            "precision@5": 0.4,
+            "recall@5": 1.0,
+            "precision@10": 0.2,
+            "recall@10": 1.0
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 3.218,
+          "hits_count": 5,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 4.9995,
+              "title": "Raft Consensus and Leader Election"
+            },
+            {
+              "doc_id": 5,
+              "score": 2.0046,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 6,
+              "score": 1.351,
+              "title": "Distributed Transactions with Two-Phase Commit"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.1908,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 1,
+              "score": 0.8445,
+              "title": "Distributed In-Memory Caching with Redis"
+            }
+          ],
+          "metrics": {
+            "query": "how to achieve consensus across distributed servers",
+            "retrieved_count": 5,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2,
+              5,
+              6,
+              9,
+              1
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.8333,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.6667,
+            "recall@3": 1.0,
+            "precision@5": 0.4,
+            "recall@5": 1.0,
+            "precision@10": 0.2,
+            "recall@10": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "B1",
+      "category": "Homemade Win: Hyphenated Compound Terms",
+      "query": "in-memory key-value",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.026,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 4.7436,
+              "title": "Distributed In-Memory Caching with Redis",
+              "content_preview": "Redis is an in-memory key-value data store frequently deployed as a distributed ..."
+            }
+          ],
+          "metrics": {
+            "query": "in-memory key-value",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              1
+            ],
+            "relevant_doc_ids": [
+              1
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 2.624,
+          "hits_count": 3,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 6.5619,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 9,
+              "score": 1.6425,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            },
+            {
+              "doc_id": 3,
+              "score": 1.583,
+              "title": "Database Sharding and Horizontal Partitioning"
+            }
+          ],
+          "metrics": {
+            "query": "in-memory key-value",
+            "retrieved_count": 3,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              1,
+              9,
+              3
+            ],
+            "relevant_doc_ids": [
+              1
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 2.305,
+          "hits_count": 4,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 4.8584,
+              "title": "Distributed In-Memory Caching with Redis"
+            },
+            {
+              "doc_id": 3,
+              "score": 1.1869,
+              "title": "Database Sharding and Horizontal Partitioning"
+            },
+            {
+              "doc_id": 5,
+              "score": 1.1397,
+              "title": "Consistent Hashing and Virtual Nodes"
+            },
+            {
+              "doc_id": 9,
+              "score": 0.8315,
+              "title": "Rambling Infrastructure Notes on Hardware & Cache (Verbose Document)"
+            }
+          ],
+          "metrics": {
+            "query": "in-memory key-value",
+            "retrieved_count": 4,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              1,
+              3,
+              5,
+              9
+            ],
+            "relevant_doc_ids": [
+              1
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 2.286,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 1,
+              "score": 3.9471,
+              "title": "Distributed In-Memory Caching with Redis"
+            }
+          ],
+          "metrics": {
+            "query": "in-memory key-value",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              1
+            ],
+            "relevant_doc_ids": [
+              1
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "B2",
+      "category": "Homemade Win: Small-Corpus IDF Separation",
+      "query": "scatter-gather",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.021,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 3,
+              "score": 2.1768,
+              "title": "Database Sharding and Horizontal Partitioning",
+              "content_preview": "Database sharding divides a large dataset across multiple database instances hor..."
+            }
+          ],
+          "metrics": {
+            "query": "scatter-gather",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              3
+            ],
+            "relevant_doc_ids": [
+              3
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 2.074,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 3,
+              "score": 4.3326,
+              "title": "Database Sharding and Horizontal Partitioning"
+            }
+          ],
+          "metrics": {
+            "query": "scatter-gather",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              3
+            ],
+            "relevant_doc_ids": [
+              3
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 2.22,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 3,
+              "score": 4.2898,
+              "title": "Database Sharding and Horizontal Partitioning"
+            }
+          ],
+          "metrics": {
+            "query": "scatter-gather",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              3
+            ],
+            "relevant_doc_ids": [
+              3
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 3.421,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 3,
+              "score": 2.2258,
+              "title": "Database Sharding and Horizontal Partitioning"
+            }
+          ],
+          "metrics": {
+            "query": "scatter-gather",
+            "retrieved_count": 1,
+            "relevant_count": 1,
+            "retrieved_doc_ids": [
+              3
+            ],
+            "relevant_doc_ids": [
+              3
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 1.0,
+            "precision@1": 1.0,
+            "recall@1": 1.0,
+            "precision@3": 0.3333,
+            "recall@3": 1.0,
+            "precision@5": 0.2,
+            "recall@5": 1.0,
+            "precision@10": 0.1,
+            "recall@10": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "B3",
+      "category": "Homemade Win: Microsecond Execution Latency",
+      "query": "raft consensus leader election",
+      "configs": {
+        "homemade_bm25": {
+          "name": "Homemade (Boolean AND + BM25)",
+          "latency_ms": 0.031,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 11.4203,
+              "title": "Raft Consensus and Leader Election",
+              "content_preview": "The Raft consensus algorithm maintains state machine consistency across distribu..."
+            }
+          ],
+          "metrics": {
+            "query": "raft consensus leader election",
+            "retrieved_count": 1,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.5,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.3333,
+            "recall@3": 0.5,
+            "precision@5": 0.2,
+            "recall@5": 0.5,
+            "precision@10": 0.1,
+            "recall@10": 0.5
+          }
+        },
+        "es_standard": {
+          "name": "Elasticsearch (Standard Analyzer, OR)",
+          "latency_ms": 2.579,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 9.2512,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "raft consensus leader election",
+            "retrieved_count": 1,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.5,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.3333,
+            "recall@3": 0.5,
+            "precision@5": 0.2,
+            "recall@5": 0.5,
+            "precision@10": 0.1,
+            "recall@10": 0.5
+          }
+        },
+        "es_english": {
+          "name": "Elasticsearch (English Analyzer + Stemming, OR)",
+          "latency_ms": 2.841,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 9.1549,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "raft consensus leader election",
+            "retrieved_count": 1,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.5,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.3333,
+            "recall@3": 0.5,
+            "precision@5": 0.2,
+            "recall@5": 0.5,
+            "precision@10": 0.1,
+            "recall@10": 0.5
+          }
+        },
+        "es_exact": {
+          "name": "Elasticsearch (Exact Hyphen Analyzer, OR)",
+          "latency_ms": 2.702,
+          "hits_count": 1,
+          "retrieved": [
+            {
+              "doc_id": 2,
+              "score": 9.1622,
+              "title": "Raft Consensus and Leader Election"
+            }
+          ],
+          "metrics": {
+            "query": "raft consensus leader election",
+            "retrieved_count": 1,
+            "relevant_count": 2,
+            "retrieved_doc_ids": [
+              2
+            ],
+            "relevant_doc_ids": [
+              2,
+              6
+            ],
+            "reciprocal_rank": 1.0,
+            "average_precision": 0.5,
+            "precision@1": 1.0,
+            "recall@1": 0.5,
+            "precision@3": 0.3333,
+            "recall@3": 0.5,
+            "precision@5": 0.2,
+            "recall@5": 0.5,
+            "precision@10": 0.1,
+            "recall@10": 0.5
+          }
+        }
+      }
+    }
+  ]
+}

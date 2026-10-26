@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "module": "M16a",
+    "lab": "M16a-L3",
+    "purpose": "Ground truth relevance judgments for Information Retrieval evaluation comparing Homemade Inverted Index vs. Elasticsearch",
+    "scale": {
+      "0": "Irrelevant - Document does not address the query information need.",
+      "1": "Partially Relevant - Document touches on related concepts or sub-topics.",
+      "2": "Highly Relevant - Document directly answers or centers on the query topic."
+    }
+  },
+  "queries": [
+    {
+      "query_id": "A1",
+      "query": "replicating cache nodes",
+      "category": "Elasticsearch Win (Morphological Stemming)",
+      "expected_top_docs": [1, 8],
+      "judgments": [
+        {
+          "doc_id": 1,
+          "grade": 2,
+          "notes": "Highly relevant: Directly covers distributed cache nodes and master-slave replication."
+        },
+        {
+          "doc_id": 8,
+          "grade": 1,
+          "notes": "Partially relevant: Covers data replication strategies (sync vs async), but not caching."
+        },
+        {
+          "doc_id": 9,
+          "grade": 1,
+          "notes": "Partially relevant: Mentions distributed cache cluster repeatedly, but rambling infrastructure notes."
+        }
+      ]
+    },
+    {
+      "query_id": "A2",
+      "query": "redis cache clustering and sharding",
+      "category": "Elasticsearch Win (Disjunctive Multi-Term Matching)",
+      "expected_top_docs": [1, 3],
+      "judgments": [
+        {
+          "doc_id": 1,
+          "grade": 2,
+          "notes": "Highly relevant: Directly covers Redis in-memory cache and cluster acceleration."
+        },
+        {
+          "doc_id": 3,
+          "grade": 2,
+          "notes": "Highly relevant: Dedicated document on database sharding and horizontal partitioning."
+        },
+        {
+          "doc_id": 5,
+          "grade": 1,
+          "notes": "Partially relevant: Discusses consistent hashing for cache server distribution."
+        }
+      ]
+    },
+    {
+      "query_id": "A3",
+      "query": "how to achieve consensus across distributed servers",
+      "category": "Elasticsearch Win (Stopword Filtering & IDF Weighting)",
+      "expected_top_docs": [2],
+      "judgments": [
+        {
+          "doc_id": 2,
+          "grade": 2,
+          "notes": "Highly relevant: Specifically explains Raft consensus across distributed servers."
+        },
+        {
+          "doc_id": 6,
+          "grade": 1,
+          "notes": "Partially relevant: Covers distributed transactions and 2PC coordinator."
+        }
+      ]
+    },
+    {
+      "query_id": "B1",
+      "query": "in-memory key-value",
+      "category": "Homemade Index Win (Hyphenated Compound Preservation)",
+      "expected_top_docs": [1],
+      "judgments": [
+        {
+          "doc_id": 1,
+          "grade": 2,
+          "notes": "Highly relevant: Explicitly introduces Redis as an in-memory key-value data store."
+        }
+      ]
+    },
+    {
+      "query_id": "B2",
+      "query": "scatter-gather",
+      "category": "Homemade Index Win (Small-Corpus Float IDF Separation)",
+      "expected_top_docs": [3],
+      "judgments": [
+        {
+          "doc_id": 3,
+          "grade": 2,
+          "notes": "Highly relevant: Explicitly covers cross-shard scatter-gather queries in sharded databases."
+        }
+      ]
+    },
+    {
+      "query_id": "B3",
+      "query": "raft consensus leader election",
+      "category": "Homemade Index Win (Zero-Overhead Microsecond Execution)",
+      "expected_top_docs": [2],
+      "judgments": [
+        {
+          "doc_id": 2,
+          "grade": 2,
+          "notes": "Highly relevant: Core document on Raft consensus and randomized leader election."
+        },
+        {
+          "doc_id": 6,
+          "grade": 1,
+          "notes": "Partially relevant: Mentions distributed coordination, but for two-phase commit."
+        }
+      ]
+    }
+  ]
+}
