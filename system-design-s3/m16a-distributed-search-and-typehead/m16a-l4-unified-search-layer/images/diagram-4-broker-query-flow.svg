@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .card-blue { fill: #EFF6FF; stroke: #3B82F6; stroke-width: 1.5; rx: 8px; }
+      .card-emerald { fill: #ECFDF5; stroke: #10B981; stroke-width: 1.5; rx: 8px; }
+      .card-amber { fill: #FFFBEB; stroke: #F59E0B; stroke-width: 1.5; rx: 8px; }
+      .card-rose { fill: #FEF2F2; stroke: #EF4444; stroke-width: 1.5; rx: 8px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #0F172A; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .conn-blue { stroke: #2563EB; stroke-width: 2; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-amber { stroke: #D97706; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-emerald { stroke: #059669; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      @keyframes flow {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#D97706" />
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Search Broker Service: Decision Flow &amp; Fallback Execution</text>
+    <text class="subtext" x="0" y="20">Internal routing logic ensuring zero client-facing 500 errors during outages or SLA breaches</text>
+  </g>
+
+  <!-- Step 1: Request Ingestion -->
+  <g transform="translate(40, 75)">
+    <rect width="210" height="70" class="card" />
+    <text class="title" x="14" y="24">1. Incoming Request</text>
+    <text class="code-text" x="14" y="44">GET /search?q={query}</text>
+    <text class="subtext" x="14" y="58">t0 = time.perf_counter()</text>
+  </g>
+
+  <!-- Arrow 1 -> Decision 1 -->
+  <path d="M 250 110 L 320 110" class="conn-blue" marker-end="url(#arrow-blue)" />
+
+  <!-- Step 2: Circuit Health Gate -->
+  <g transform="translate(320, 65)">
+    <polygon points="120,0 240,45 120,90 0,45" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2" />
+    <text class="title" x="52" y="42" font-size="11px">Circuit Allowed?</text>
+    <text class="code-text" x="42" y="58" font-size="9px">can_execute() &amp;&amp; !forced</text>
+  </g>
+
+  <!-- Branch A: Circuit OPEN or Forced (Fast-Fail) -->
+  <path d="M 440 65 L 440 20 L 720 20 L 720 75" class="conn-amber" marker-end="url(#arrow-amber)" />
+  <rect x="520" y="10" width="140" height="20" fill="#FFFFFF" stroke="#FCD34D" rx="4" />
+  <text class="badge-text" x="528" y="24" fill="#B45309">NO (OPEN OR FORCED)</text>
+
+  <!-- Branch B: Circuit CLOSED (Proceed to Primary) -->
+  <path d="M 440 155 L 440 200" class="conn-blue" marker-end="url(#arrow-blue)" />
+  <text class="badge-text" x="448" y="180" fill="#1D4ED8">YES (CLOSED)</text>
+
+  <!-- Step 3: Primary Elasticsearch Query -->
+  <g transform="translate(320, 200)">
+    <rect width="240" height="110" class="card-blue" />
+    <text class="title" x="16" y="24" fill="#1E40AF">2. Primary Cluster Query</text>
+    <text class="code-text" x="16" y="46">es_client.search(q, "content.english")</text>
+    <text class="subtext" x="16" y="66">Network call to ES port 9200</text>
+    <text class="subtext" x="16" y="82">Timer: es_duration = now - t0</text>
+    <text class="code-text" x="16" y="98" fill="#2563EB">Target SLA: &lt;= 500 ms</text>
+  </g>
+
+  <!-- Arrow 3 -> Decision 2 -->
+  <path d="M 440 310 L 440 350" class="conn-blue" marker-end="url(#arrow-blue)" />
+
+  <!-- Step 4: SLA and Health Check -->
+  <g transform="translate(320, 350)">
+    <polygon points="120,0 240,45 120,90 0,45" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2" />
+    <text class="title" x="65" y="42" font-size="11px">SLA Compliant?</text>
+    <text class="code-text" x="50" y="58" font-size="9px">latency &lt;= 500ms &amp;&amp; OK</text>
+  </g>
+
+  <!-- Primary Success Path (Down) -->
+  <path d="M 440 440 L 440 470 L 250 470" class="conn-emerald" marker-end="url(#arrow-emerald)" />
+  <text class="badge-text" x="330" y="462" fill="#047857">YES (PRIMARY SUCCESS)</text>
+
+  <!-- Step 5A: Primary Response Card -->
+  <g transform="translate(40, 420)">
+    <rect width="210" height="96" class="card-emerald" />
+    <text class="title" x="14" y="22" fill="#065F46">Response: Primary ES</text>
+    <text class="code-text" x="14" y="42">&#8226; engine: "elasticsearch"</text>
+    <text class="code-text" x="14" y="58">&#8226; degraded: false</text>
+    <text class="code-text" x="14" y="74" fill="#047857">&#8226; latency_ms: ~6.6 ms</text>
+    <text class="subtext" x="14" y="90">record_success() resets FSM</text>
+  </g>
+
+  <!-- Primary Failure / Timeout Path (Right to Fallback) -->
+  <path d="M 560 395 L 720 395 L 720 220" class="conn-amber" marker-end="url(#arrow-amber)" />
+  <rect x="580" y="380" width="120" height="20" fill="#FFFFFF" stroke="#FECACA" rx="4" />
+  <text class="badge-text" x="588" y="394" fill="#DC2626">NO (SLA BREACH / ERROR)</text>
+
+  <!-- Step 5B: In-Memory Fallback Engine -->
+  <g transform="translate(620, 75)">
+    <rect width="300" height="145" class="card-amber" />
+    <text class="title" x="16" y="24" fill="#92400E">3. Fallback: In-Memory Index</text>
+    <text class="subtext" x="16" y="42">Zero-IPC Heap RAM Access (# TODO 3)</text>
+    <line x1="16" y1="52" x2="284" y2="52" stroke="#FDE68A" />
+    <text class="code-text" x="16" y="70">&#8226; ranker.search(q, mode="bm25")</text>
+    <text class="code-text" x="16" y="90">&#8226; Two-pointer Boolean posting merge</text>
+    <text class="code-text" x="16" y="110" fill="#D97706">&#8226; Execution Time: 0.02 - 0.05 ms</text>
+    <text class="subtext" x="16" y="130">record_failure() increments circuit FSM</text>
+  </g>
+
+  <!-- Arrow Fallback -> Degraded Response -->
+  <path d="M 770 220 L 770 420" class="conn-amber" marker-end="url(#arrow-amber)" />
+
+  <!-- Step 5C: Degraded Response Card -->
+  <g transform="translate(660, 420)">
+    <rect width="260" height="96" class="card-amber" />
+    <text class="title" x="14" y="22" fill="#92400E">Response: Degraded RAM</text>
+    <text class="code-text" x="14" y="42">&#8226; engine: "in-memory-inverted-index"</text>
+    <text class="code-text" x="14" y="58">&#8226; degraded: true</text>
+    <text class="code-text" x="14" y="74" fill="#D97706">&#8226; latency_ms: ~0.024 ms (Fast!)</text>
+    <text class="subtext" x="14" y="90">Zero client-facing 500 errors</text>
+  </g>
+</svg>

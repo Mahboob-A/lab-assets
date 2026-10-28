@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unified Search Surface & Request Inspector</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --border: #E2E8F0;
+      --border-dark: #CBD5E1;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --tech-blue: #2563EB;
+      --tech-blue-light: #EFF6FF;
+      --emerald: #059669;
+      --emerald-light: #ECFDF5;
+      --amber: #D97706;
+      --amber-light: #FFFBEB;
+      --rose: #DC2626;
+      --rose-light: #FEF2F2;
+      --slate: #475569;
+      --purple: #7C3AED;
+      --purple-light: #F5F3FF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-closed { background: var(--emerald-light); color: var(--emerald); border: 1px solid #A7F3D0; }
+    .badge-open { background: var(--rose-light); color: var(--rose); border: 1px solid #FECACA; }
+    .badge-half-open { background: var(--amber-light); color: var(--amber); border: 1px solid #FDE68A; }
+    .badge-degraded { background: var(--amber-light); color: var(--amber); border: 1px solid #FDE68A; }
+    .badge-primary { background: var(--tech-blue-light); color: var(--tech-blue); border: 1px solid #BFDBFE; }
+    .badge-purple { background: var(--purple-light); color: var(--purple); border: 1px solid #DDD6FE; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Left Column: Search & Controls */
+    .search-box-wrapper {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 14px;
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--tech-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .typeahead-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08);
+      z-index: 50;
+      margin-top: 4px;
+      max-height: 240px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .typeahead-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .typeahead-item:last-child {
+      border-bottom: none;
+    }
+
+    .typeahead-item:hover {
+      background: var(--tech-blue-light);
+      color: var(--tech-blue);
+    }
+
+    .freq-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: #F1F5F9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #F8FAFC;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Action Buttons Bar */
+    .actions-bar {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr 1.1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .btn-search {
+      background: var(--tech-blue);
+      color: #FFFFFF;
+    }
+    .btn-search:hover { background: #1D4ED8; }
+
+    .btn-fallback {
+      background: var(--amber-light);
+      color: var(--amber);
+      border-color: #FDE68A;
+    }
+    .btn-fallback:hover { background: #FEF3C7; }
+
+    .btn-compare {
+      background: var(--purple-light);
+      color: var(--purple);
+      border-color: #DDD6FE;
+    }
+    .btn-compare:hover { background: #EDE9FE; }
+
+    .btn-trip {
+      background: var(--rose-light);
+      color: var(--rose);
+      border-color: #FECACA;
+    }
+    .btn-trip:hover { background: #FEE2E2; }
+
+    .btn-reset {
+      background: var(--emerald-light);
+      color: var(--emerald);
+      border-color: #A7F3D0;
+    }
+    .btn-reset:hover { background: #D1FAE5; }
+
+    /* Results Area */
+    .results-container {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      background: #FAFAFA;
+      min-height: 120px;
+    }
+
+    .results-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .result-card {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #FFFFFF;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .result-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      font-family: monospace;
+      flex-wrap: wrap;
+    }
+
+    /* Side-by-Side Compare Layout */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .compare-col {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .compare-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .speedup-callout {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    /* Chaos Panel */
+    .chaos-panel {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      margin-top: 16px;
+    }
+
+    .chaos-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Educational Guide Card */
+    .guide-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .guide-section {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .guide-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .guide-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guide-item {
+      margin-bottom: 6px;
+      color: var(--slate);
+    }
+
+    .guide-item strong {
+      color: var(--text);
+    }
+
+    /* Right Column: Chrome DevTools Waterfall Inspector */
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .waterfall-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .waterfall-table th {
+      text-align: left;
+      padding: 8px;
+      background: #F1F5F9;
+      color: var(--slate);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .waterfall-table td {
+      padding: 8px;
+      border-bottom: 1px solid #F1F5F9;
+      vertical-align: middle;
+    }
+
+    .waterfall-bar-container {
+      position: relative;
+      height: 16px;
+      background: #EEF2F6;
+      border-radius: 3px;
+      overflow: hidden;
+      width: 100%;
+      display: flex;
+    }
+
+    .bar-debounce {
+      background: #94A3B8;
+      height: 100%;
+    }
+
+    .bar-rtt {
+      background: #F59E0B;
+      height: 100%;
+    }
+
+    .bar-server {
+      background: #10B981;
+      height: 100%;
+    }
+
+    .bar-ram {
+      background: #06B6D4;
+      height: 100%;
+    }
+
+    .waterfall-row-dropped td {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .clear-action {
+      font-size: 11px;
+      color: var(--tech-blue);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .clear-action:hover {
+      color: #1D4ED8;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Unified Search Surface & Request Inspector</h1>
+      <p>Module 16a &bull; Lab 4: Hybrid Typeahead, Primary Elasticsearch, and Fault-Tolerant In-Memory Fallback</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <span id="circuit-badge" class="badge badge-closed">Circuit: CLOSED</span>
+      <span id="engine-badge" class="badge badge-primary">Primary: Elasticsearch</span>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <!-- LEFT COLUMN: Search, Controls, Results, & Educational Guide -->
+    <div>
+      <!-- 1. Search Box & Controls Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>Search & Keystroke Autocomplete</span>
+          <span style="font-size: 11px; color: var(--text-muted);" id="current-mode-label">Mode: Primary (ES)</span>
+        </div>
+
+        <!-- Debounce Controls -->
+        <div class="controls-bar">
+          <div class="toggle-group">
+            <input type="checkbox" id="debounce-toggle" checked>
+            <label for="debounce-toggle" style="cursor: pointer; font-weight: 600;">Debounce</label>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <input type="range" id="debounce-slider" min="50" max="500" step="50" value="200" style="width: 80px;">
+            <span id="debounce-label" style="font-family: monospace; font-size: 11px;">200ms</span>
+          </div>
+          <div style="margin-left: auto; font-size: 11px; color: var(--text-muted);">
+            Min prefix: <strong>2 chars</strong>
+          </div>
+        </div>
+
+        <!-- Search Input -->
+        <div class="search-box-wrapper">
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Type 'sys', 'dist', 'raft', 'python', 'cache'..."
+            autocomplete="off"
+          />
+          <div id="typeahead-dropdown" class="typeahead-dropdown"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-bar">
+          <button id="btn-do-search" class="btn btn-search" title="Search Primary Elasticsearch (/search)">Execute Full Search</button>
+          <button id="btn-force-fallback" class="btn btn-fallback" title="Force In-Memory Fallback (/search?force_fallback=true)">Force RAM Fallback</button>
+          <button id="btn-compare" class="btn btn-compare" title="Run Both Engines Side-by-Side (/compare)">Compare Both Engines</button>
+        </div>
+
+        <!-- Results Display Area -->
+        <div class="results-container">
+          <div class="results-header-row">
+            <span id="results-summary" style="color: var(--text-muted); font-weight: 600;">Ready for query input</span>
+            <span class="clear-action" id="btn-clear-results">Clear Results</span>
+          </div>
+          <div class="results-list" id="results-list">
+            <div id="results-placeholder" style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 20px;">
+              Search results will appear here upon submission, dropdown click, or comparison.
+            </div>
+          </div>
+        </div>
+
+        <!-- Chaos Administration Panel -->
+        <div class="chaos-panel">
+          <div style="font-size: 12px; font-weight: 600; margin-bottom: 2px;">Chaos Engineering & Fault Injection</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+            Simulate cluster saturation to verify sub-millisecond in-memory RAM fallback.
+          </div>
+          <div class="chaos-buttons">
+            <button id="btn-trip-cb" class="btn btn-trip">Trip Circuit Breaker (Force OPEN)</button>
+            <button id="btn-reset-cb" class="btn btn-reset">Reset Circuit Breaker (CLOSED)</button>
+          </div>
+          <div id="cb-details" style="font-family: monospace; font-size: 11px; color: var(--slate); margin-top: 10px;">
+            Status: CLOSED | Consecutive Failures: 0/3 | SLA: 500ms
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Educational Systems Guide Window (Placed Below Search Card) -->
+      <div class="guide-card">
+        <div class="card-title" style="margin-bottom: 12px;">
+          <span>System Operation & Telemetry Guide</span>
+          <span class="badge badge-primary">Under the Hood</span>
+        </div>
+
+        <!-- Section A: How to Interact -->
+        <div class="guide-section">
+          <div class="guide-section-title">1. How to Interact with the Surface</div>
+          <div class="guide-item">
+            &#8226; <strong>Typeahead Autocomplete:</strong> Type any characters in the search box. The client queries the in-memory Trie (from Lab 2) in <code>0.016ms</code> using precomputed node Top-K heaps.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>Execute Full Search:</strong> Type a query and click <strong>"Execute Full Search"</strong> to route to primary Elasticsearch (from Lab 3) on port 9200 with Porter stemming and BM25 scoring.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>Compare Both Engines:</strong> Click <strong>"Compare Both Engines"</strong> to run the query simultaneously against Elasticsearch and the in-memory fallback index and inspect the side-by-side performance tradeoff.
+          </div>
+        </div>
+
+        <!-- Section B: Telemetry Metrics -->
+        <div class="guide-section">
+          <div class="guide-section-title">2. Telemetry Metrics Explained</div>
+          <div class="guide-item">
+            &#8226; <strong>Keystrokes:</strong> Total physical key events registered by the input listener.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>Emitted Calls:</strong> Actual HTTP network requests dispatched to <code>/suggest</code>.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>Suppressed:</strong> Requests cancelled by the 200ms debounce timer or blocked by prefix gating.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>QPS Saved:</strong> Percentage of backend query volume saved (<code>Suppressed / (Emitted + Suppressed)</code>), showing 75%–85% traffic reduction.
+          </div>
+        </div>
+
+        <!-- Section C: Waterfall Status Flags -->
+        <div class="guide-section">
+          <div class="guide-section-title">3. Waterfall Status Flags Explained</div>
+          <div class="guide-item">
+            &#8226; <span class="badge badge-closed">200 OK</span>: Request succeeded and returned from server within SLA.
+          </div>
+          <div class="guide-item">
+            &#8226; <span class="badge badge-open">GATED (&lt; 2 chars)</span>: Keystroke prefix shorter than 2 characters; suppressed at client / dropped at gateway to avoid single-letter cache thrashing.
+          </div>
+          <div class="guide-item">
+            &#8226; <span class="badge badge-open">CANCELLED (Debounced)</span>: Active 200ms debounce timer aborted because another key was pressed.
+          </div>
+          <div class="guide-item">
+            &#8226; <span class="badge badge-primary">PRIMARY (ES)</span>: Full-text search executed against primary Elasticsearch cluster.
+          </div>
+          <div class="guide-item">
+            &#8226; <span class="badge badge-degraded">DEGRADED (RAM)</span>: Full-text search diverted to the zero-IPC in-memory inverted index due to circuit breaker trip or SLA breach.
+          </div>
+        </div>
+
+        <!-- Section D: Chaos Administration (One-Liners) -->
+        <div class="guide-section">
+          <div class="guide-section-title">4. Chaos Administration (One-Liners)</div>
+          <div class="guide-item">
+            &#8226; <strong>Trip Circuit Breaker:</strong> Forces the circuit to <code>OPEN</code>, immediately quarantining Elasticsearch and demonstrating that searches gracefully degrade to in-memory RAM in <code>0.02ms</code> without failing.
+          </div>
+          <div class="guide-item">
+            &#8226; <strong>Reset Circuit Breaker:</strong> Forces the circuit back to <code>CLOSED</code>, immediately resuming normal high-recall primary routing to Elasticsearch.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Chrome DevTools Waterfall Inspector -->
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <span>Request Waterfall & Telemetry Inspector</span>
+          <span class="clear-action" id="btn-clear-log">Clear Log</span>
+        </div>
+
+        <!-- Metrics Summary -->
+        <div class="stats-summary">
+          <div class="stat-box">
+            <div class="stat-val" id="stat-keystrokes">0</div>
+            <div class="stat-label">Keystrokes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-emitted">0</div>
+            <div class="stat-label">Emitted Calls</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-suppressed" style="color: var(--emerald);">0</div>
+            <div class="stat-label">Suppressed</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-savings" style="color: var(--emerald);">0%</div>
+            <div class="stat-label">QPS Saved</div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display: flex; gap: 14px; font-size: 11px; margin-bottom: 12px; padding: 6px 10px; background: #F8FAFC; border-radius: 4px; flex-wrap: wrap;">
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <span style="width: 10px; height: 10px; background: #94A3B8; border-radius: 2px;"></span> Debounce Wait
+          </span>
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <span style="width: 10px; height: 10px; background: #F59E0B; border-radius: 2px;"></span> Network RTT
+          </span>
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <span style="width: 10px; height: 10px; background: #10B981; border-radius: 2px;"></span> ES Primary
+          </span>
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <span style="width: 10px; height: 10px; background: #06B6D4; border-radius: 2px;"></span> RAM Index/Trie
+          </span>
+        </div>
+
+        <!-- Waterfall Timeline Table -->
+        <div style="max-height: 520px; overflow-y: auto;">
+          <table class="waterfall-table">
+            <thead>
+              <tr>
+                <th style="width: 20%;">Query / Event</th>
+                <th style="width: 14%;">Target</th>
+                <th style="width: 18%;">Status</th>
+                <th style="width: 30%;">Waterfall Timeline</th>
+                <th style="width: 18%; text-align: right;">Duration</th>
+              </tr>
+            </thead>
+            <tbody id="waterfall-body">
+              <tr id="waterfall-placeholder">
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  Begin typing in the search box to record network waterfall traces.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State Tracker
+    const state = {
+      keystrokes: 0,
+      emittedCalls: 0,
+      suppressedCalls: 0,
+      debounceTimer: null,
+    };
+
+    // DOM Elements
+    const searchInput = document.getElementById('search-input');
+    const dropdown = document.getElementById('typeahead-dropdown');
+    const resultsList = document.getElementById('results-list');
+    const resultsSummary = document.getElementById('results-summary');
+    const debounceToggle = document.getElementById('debounce-toggle');
+    const debounceSlider = document.getElementById('debounce-slider');
+    const debounceLabel = document.getElementById('debounce-label');
+    const waterfallBody = document.getElementById('waterfall-body');
+    const waterfallPlaceholder = document.getElementById('waterfall-placeholder');
+
+    const statKeystrokes = document.getElementById('stat-keystrokes');
+    const statEmitted = document.getElementById('stat-emitted');
+    const statSuppressed = document.getElementById('stat-suppressed');
+    const statSavings = document.getElementById('stat-savings');
+
+    const circuitBadge = document.getElementById('circuit-badge');
+    const engineBadge = document.getElementById('engine-badge');
+    const cbDetails = document.getElementById('cb-details');
+    const currentModeLabel = document.getElementById('current-mode-label');
+
+    // Debounce Slider Input Listener
+    debounceSlider.addEventListener('input', () => {
+      debounceLabel.textContent = `${debounceSlider.value}ms`;
+    });
+
+    function updateStats() {
+      statKeystrokes.textContent = state.keystrokes;
+      statEmitted.textContent = state.emittedCalls;
+      statSuppressed.textContent = state.suppressedCalls;
+      const total = state.emittedCalls + state.suppressedCalls;
+      const savingsPct = total > 0 ? Math.round((state.suppressedCalls / total) * 100) : 0;
+      statSavings.textContent = `${savingsPct}%`;
+    }
+
+    function addWaterfallRow({ query, target, status, statusClass, debounceMs, rttMs, serverMs, engine, isDropped }) {
+      const ph = document.getElementById('waterfall-placeholder');
+      if (ph) ph.remove();
+
+      const tr = document.createElement('tr');
+      if (isDropped) tr.className = 'waterfall-row-dropped';
+
+      const totalMs = (debounceMs || 0) + (rttMs || 0);
+      const isRam = engine && (engine.includes('in-memory') || engine.includes('trie'));
+      const serverBarClass = isRam ? 'bar-ram' : 'bar-server';
+
+      const debouncePct = Math.min(100, Math.round(((debounceMs || 0) / Math.max(1, totalMs)) * 100));
+      const rttPct = Math.max(5, 100 - debouncePct);
+
+      tr.innerHTML = `
+        <td style="font-family: monospace; font-weight: 600;">${query || '&empty;'}</td>
+        <td><span class="badge ${isRam ? 'badge-half-open' : 'badge-primary'}">${target}</span></td>
+        <td><span class="badge ${statusClass}">${status}</span></td>
+        <td>
+          <div class="waterfall-bar-container" title="Debounce: ${debounceMs}ms, RTT: ${rttMs ? rttMs.toFixed(2) : 0}ms">
+            ${debounceMs > 0 ? `<div class="bar-debounce" style="width: ${debouncePct}%;"></div>` : ''}
+            <div class="${serverBarClass}" style="width: ${rttPct}%;"></div>
+          </div>
+        </td>
+        <td style="text-align: right; font-family: monospace;">${rttMs ? rttMs.toFixed(1) + 'ms' : '-'}</td>
+      `;
+
+      waterfallBody.insertBefore(tr, waterfallBody.firstChild);
+    }
+
+    // Keystroke Autocomplete Listener
+    searchInput.addEventListener('input', () => {
+      state.keystrokes++;
+      const query = searchInput.value;
+      const debounceEnabled = debounceToggle.checked;
+      const debounceTime = parseInt(debounceSlider.value, 10);
+
+      // Prefix Gating (< 2 characters)
+      if (query.trim().length < 2) {
+        dropdown.style.display = 'none';
+        state.suppressedCalls++;
+        updateStats();
+        addWaterfallRow({
+          query: `"${query}"`,
+          target: '/suggest',
+          status: 'Gated (< 2 chars)',
+          statusClass: 'badge-open',
+          debounceMs: 0,
+          rttMs: 0,
+          serverMs: 0,
+          engine: 'client',
+          isDropped: true,
+        });
+        return;
+      }
+
+      if (debounceEnabled) {
+        if (state.debounceTimer) {
+          clearTimeout(state.debounceTimer);
+          state.suppressedCalls++;
+          updateStats();
+          addWaterfallRow({
+            query: `"${query}"`,
+            target: '/suggest',
+            status: 'Cancelled (Debounced)',
+            statusClass: 'badge-open',
+            debounceMs: debounceTime,
+            rttMs: 0,
+            serverMs: 0,
+            engine: 'client',
+            isDropped: true,
+          });
+        }
+
+        state.debounceTimer = setTimeout(() => {
+          fetchSuggestions(query, debounceTime);
+        }, debounceTime);
+      } else {
+        fetchSuggestions(query, 0);
+      }
+
+      updateStats();
+    });
+
+    async function fetchSuggestions(prefix, debounceWait) {
+      state.emittedCalls++;
+      updateStats();
+
+      const t0 = performance.now();
+      try {
+        const res = await fetch(`/suggest?q=${encodeURIComponent(prefix)}&limit=5`);
+        const data = await res.json();
+        const rtt = performance.now() - t0;
+
+        addWaterfallRow({
+          query: `"${prefix}"`,
+          target: '/suggest',
+          status: '200 OK',
+          statusClass: 'badge-closed',
+          debounceMs: debounceWait,
+          rttMs: rtt,
+          serverMs: data.latency_ms,
+          engine: 'trie',
+          isDropped: false,
+        });
+
+        renderDropdown(data.suggestions);
+      } catch (err) {
+        addWaterfallRow({
+          query: `"${prefix}"`,
+          target: '/suggest',
+          status: 'Failed',
+          statusClass: 'badge-open',
+          debounceMs: debounceWait,
+          rttMs: performance.now() - t0,
+          serverMs: 0,
+          engine: 'network',
+          isDropped: false,
+        });
+      }
+    }
+
+    function renderDropdown(suggestions) {
+      if (!suggestions || suggestions.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      dropdown.innerHTML = '';
+      suggestions.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'typeahead-item';
+        div.innerHTML = `
+          <span>${item.query}</span>
+          <span class="freq-badge">${item.frequency}</span>
+        `;
+        div.addEventListener('click', () => {
+          searchInput.value = item.query;
+          dropdown.style.display = 'none';
+          executeSearch(item.query, false);
+        });
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = 'block';
+    }
+
+    // Search Execution (Primary or Fallback)
+    async function executeSearch(query, forceFallback = false) {
+      const cleanQ = query ? query.trim() : '';
+      if (!cleanQ) {
+        alert('Please enter a query in the search box before searching.');
+        searchInput.focus();
+        return;
+      }
+
+      dropdown.style.display = 'none';
+      currentModeLabel.textContent = forceFallback ? 'Mode: Forced RAM Fallback' : 'Mode: Primary (ES)';
+
+      const t0 = performance.now();
+      try {
+        const res = await fetch(`/search?q=${encodeURIComponent(cleanQ)}&force_fallback=${forceFallback}`);
+        const data = await res.json();
+        const rtt = performance.now() - t0;
+
+        addWaterfallRow({
+          query: `"${cleanQ}"`,
+          target: '/search',
+          status: data.degraded ? 'DEGRADED (RAM)' : 'PRIMARY (ES)',
+          statusClass: data.degraded ? 'badge-degraded' : 'badge-closed',
+          debounceMs: 0,
+          rttMs: rtt,
+          serverMs: data.latency_ms,
+          engine: data.engine,
+          isDropped: false,
+        });
+
+        renderSearchResults(data);
+        pollHealth();
+      } catch (err) {
+        console.error('Search request failed', err);
+      }
+    }
+
+    function renderSearchResults(data) {
+      resultsList.innerHTML = '';
+      resultsSummary.textContent = `Returned ${data.total_hits} results in ${data.latency_ms} ms (${data.engine})`;
+
+      if (!data.results || data.results.length === 0) {
+        resultsList.innerHTML = `
+          <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 20px;">
+            No matching documents found for <strong>"${data.query}"</strong>.
+            ${data.degraded ? '<br><span style="color: var(--amber);">Notice: Fallback in-memory index does not include morphological stemming.</span>' : ''}
+          </div>
+        `;
+        return;
+      }
+
+      data.results.forEach(hit => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div class="result-header">
+            <span>Doc #${hit.doc_id}: ${hit.title}</span>
+            <span style="font-family: monospace; color: var(--tech-blue); font-weight: 700;">Score: ${hit.score.toFixed(4)}</span>
+          </div>
+          <div class="result-meta">
+            <span>Engine: <strong>${data.engine}</strong></span>
+            <span>Degraded: <strong>${data.degraded}</strong></span>
+            ${data.degradation_reason ? `<span style="color: var(--amber);">Reason: ${data.degradation_reason}</span>` : ''}
+          </div>
+        `;
+        resultsList.appendChild(card);
+      });
+    }
+
+    // Side-by-Side Compare (/compare) Execution
+    async function executeCompare(query) {
+      const cleanQ = query ? query.trim() : '';
+      if (!cleanQ) {
+        alert('Please enter a query in the search box before comparing engines.');
+        searchInput.focus();
+        return;
+      }
+
+      dropdown.style.display = 'none';
+      currentModeLabel.textContent = 'Mode: Side-by-Side Comparison';
+
+      const t0 = performance.now();
+      try {
+        const res = await fetch(`/compare?q=${encodeURIComponent(cleanQ)}`);
+        const data = await res.json();
+        const rtt = performance.now() - t0;
+
+        addWaterfallRow({
+          query: `"${cleanQ}"`,
+          target: '/compare',
+          status: 'COMPARE (Dual)',
+          statusClass: 'badge-purple',
+          debounceMs: 0,
+          rttMs: rtt,
+          serverMs: data.elasticsearch.latency_ms,
+          engine: 'dual',
+          isDropped: false,
+        });
+
+        renderCompareResults(data);
+        pollHealth();
+      } catch (err) {
+        console.error('Compare request failed', err);
+      }
+    }
+
+    function renderCompareResults(data) {
+      resultsList.innerHTML = '';
+      resultsSummary.textContent = `Side-by-Side Shootout: "${data.query}"`;
+
+      const container = document.createElement('div');
+
+      const esHitsHtml = (data.elasticsearch.hits && data.elasticsearch.hits.length > 0)
+        ? data.elasticsearch.hits.map(h => `<div style="font-size: 11px; padding: 4px 0; border-bottom: 1px solid #F1F5F9;">Doc #${h.doc_id}: <strong>${h.title}</strong> (Score: ${h.score.toFixed(4)})</div>`).join('')
+        : '<div style="font-size: 11px; color: var(--text-muted); padding: 8px 0;">No hits.</div>';
+
+      const ramHitsHtml = (data.in_memory_inverted_index.hits && data.in_memory_inverted_index.hits.length > 0)
+        ? data.in_memory_inverted_index.hits.map(h => `<div style="font-size: 11px; padding: 4px 0; border-bottom: 1px solid #F1F5F9;">Doc #${h.doc_id}: <strong>${h.title}</strong> (Score: ${h.score.toFixed(4)})</div>`).join('')
+        : '<div style="font-size: 11px; color: var(--text-muted); padding: 8px 0;">0 hits (Exact token match only).</div>';
+
+      container.innerHTML = `
+        <div class="compare-grid">
+          <!-- Left: Elasticsearch -->
+          <div class="compare-col" style="border-top: 3px solid var(--tech-blue);">
+            <div class="compare-col-header">
+              <span>Elasticsearch Primary</span>
+              <span class="badge badge-primary">${data.elasticsearch.latency_ms} ms</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+              Hits: <strong>${data.elasticsearch.total_hits}</strong> | English Porter Stemmer
+            </div>
+            ${esHitsHtml}
+          </div>
+
+          <!-- Right: In-Memory Index -->
+          <div class="compare-col" style="border-top: 3px solid var(--amber);">
+            <div class="compare-col-header">
+              <span>In-Memory Fallback</span>
+              <span class="badge badge-degraded">${data.in_memory_inverted_index.latency_ms} ms</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+              Hits: <strong>${data.in_memory_inverted_index.total_hits}</strong> | Zero-IPC RAM Heap
+            </div>
+            ${ramHitsHtml}
+          </div>
+        </div>
+
+        <!-- Speedup & Tradeoff Banner -->
+        <div class="speedup-callout">
+          <div style="font-weight: 700; color: var(--tech-blue); margin-bottom: 2px;">
+            Speedup Multiplier: ${data.speedup_factor}
+          </div>
+          <div style="color: var(--slate); font-size: 11px;">
+            ${data.tradeoff_analysis}
+          </div>
+        </div>
+      `;
+
+      resultsList.appendChild(container);
+    }
+
+    // Health and Circuit Breaker Poller
+    async function pollHealth() {
+      try {
+        const res = await fetch('/health');
+        const data = await res.json();
+        const cb = data.circuit_breaker;
+
+        circuitBadge.textContent = `Circuit: ${cb.state}`;
+        circuitBadge.className = `badge badge-${cb.state.toLowerCase().replace('_', '-')}`;
+
+        if (data.primary_elasticsearch.reachable && cb.state === 'CLOSED') {
+          engineBadge.textContent = 'Primary: Elasticsearch';
+          engineBadge.className = 'badge badge-primary';
+        } else {
+          engineBadge.textContent = 'Fallback: In-Memory Index';
+          engineBadge.className = 'badge badge-degraded';
+        }
+
+        cbDetails.textContent = `Status: ${cb.state} | Failures: ${cb.failure_count}/${cb.failure_threshold} | SLA: ${cb.timeout_sla_ms}ms ${cb.cooldown_remaining_s > 0 ? '| Cooldown: ' + cb.cooldown_remaining_s + 's' : ''}`;
+      } catch (err) {
+        console.error('Health poll failed', err);
+      }
+    }
+
+    // Event Handlers for Action Buttons
+    document.getElementById('btn-do-search').addEventListener('click', () => {
+      executeSearch(searchInput.value, false);
+    });
+
+    document.getElementById('btn-force-fallback').addEventListener('click', () => {
+      executeSearch(searchInput.value, true);
+    });
+
+    document.getElementById('btn-compare').addEventListener('click', () => {
+      executeCompare(searchInput.value);
+    });
+
+    // Clear Results Handler
+    document.getElementById('btn-clear-results').addEventListener('click', () => {
+      resultsList.innerHTML = `
+        <div id="results-placeholder" style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 20px;">
+          Search results will appear here upon submission, dropdown click, or comparison.
+        </div>
+      `;
+      resultsSummary.textContent = 'Results cleared';
+      searchInput.value = '';
+      dropdown.style.display = 'none';
+      currentModeLabel.textContent = 'Mode: Primary (ES)';
+    });
+
+    // Clear Waterfall Log Handler
+    document.getElementById('btn-clear-log').addEventListener('click', () => {
+      waterfallBody.innerHTML = `
+        <tr id="waterfall-placeholder">
+          <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+            Log cleared. Type in search bar to record traces.
+          </td>
+        </tr>
+      `;
+      state.keystrokes = 0;
+      state.emittedCalls = 0;
+      state.suppressedCalls = 0;
+      updateStats();
+    });
+
+    // Chaos Controls
+    document.getElementById('btn-trip-cb').addEventListener('click', async () => {
+      await fetch('/circuit-breaker/trip', { method: 'POST' });
+      pollHealth();
+    });
+
+    document.getElementById('btn-reset-cb').addEventListener('click', async () => {
+      await fetch('/circuit-breaker/reset', { method: 'POST' });
+      pollHealth();
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    // Initial Health Poll and recurring 3s check
+    pollHealth();
+    setInterval(pollHealth, 3000);
+  </script>
+</body>
+</html>

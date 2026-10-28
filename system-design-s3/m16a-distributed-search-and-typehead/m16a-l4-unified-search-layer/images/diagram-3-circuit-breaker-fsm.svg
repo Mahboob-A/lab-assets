@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .card-closed { fill: #ECFDF5; stroke: #10B981; stroke-width: 2; rx: 10px; }
+      .card-open { fill: #FEF2F2; stroke: #EF4444; stroke-width: 2; rx: 10px; }
+      .card-half { fill: #FFFBEB; stroke: #F59E0B; stroke-width: 2; rx: 10px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #0F172A; }
+      .state-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .transition-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; }
+      .conn-red { stroke: #EF4444; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-amber { stroke: #F59E0B; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-green { stroke: #10B981; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      @keyframes flow {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#EF4444" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10B981" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#F59E0B" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Search Circuit Breaker: Finite State Machine (FSM)</text>
+    <text class="subtext" x="0" y="20">Quarantine failing primary clusters and divert to in-memory fallback with zero latency penalty</text>
+  </g>
+
+  <!-- STATE 1: CLOSED (NORMAL OPERATION) -->
+  <g transform="translate(50, 110)">
+    <rect width="280" height="340" class="card-closed" />
+    <rect x="16" y="16" width="110" height="22" fill="#D1FAE5" stroke="#10B981" rx="4" />
+    <text class="badge-text" x="24" y="31" fill="#047857">STATE: CLOSED</text>
+    <text class="state-title" x="16" y="66" fill="#065F46">Normal Operation</text>
+    <text class="subtext" x="16" y="84">Primary traffic flows to Elasticsearch</text>
+
+    <line x1="16" y1="96" x2="264" y2="96" stroke="#A7F3D0" />
+
+    <text class="code-text" x="16" y="122">&#8226; can_execute() -&gt; True</text>
+    <text class="code-text" x="16" y="144">&#8226; Target: Elasticsearch (9200)</text>
+    <text class="code-text" x="16" y="166">&#8226; Success: resets failure_count = 0</text>
+    <text class="code-text" x="16" y="188">&#8226; SLA Cap: 500ms per request</text>
+
+    <rect x="16" y="212" width="248" height="106" fill="#FFFFFF" stroke="#6EE7B7" rx="6" />
+    <text class="title" x="26" y="234" font-size="12px">Transition Condition:</text>
+    <text class="code-text" x="26" y="254" fill="#B91C1C">failure_count &gt;= 3</text>
+    <text class="subtext" x="26" y="272">(Consecutive HTTP 5xx / timeouts)</text>
+    <text class="subtext" x="26" y="288">&#8212;&gt; Trips immediately to OPEN</text>
+    <text class="code-text" x="26" y="306" fill="#64748B">Admin Trip: /circuit-breaker/trip</text>
+  </g>
+
+  <!-- STATE 2: OPEN (QUARANTINE / FAST-FAIL) -->
+  <g transform="translate(630, 80)">
+    <rect width="280" height="190" class="card-open" />
+    <rect x="16" y="14" width="90" height="22" fill="#FEE2E2" stroke="#EF4444" rx="4" />
+    <text class="badge-text" x="24" y="29" fill="#B91C1C">STATE: OPEN</text>
+    <text class="state-title" x="16" y="62" fill="#991B1B">Cluster Quarantined</text>
+    <text class="subtext" x="16" y="78">Fast-fail active &#8226; Primary traffic blocked</text>
+
+    <line x1="16" y1="88" x2="264" y2="88" stroke="#FECACA" />
+
+    <text class="code-text" x="16" y="110">&#8226; can_execute() -&gt; False</text>
+    <text class="code-text" x="16" y="128" fill="#DC2626">&#8226; Target: In-Memory Index (RAM)</text>
+    <text class="code-text" x="16" y="146">&#8226; Latency: 0.02ms (Sub-millisecond)</text>
+    <text class="code-text" x="16" y="164">&#8226; Cooldown Timer: 10.0 seconds</text>
+  </g>
+
+  <!-- STATE 3: HALF-OPEN (CANARY TRIAL) -->
+  <g transform="translate(630, 310)">
+    <rect width="280" height="180" class="card-half" />
+    <rect x="16" y="14" width="130" height="22" fill="#FEF3C7" stroke="#F59E0B" rx="4" />
+    <text class="badge-text" x="24" y="29" fill="#B45309">STATE: HALF-OPEN</text>
+    <text class="state-title" x="16" y="62" fill="#92400E">Canary Trial Probe</text>
+    <text class="subtext" x="16" y="78">Testing cluster recovery under live load</text>
+
+    <line x1="16" y1="88" x2="264" y2="88" stroke="#FDE68A" />
+
+    <text class="code-text" x="16" y="110">&#8226; Allows exactly 1 canary request</text>
+    <text class="code-text" x="16" y="128">&#8226; Probes Elasticsearch primary</text>
+    <text class="code-text" x="16" y="146" fill="#059669">&#8226; If Success: CLOSED (Recovered!)</text>
+    <text class="code-text" x="16" y="164" fill="#DC2626">&#8226; If Fail: Re-quarantine OPEN (10s)</text>
+  </g>
+
+  <!-- TRANSITION CONNECTORS -->
+  <!-- 1. CLOSED -> OPEN (Top arrow) -->
+  <path d="M 330 180 C 440 140, 520 140, 630 140" class="conn-red" marker-end="url(#arrow-red)" />
+  <rect x="390" y="122" width="180" height="36" fill="#FFFFFF" stroke="#FECACA" rx="4" />
+  <text class="transition-label" x="398" y="137" fill="#DC2626">3 Failures or SLA &gt; 500ms</text>
+  <text class="subtext" x="398" y="151">Trip threshold exceeded</text>
+
+  <!-- 2. OPEN -> HALF-OPEN (Right vertical arrow) -->
+  <path d="M 770 270 L 770 310" class="conn-amber" marker-end="url(#arrow-amber)" />
+  <rect x="785" y="274" width="120" height="24" fill="#FFFFFF" stroke="#FDE68A" rx="4" />
+  <text class="transition-label" x="792" y="290" fill="#B45309">Cooldown 10.0s</text>
+
+  <!-- 3. HALF-OPEN -> CLOSED (Success recovery arrow) -->
+  <path d="M 630 420 C 500 450, 440 450, 330 380" class="conn-green" marker-end="url(#arrow-green)" />
+  <rect x="390" y="420" width="190" height="36" fill="#FFFFFF" stroke="#A7F3D0" rx="4" />
+  <text class="transition-label" x="398" y="435" fill="#047857">Canary Probe Succeeded</text>
+  <text class="subtext" x="398" y="449">Reset failure_count = 0</text>
+
+  <!-- 4. HALF-OPEN -> OPEN (Canary fail bounce) -->
+  <path d="M 650 310 C 620 285, 620 260, 650 270" class="conn-red" marker-end="url(#arrow-red)" />
+  <text class="code-text" x="555" y="290" fill="#DC2626">Canary Failed</text>
+</svg>

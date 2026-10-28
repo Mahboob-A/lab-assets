@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .card-piece-1 { fill: #FFFBEB; stroke: #F59E0B; stroke-width: 1.5; rx: 8px; }
+      .card-piece-2 { fill: #ECFDF5; stroke: #10B981; stroke-width: 1.5; rx: 8px; }
+      .card-piece-3 { fill: #EFF6FF; stroke: #3B82F6; stroke-width: 1.5; rx: 8px; }
+      .card-unified { fill: #F1F5F9; stroke: #0F172A; stroke-width: 2; rx: 10px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #0F172A; }
+      .piece-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 800; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .conn-amber { stroke: #D97706; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-emerald { stroke: #059669; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .conn-blue { stroke: #2563EB; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      @keyframes flow {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#D97706" />
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Architectural Lineage: Three Foundations Converging into One Surface</text>
+    <text class="subtext" x="0" y="20">How Lab 1, Lab 2, and Lab 3 compose the complete, fault-tolerant search ecosystem</text>
+  </g>
+
+  <!-- TOP ROW: THE 3 FOUNDATIONS -->
+  <!-- Foundation 1: Lab 1 Inverted Index -->
+  <g transform="translate(40, 75)">
+    <rect width="270" height="230" class="card-piece-1" />
+    <rect x="14" y="14" width="90" height="20" fill="#FEF3C7" stroke="#F59E0B" rx="4" />
+    <text class="badge-text" x="22" y="28" fill="#B45309">FOUNDATION 1</text>
+    <text class="piece-title" x="14" y="58" fill="#92400E">Lab 1: In-Memory Index</text>
+    <text class="subtext" x="14" y="74">Build an Inverted Index with Ranking</text>
+
+    <line x1="14" y1="84" x2="256" y2="84" stroke="#FDE68A" />
+
+    <text class="code-text" x="14" y="106">&#8226; In-memory postings: dict[str, list]</text>
+    <text class="code-text" x="14" y="126">&#8226; Two-pointer Boolean AND merge</text>
+    <text class="code-text" x="14" y="146">&#8226; Okapi BM25 scoring with k1=1.2, b=0.75</text>
+    <text class="code-text" x="14" y="166">&#8226; Zero-IPC RAM access (heap memory)</text>
+
+    <rect x="14" y="184" width="242" height="32" fill="#FFFFFF" stroke="#FCD34D" rx="4" />
+    <text class="badge-text" x="22" y="204" fill="#B45309">ROLE IN LAB 4: SUB-MS FALLBACK ENGINE</text>
+  </g>
+
+  <!-- Foundation 2: Lab 2 Typeahead Trie -->
+  <g transform="translate(345, 75)">
+    <rect width="270" height="230" class="card-piece-2" />
+    <rect x="14" y="14" width="90" height="20" fill="#D1FAE5" stroke="#10B981" rx="4" />
+    <text class="badge-text" x="22" y="28" fill="#047857">FOUNDATION 2</text>
+    <text class="piece-title" x="14" y="58" fill="#065F46">Lab 2: Typeahead Trie</text>
+    <text class="subtext" x="14" y="74">Typeahead Service with Trie &amp; Hash+Heap</text>
+
+    <line x1="14" y1="84" x2="256" y2="84" stroke="#A7F3D0" />
+
+    <text class="code-text" x="14" y="106">&#8226; Prefix Tree with O(L) navigation</text>
+    <text class="code-text" x="14" y="126">&#8226; Post-order bottom-up Top-K caching</text>
+    <text class="code-text" x="14" y="146">&#8226; Redis hot-prefix caching &amp; frequency</text>
+    <text class="code-text" x="14" y="166">&#8226; Sub-millisecond keystroke responsiveness</text>
+
+    <rect x="14" y="184" width="242" height="32" fill="#FFFFFF" stroke="#6EE7B7" rx="4" />
+    <text class="badge-text" x="22" y="204" fill="#047857">ROLE IN LAB 4: AUTOCOMPLETE LAYER (/suggest)</text>
+  </g>
+
+  <!-- Foundation 3: Lab 3 Elasticsearch -->
+  <g transform="translate(650, 75)">
+    <rect width="270" height="230" class="card-piece-3" />
+    <rect x="14" y="14" width="90" height="20" fill="#DBEAFE" stroke="#3B82F6" rx="4" />
+    <text class="badge-text" x="22" y="28" fill="#1D4ED8">FOUNDATION 3</text>
+    <text class="piece-title" x="14" y="58" fill="#1E40AF">Lab 3: Elasticsearch</text>
+    <text class="subtext" x="14" y="74">From First Principles to Production</text>
+
+    <line x1="14" y1="84" x2="256" y2="84" stroke="#BFDBFE" />
+
+    <text class="code-text" x="14" y="106">&#8226; Multi-field index (standard, english, exact)</text>
+    <text class="code-text" x="14" y="126">&#8226; Lucene Porter morphological stemmer</text>
+    <text class="code-text" x="14" y="146">&#8226; Empirical IR: MAP 0.8472 vs 0.4167</text>
+    <text class="code-text" x="14" y="166">&#8226; Enterprise full-text distributed search</text>
+
+    <rect x="14" y="184" width="242" height="32" fill="#FFFFFF" stroke="#93C5FD" rx="4" />
+    <text class="badge-text" x="22" y="204" fill="#1D4ED8">ROLE IN LAB 4: PRIMARY SEARCH ENGINE (/search)</text>
+  </g>
+
+  <!-- Converging Connectors -->
+  <path d="M 175 305 L 175 365 L 360 365" class="conn-amber" marker-end="url(#arrow-amber)" />
+  <path d="M 480 305 L 480 365" class="conn-emerald" marker-end="url(#arrow-emerald)" />
+  <path d="M 785 305 L 785 365 L 600 365" class="conn-blue" marker-end="url(#arrow-blue)" />
+
+  <!-- BOTTOM: UNIFIED CAPSTONE (LAB 4) -->
+  <g transform="translate(40, 375)">
+    <rect width="880" height="120" class="card-unified" />
+    <text class="piece-title" x="24" y="32" fill="#0F172A">Lab 4: Fault-Tolerant Unified Search Surface (The Integration Capstone)</text>
+    <text class="subtext" x="24" y="50">FastAPI Gateway Broker &#8226; State Machine Circuit Breaker (CLOSED / OPEN / HALF-OPEN) &#8226; Chrome DevTools Waterfall Inspector</text>
+
+    <line x1="24" y1="62" x2="856" y2="62" stroke="#CBD5E1" />
+
+    <g transform="translate(24, 74)">
+      <rect x="0" y="0" width="260" height="34" fill="#FFFFFF" stroke="#E2E8F0" rx="6" />
+      <text class="code-text" x="12" y="22" fill="#047857">Prefix Autocomplete &#8226; 0.016ms</text>
+    </g>
+
+    <g transform="translate(300, 74)">
+      <rect x="0" y="0" width="260" height="34" fill="#FFFFFF" stroke="#E2E8F0" rx="6" />
+      <text class="code-text" x="12" y="22" fill="#1D4ED8">ES Primary Engine &#8226; 6.6ms SLA</text>
+    </g>
+
+    <g transform="translate(576, 74)">
+      <rect x="0" y="0" width="280" height="34" fill="#FFFFFF" stroke="#E2E8F0" rx="6" />
+      <text class="code-text" x="12" y="22" fill="#B45309">Circuit Breaker &#8226; 0.02ms Fallback</text>
+    </g>
+  </g>
+</svg>

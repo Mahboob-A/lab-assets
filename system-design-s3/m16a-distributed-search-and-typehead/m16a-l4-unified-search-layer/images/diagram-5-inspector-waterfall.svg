@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #0F172A; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .th { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 700; fill: #475569; }
+      .bar-debounce { fill: #94A3B8; rx: 2px; }
+      .bar-rtt { fill: #F59E0B; rx: 2px; }
+      .bar-es { fill: #10B981; rx: 2px; }
+      .bar-ram { fill: #06B6D4; rx: 2px; }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Chrome DevTools Request Waterfall: Microsecond Latency Decomposition</text>
+    <text class="subtext" x="0" y="20">How the client inspector records hop-by-hop delays: Debounce wait, Network RTT, and Engine Execution</text>
+  </g>
+
+  <!-- TOP CARD: COLOR LEGEND & PHASE DECOMPOSITION -->
+  <g transform="translate(40, 75)">
+    <rect width="880" height="90" class="card" />
+    <text class="title" x="16" y="24">Latency Breakdown Phases</text>
+
+    <!-- Phase 1: Debounce -->
+    <g transform="translate(16, 40)">
+      <rect x="0" y="0" width="18" height="18" class="bar-debounce" />
+      <text class="title" x="26" y="14" font-size="12px">1. Debounce Wait (200ms)</text>
+      <text class="subtext" x="26" y="30">Suppresses rapid typing chatter</text>
+    </g>
+
+    <!-- Phase 2: Network RTT -->
+    <g transform="translate(230, 40)">
+      <rect x="0" y="0" width="18" height="18" class="bar-rtt" />
+      <text class="title" x="26" y="14" font-size="12px">2. Network RTT (~1.5ms)</text>
+      <text class="subtext" x="26" y="30">TCP socket transit to FastAPI</text>
+    </g>
+
+    <!-- Phase 3: Elasticsearch Execution -->
+    <g transform="translate(440, 40)">
+      <rect x="0" y="0" width="18" height="18" class="bar-es" />
+      <text class="title" x="26" y="14" font-size="12px">3. ES Execution (~6.6ms)</text>
+      <text class="subtext" x="26" y="30">Lucene inverted index &amp; stemming</text>
+    </g>
+
+    <!-- Phase 4: RAM Index / Trie Execution -->
+    <g transform="translate(650, 40)">
+      <rect x="0" y="0" width="18" height="18" class="bar-ram" />
+      <text class="title" x="26" y="14" font-size="12px">4. RAM Execution (0.02ms)</text>
+      <text class="subtext" x="26" y="30">Zero-IPC heap memory lookup</text>
+    </g>
+  </g>
+
+  <!-- BOTTOM CARD: WATERFALL TIMELINE TABLE (DEVTOOLS REPLICA) -->
+  <g transform="translate(40, 180)">
+    <rect width="880" height="295" class="card" />
+
+    <!-- Table Header -->
+    <rect x="0" y="0" width="880" height="32" fill="#F1F5F9" rx="8" />
+    <text class="th" x="20" y="20">QUERY / EVENT</text>
+    <text class="th" x="180" y="20">TARGET</text>
+    <text class="th" x="290" y="20">STATUS</text>
+    <text class="th" x="420" y="20">WATERFALL TIMELINE TRACE</text>
+    <text class="th" x="780" y="20">TOTAL DURATION</text>
+
+    <!-- Row 1: "s" -> Gated -->
+    <g transform="translate(0, 32)">
+      <line x1="0" y1="42" x2="880" y2="42" stroke="#F1F5F9" />
+      <text class="code-text" x="20" y="26">"s" (Key 1)</text>
+      <rect x="180" y="10" width="70" height="20" fill="#F1F5F9" stroke="#CBD5E1" rx="4" />
+      <text class="badge-text" x="190" y="24" fill="#64748B">/suggest</text>
+      <rect x="290" y="10" width="100" height="20" fill="#FEF2F2" stroke="#FECACA" rx="4" />
+      <text class="badge-text" x="298" y="24" fill="#DC2626">GATED (&lt;2 CHARS)</text>
+
+      <!-- Waterfall Bar (Zero length - dropped on client) -->
+      <rect x="420" y="14" width="320" height="14" fill="#F8FAFC" stroke="#E2E8F0" rx="3" />
+      <text class="subtext" x="430" y="25" fill="#94A3B8">0ms (Suppressed on client before network)</text>
+
+      <text class="code-text" x="780" y="26" fill="#64748B">0.0 ms</text>
+    </g>
+
+    <!-- Row 2: "sy" -> Cancelled / Debounced -->
+    <g transform="translate(0, 74)">
+      <line x1="0" y1="42" x2="880" y2="42" stroke="#F1F5F9" />
+      <text class="code-text" x="20" y="26">"sy" (Key 2)</text>
+      <rect x="180" y="10" width="70" height="20" fill="#F1F5F9" stroke="#CBD5E1" rx="4" />
+      <text class="badge-text" x="190" y="24" fill="#64748B">/suggest</text>
+      <rect x="290" y="10" width="100" height="20" fill="#FEF2F2" stroke="#FECACA" rx="4" />
+      <text class="badge-text" x="298" y="24" fill="#DC2626">CANCELLED</text>
+
+      <!-- Waterfall Bar -->
+      <rect x="420" y="14" width="320" height="14" fill="#F8FAFC" stroke="#E2E8F0" rx="3" />
+      <rect x="420" y="14" width="80" height="14" class="bar-debounce" />
+      <text class="subtext" x="510" y="25" fill="#94A3B8">Timer cleared by next keystroke</text>
+
+      <text class="code-text" x="780" y="26" fill="#64748B">Debounced</text>
+    </g>
+
+    <!-- Row 3: "sys" -> Emitted to Trie -->
+    <g transform="translate(0, 116)">
+      <line x1="0" y1="42" x2="880" y2="42" stroke="#F1F5F9" />
+      <text class="code-text" x="20" y="26">"sys" (Emitted)</text>
+      <rect x="180" y="10" width="70" height="20" fill="#ECFDF5" stroke="#10B981" rx="4" />
+      <text class="badge-text" x="190" y="24" fill="#047857">/suggest</text>
+      <rect x="290" y="10" width="100" height="20" fill="#ECFDF5" stroke="#10B981" rx="4" />
+      <text class="badge-text" x="312" y="24" fill="#047857">200 OK</text>
+
+      <!-- Waterfall Bar: Debounce (200ms) + RTT (1.5ms) + RAM (0.016ms) -->
+      <rect x="420" y="14" width="320" height="14" fill="#F8FAFC" stroke="#E2E8F0" rx="3" />
+      <rect x="420" y="14" width="220" height="14" class="bar-debounce" />
+      <rect x="640" y="14" width="20" height="14" class="bar-rtt" />
+      <rect x="660" y="14" width="6" height="14" class="bar-ram" />
+
+      <text class="code-text" x="780" y="26" fill="#059669">201.5 ms</text>
+    </g>
+
+    <!-- Row 4: Search "replicating cache" -> Primary ES -->
+    <g transform="translate(0, 158)">
+      <line x1="0" y1="42" x2="880" y2="42" stroke="#F1F5F9" />
+      <text class="code-text" x="20" y="26">"replicating..."</text>
+      <rect x="180" y="10" width="70" height="20" fill="#EFF6FF" stroke="#3B82F6" rx="4" />
+      <text class="badge-text" x="194" y="24" fill="#1D4ED8">/search</text>
+      <rect x="290" y="10" width="100" height="20" fill="#EFF6FF" stroke="#3B82F6" rx="4" />
+      <text class="badge-text" x="300" y="24" fill="#1D4ED8">PRIMARY (ES)</text>
+
+      <!-- Waterfall Bar: Zero debounce + RTT + ES execution -->
+      <rect x="420" y="14" width="320" height="14" fill="#F8FAFC" stroke="#E2E8F0" rx="3" />
+      <rect x="420" y="14" width="30" height="14" class="bar-rtt" />
+      <rect x="450" y="14" width="120" height="14" class="bar-es" />
+
+      <text class="code-text" x="780" y="26" fill="#1D4ED8">6.77 ms</text>
+    </g>
+
+    <!-- Row 5: Search "replicating cache" -> Circuit Tripped (Fallback RAM) -->
+    <g transform="translate(0, 200)">
+      <line x1="0" y1="42" x2="880" y2="42" stroke="#F1F5F9" />
+      <text class="code-text" x="20" y="26">"replicating..."</text>
+      <rect x="180" y="10" width="70" height="20" fill="#FFFBEB" stroke="#F59E0B" rx="4" />
+      <text class="badge-text" x="194" y="24" fill="#B45309">/search</text>
+      <rect x="290" y="10" width="100" height="20" fill="#FFFBEB" stroke="#F59E0B" rx="4" />
+      <text class="badge-text" x="298" y="24" fill="#B45309">DEGRADED (RAM)</text>
+
+      <!-- Waterfall Bar: Zero debounce + RTT + RAM execution -->
+      <rect x="420" y="14" width="320" height="14" fill="#F8FAFC" stroke="#E2E8F0" rx="3" />
+      <rect x="420" y="14" width="30" height="14" class="bar-rtt" />
+      <rect x="450" y="14" width="8" height="14" class="bar-ram" />
+
+      <text class="code-text" x="780" y="26" fill="#D97706">0.024 ms (360x faster)</text>
+    </g>
+
+    <!-- Summary footer -->
+    <g transform="translate(20, 255)">
+      <text class="subtext" x="0" y="16">Inspector Insight: In-Memory RAM execution is sub-millisecond (0.02ms) and completely immune to cluster saturation or network latency.</text>
+    </g>
+  </g>
+</svg>

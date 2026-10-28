@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .card-blue { fill: #EFF6FF; stroke: #3B82F6; stroke-width: 1.5; rx: 8px; }
+      .card-amber { fill: #FFFBEB; stroke: #F59E0B; stroke-width: 1.5; rx: 8px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #0F172A; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .axis { stroke: #94A3B8; stroke-width: 2; fill: none; }
+      .grid-line { stroke: #E2E8F0; stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+      .quad-ideal { fill: #F0FDF4; opacity: 0.6; }
+      .quad-fail { fill: #FEF2F2; opacity: 0.4; }
+    </style>
+    <marker id="arrow-axis" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748B" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Architectural Tradeoff: Latency vs. Relevance Quality</text>
+    <text class="subtext" x="0" y="20">Why unified architectures combine Elasticsearch (High MAP) with In-Memory Indexing (Sub-ms Latency)</text>
+  </g>
+
+  <!-- LEFT: QUADRANT CHART (480px) -->
+  <g transform="translate(40, 75)">
+    <rect width="460" height="420" class="card" />
+    <text class="title" x="16" y="24">System Tradeoff Quadrant</text>
+
+    <!-- Quadrant shading -->
+    <rect x="50" y="50" width="180" height="150" class="quad-ideal" />
+    <text class="badge-text" x="60" y="70" fill="#059669">THEORETICAL IDEAL</text>
+    <text class="subtext" x="60" y="86">(Sub-ms + Max MAP)</text>
+
+    <rect x="230" y="200" width="190" height="170" class="quad-fail" />
+    <text class="badge-text" x="250" y="340" fill="#DC2626">FAILURE / OUTAGE ZONE</text>
+    <text class="subtext" x="250" y="356">(Saturated cluster / Slow &amp; Broken)</text>
+
+    <!-- Axes -->
+    <!-- X-Axis (Latency: 0.01ms -> 100ms) -->
+    <line x1="50" y1="370" x2="430" y2="370" class="axis" marker-end="url(#arrow-axis)" />
+    <text class="subtext" x="370" y="390">Latency (Log Scale) &#8594;</text>
+
+    <text class="subtext" x="50" y="386">0.01ms</text>
+    <text class="subtext" x="140" y="386">0.1ms</text>
+    <text class="subtext" x="230" y="386">1ms</text>
+    <text class="subtext" x="320" y="386">10ms</text>
+
+    <!-- Y-Axis (Relevance Quality: MAP 0.0 -> 1.0) -->
+    <line x1="50" y1="370" x2="50" y2="50" class="axis" marker-end="url(#arrow-axis)" />
+    <text class="subtext" x="15" y="44">&#8593; Relevance (MAP)</text>
+
+    <text class="subtext" x="20" y="370">0.0</text>
+    <text class="subtext" x="20" y="290">0.25</text>
+    <text class="subtext" x="20" y="210">0.50</text>
+    <text class="subtext" x="20" y="130">0.75</text>
+    <text class="subtext" x="20" y="60">1.00</text>
+
+    <!-- Grid lines -->
+    <line x1="50" y1="210" x2="420" y2="210" class="grid-line" />
+    <line x1="230" y1="50" x2="230" y2="370" class="grid-line" />
+
+    <!-- POINT A: In-Memory Index (Fallback) -->
+    <!-- Latency 0.05ms (x=90), MAP 0.4167 (y=236) -->
+    <circle cx="95" cy="236" r="10" fill="#D97706" stroke="#92400E" stroke-width="2" />
+    <rect x="80" y="255" width="140" height="42" fill="#FFFFFF" stroke="#FCD34D" rx="4" />
+    <text class="badge-text" x="88" y="271" fill="#B45309">FALLBACK: IN-MEMORY</text>
+    <text class="code-text" x="88" y="287" fill="#B45309">0.05ms | MAP 0.4167</text>
+
+    <!-- POINT B: Elasticsearch (Primary) -->
+    <!-- Latency 6.62ms (x=300), MAP 0.8472 (y=100) -->
+    <circle cx="305" cy="100" r="10" fill="#2563EB" stroke="#1E40AF" stroke-width="2" />
+    <rect x="235" y="55" width="145" height="42" fill="#FFFFFF" stroke="#93C5FD" rx="4" />
+    <text class="badge-text" x="243" y="71" fill="#1D4ED8">PRIMARY: ELASTICSEARCH</text>
+    <text class="code-text" x="243" y="87" fill="#1D4ED8">6.62ms | MAP 0.8472</text>
+  </g>
+
+  <!-- RIGHT: SCORECARD METRICS TABLE (420px) -->
+  <g transform="translate(520, 75)">
+    <rect width="400" height="420" class="card" />
+    <text class="title" x="16" y="24">Empirical Scorecard &amp; Tradeoff Analysis</text>
+
+    <!-- Comparison Table -->
+    <g transform="translate(16, 45)">
+      <rect x="0" y="0" width="368" height="26" fill="#F1F5F9" rx="4" />
+      <text class="badge-text" x="12" y="17" fill="#475569">DIMENSION</text>
+      <text class="badge-text" x="150" y="17" fill="#1D4ED8">ELASTICSEARCH</text>
+      <text class="badge-text" x="260" y="17" fill="#B45309">IN-MEMORY RAM</text>
+
+      <!-- Row 1: Latency -->
+      <line x1="0" y1="56" x2="368" y2="56" stroke="#F1F5F9" />
+      <text class="title" x="12" y="46" font-size="11px">Query Latency (p50)</text>
+      <text class="code-text" x="150" y="46" fill="#1D4ED8">6.62 ms</text>
+      <text class="code-text" x="260" y="46" fill="#059669">0.05 ms (132x)</text>
+
+      <!-- Row 2: MAP Score -->
+      <line x1="0" y1="88" x2="368" y2="88" stroke="#F1F5F9" />
+      <text class="title" x="12" y="78" font-size="11px">Relevance (MAP)</text>
+      <text class="code-text" x="150" y="78" fill="#059669">0.8472 (100%)</text>
+      <text class="code-text" x="260" y="78" fill="#D97706">0.4167 (-51%)</text>
+
+      <!-- Row 3: Precision @ 1 -->
+      <line x1="0" y1="120" x2="368" y2="120" stroke="#F1F5F9" />
+      <text class="title" x="12" y="110" font-size="11px">Precision@1 (Top Hit)</text>
+      <text class="code-text" x="150" y="110" fill="#059669">1.0000</text>
+      <text class="code-text" x="260" y="110" fill="#D97706">0.5000</text>
+
+      <!-- Row 4: Porter Stemming -->
+      <line x1="0" y1="152" x2="368" y2="152" stroke="#F1F5F9" />
+      <text class="title" x="12" y="142" font-size="11px">Stemming Pipeline</text>
+      <text class="code-text" x="150" y="142" fill="#1D4ED8">Porter (english)</text>
+      <text class="code-text" x="260" y="142" fill="#64748B">Exact tokens</text>
+
+      <!-- Row 5: Failure Mode -->
+      <line x1="0" y1="184" x2="368" y2="184" stroke="#F1F5F9" />
+      <text class="title" x="12" y="174" font-size="11px">Failure Resilience</text>
+      <text class="code-text" x="150" y="174" fill="#DC2626">Cluster OOM / Lag</text>
+      <text class="code-text" x="260" y="174" fill="#059669">Zero-IPC Immune</text>
+    </g>
+
+    <!-- Engineering Philosophy Box -->
+    <rect x="16" y="255" width="368" height="145" class="card-blue" />
+    <text class="title" x="28" y="278" fill="#1E40AF">Principal Engineering Philosophy</text>
+    <text class="subtext" x="28" y="296" font-style="italic">"Late answers are wrong answers." &#8212; DoorDash &amp; Facebook</text>
+    <line x1="28" y1="306" x2="370" y2="306" stroke="#BFDBFE" />
+    <text class="subtext" x="28" y="324">In consumer search surfaces, users abandon the platform if query</text>
+    <text class="subtext" x="28" y="340">latency exceeds 500ms or throws a 500 error. By gracefully degrading</text>
+    <text class="subtext" x="28" y="356">to the in-memory inverted index, we preserve 100% availability with</text>
+    <text class="subtext" x="28" y="372">0.05ms response times during primary cluster degradation.</text>
+  </g>
+</svg>

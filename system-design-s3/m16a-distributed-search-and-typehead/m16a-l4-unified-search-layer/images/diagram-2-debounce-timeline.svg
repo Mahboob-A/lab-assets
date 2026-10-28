@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #F8FAFC; }
+      .card { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04)); }
+      .card-red { fill: #FEF2F2; stroke: #EF4444; stroke-width: 1.5; rx: 8px; }
+      .card-green { fill: #ECFDF5; stroke: #10B981; stroke-width: 1.5; rx: 8px; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #0F172A; }
+      .header-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0F172A; letter-spacing: -0.02em; }
+      .subtext { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #64748B; }
+      .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .code-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #1E293B; }
+      .timeline-axis { stroke: #94A3B8; stroke-width: 2; fill: none; }
+      .key-circle { fill: #3B82F6; stroke: #1D4ED8; stroke-width: 2; }
+      .key-label { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; dominant-baseline: central; }
+      .req-red { stroke: #EF4444; stroke-width: 2; fill: none; stroke-dasharray: 4 3; animation: flow 1s linear infinite; }
+      .req-green { stroke: #10B981; stroke-width: 2.5; fill: none; stroke-dasharray: 6 4; animation: flow 1.2s linear infinite; }
+      .timer-bracket { stroke: #059669; stroke-width: 1.5; fill: none; }
+      @keyframes flow {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+    </style>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#EF4444" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10B981" />
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#94A3B8" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Title -->
+  <g transform="translate(40, 30)">
+    <text class="header-title" x="0" y="0">Client Debouncing &amp; Prefix Gating: Controlling the Request Avalanche</text>
+    <text class="subtext" x="0" y="20">Comparing raw keystroke emission vs. 200ms timer cooldown + prefix gating (min_length &gt;= 2)</text>
+  </g>
+
+  <!-- TIMELINE 1: WITHOUT DEBOUNCING (RED) -->
+  <g transform="translate(40, 75)">
+    <rect width="880" height="175" class="card-red" />
+    <rect x="16" y="14" width="160" height="20" fill="#FEE2E2" stroke="#EF4444" rx="4" />
+    <text class="badge-text" x="24" y="28" fill="#B91C1C">WITHOUT DEBOUNCING (NAIVE)</text>
+    <text class="subtext" x="186" y="28">100% Network Chatter &#8226; Race Conditions &#8226; 6 HTTP Requests Fired</text>
+
+    <!-- Timeline Axis -->
+    <line x1="40" y1="90" x2="840" y2="90" class="timeline-axis" marker-end="url(#arrow-slate)" />
+    <text class="subtext" x="846" y="94">Time (ms)</text>
+
+    <!-- Keystroke Events -->
+    <!-- 's' at 80ms -->
+    <circle cx="90" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="90" y="90">'s'</text>
+    <text class="code-text" x="78" y="120">0ms</text>
+    <path d="M 90 76 L 90 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="55" y="44" fill="#DC2626">Req 1: "s"</text>
+
+    <!-- 'y' at 190ms -->
+    <circle cx="210" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="210" y="90">'y'</text>
+    <text class="code-text" x="198" y="120">90ms</text>
+    <path d="M 210 76 L 210 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="175" y="44" fill="#DC2626">Req 2: "sy"</text>
+
+    <!-- 's' at 330ms -->
+    <circle cx="330" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="330" y="90">'s'</text>
+    <text class="code-text" x="316" y="120">180ms</text>
+    <path d="M 330 76 L 330 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="295" y="44" fill="#DC2626">Req 3: "sys"</text>
+
+    <!-- 't' at 450ms -->
+    <circle cx="450" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="450" y="90">'t'</text>
+    <text class="code-text" x="436" y="120">270ms</text>
+    <path d="M 450 76 L 450 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="415" y="44" fill="#DC2626">Req 4: "syst"</text>
+
+    <!-- 'e' at 570ms -->
+    <circle cx="570" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="570" y="90">'e'</text>
+    <text class="code-text" x="556" y="120">360ms</text>
+    <path d="M 570 76 L 570 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="535" y="44" fill="#DC2626">Req 5: "syste"</text>
+
+    <!-- 'm' at 690ms -->
+    <circle cx="690" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="690" y="90">'m'</text>
+    <text class="code-text" x="676" y="120">450ms</text>
+    <path d="M 690 76 L 690 48" class="req-red" marker-end="url(#arrow-red)" />
+    <text class="badge-text" x="655" y="44" fill="#DC2626">Req 6: "system"</text>
+
+    <!-- Warning callout -->
+    <rect x="750" y="110" width="116" height="50" fill="#FFFFFF" stroke="#FECACA" rx="4" />
+    <text class="code-text" x="758" y="128" fill="#DC2626">Flapping UI</text>
+    <text class="code-text" x="758" y="146" fill="#DC2626">6 Server Calls</text>
+  </g>
+
+  <!-- TIMELINE 2: WITH 200MS DEBOUNCE + PREFIX GATING (GREEN) -->
+  <g transform="translate(40, 270)">
+    <rect width="880" height="185" class="card-green" />
+    <rect x="16" y="14" width="220" height="20" fill="#D1FAE5" stroke="#10B981" rx="4" />
+    <text class="badge-text" x="24" y="28" fill="#047857">WITH 200MS DEBOUNCE &amp; GATING</text>
+    <text class="subtext" x="246" y="28">83.3% QPS Suppression &#8226; Zero Race Conditions &#8226; Exactly 1 Request</text>
+
+    <!-- Timeline Axis -->
+    <line x1="40" y1="90" x2="840" y2="90" class="timeline-axis" marker-end="url(#arrow-slate)" />
+    <text class="subtext" x="846" y="94">Time (ms)</text>
+
+    <!-- Keystroke Events -->
+    <!-- 's' Gated -->
+    <circle cx="90" cy="90" r="14" fill="#94A3B8" stroke="#475569" stroke-width="2" />
+    <text class="key-label" x="90" y="90">'s'</text>
+    <text class="code-text" x="78" y="120">0ms</text>
+    <rect x="50" y="48" width="80" height="22" fill="#F1F5F9" stroke="#CBD5E1" rx="3" />
+    <text class="badge-text" x="56" y="63" fill="#64748B">GATED (&lt;2)</text>
+
+    <!-- 'y' starts timer -->
+    <circle cx="210" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="210" y="90">'y'</text>
+    <text class="code-text" x="198" y="120">90ms</text>
+    <path d="M 210 74 C 210 60, 270 60, 320 74" stroke="#059669" stroke-width="1.5" stroke-dasharray="3 2" fill="none" />
+
+    <!-- 's' resets timer -->
+    <circle cx="330" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="330" y="90">'s'</text>
+    <text class="code-text" x="316" y="120">180ms</text>
+    <path d="M 330 74 C 330 60, 390 60, 440 74" stroke="#059669" stroke-width="1.5" stroke-dasharray="3 2" fill="none" />
+
+    <!-- 't' resets timer -->
+    <circle cx="450" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="450" y="90">'t'</text>
+    <text class="code-text" x="436" y="120">270ms</text>
+
+    <!-- 'e' resets timer -->
+    <circle cx="570" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="570" y="90">'e'</text>
+    <text class="code-text" x="556" y="120">360ms</text>
+
+    <!-- 'm' resets timer -->
+    <circle cx="690" cy="90" r="14" class="key-circle" />
+    <text class="key-label" x="690" y="90">'m'</text>
+    <text class="code-text" x="676" y="120">450ms</text>
+
+    <!-- 200ms Cooldown bracket after 'm' -->
+    <line x1="690" y1="65" x2="810" y2="65" stroke="#059669" stroke-width="2" />
+    <line x1="690" y1="60" x2="690" y2="70" stroke="#059669" stroke-width="2" />
+    <line x1="810" y1="60" x2="810" y2="70" stroke="#059669" stroke-width="2" />
+    <text class="code-text" x="715" y="56" fill="#059669">200ms Pause</text>
+
+    <!-- Emission at 650ms -->
+    <circle cx="810" cy="90" r="8" fill="#10B981" />
+    <text class="code-text" x="796" y="120">650ms</text>
+    <path d="M 810 76 L 810 38" class="req-green" marker-end="url(#arrow-green)" />
+    <rect x="740" y="12" width="138" height="26" fill="#FFFFFF" stroke="#10B981" rx="4" />
+    <text class="badge-text" x="748" y="29" fill="#047857">SINGLE HTTP EMISSION!</text>
+
+    <!-- Savings badge -->
+    <rect x="700" y="142" width="168" height="30" fill="#FFFFFF" stroke="#6EE7B7" rx="4" />
+    <text class="code-text" x="708" y="162" fill="#047857">&#8226; 5 of 6 calls suppressed</text>
+  </g>
+</svg>
