@@ -185,7 +185,7 @@ In this lab, we adopt the industry-standard **hybrid production model**:
 
 **Complete solution of the lab is available here: [GitHub Repository](https://github.com/Mahboob-A/lab-assets/tree/main/system-design-s3/m16a-distributed-search-and-typehead/m16a-l2-typeahead-trie/code-implementation)**
 
-> [!IMPORTANT]
+> **IMPORTANT**
 > **Pre-populating Foundational Dataset & Support Files**:
 > Before running the verification scripts in this lab, you must pre-populate the non-trivial helper and dataset files from the GitHub repository into your `typeahead_lab/` workspace:
 > 1. `dataset.py`: Contains the curated 165-query technical search corpus and the procedural Zipfian power-law query generator.
@@ -251,7 +251,7 @@ REDIS_PASSWORD: str = "redis"      # Replace with your Poridhi Redis Password
 # ==============================================================================
 ```
 
-> [!NOTE]
+> **NOTE**
 > **Redis 6+ Access Control Lists (ACL)**: Poridhi Cloud Lab provisions Redis with modern ACL security enabled. You must supply both `REDIS_USERNAME` (e.g., `"redis"`) and `REDIS_PASSWORD`. If the username is omitted, Redis defaults authentication to the `"default"` user, which will cause authentication to fail.
 
 #### Step 3: Verifying Redis Integration
@@ -262,7 +262,7 @@ Before executing the verification test, ensure the `redis` Python driver is inst
 pip install redis
 ```
 
-> [!TIP]
+> **NOTE**
 > If you encounter `ModuleNotFoundError: No module named 'redis'` when executing the verification script, run `pip install redis` in your terminal to install the driver.
 
 Execute the standalone verification script to confirm connectivity, cache writing, cache reading, and atomic Sorted Set increments against your provisioned database:
